@@ -268,7 +268,10 @@ class _WindowHeaderState extends State<WindowHeader> {
                   },
                   child: system.isMacOS
                       ? const Center(child: Text(appName))
-                      : const SizedBox.expand(),
+                      : const Padding(
+                          padding: EdgeInsets.only(left: 12),
+                          child: _WindowHeaderBrand(),
+                        ),
                 ),
               ),
               if (!system.isMacOS) _buildActions(),
@@ -281,22 +284,48 @@ class _WindowHeaderState extends State<WindowHeader> {
 }
 
 class AppIcon extends StatelessWidget {
-  const AppIcon({super.key});
+  final double size;
+
+  const AppIcon({super.key, this.size = 16});
 
   @override
   Widget build(BuildContext context) {
+    final scale = size / 34;
     return Container(
       decoration: ShapeDecoration(
         color: context.colorScheme.surfaceContainerHighest,
         shape: RoundedSuperellipseBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(14 * scale),
         ),
       ),
-      padding: const EdgeInsets.all(8),
+      padding: EdgeInsets.all(8 * scale),
       child: Transform.translate(
-        offset: const Offset(0, -1),
-        child: Image.asset('assets/images/icon.png', width: 34, height: 34),
+        offset: Offset(0, -1 * scale),
+        child: Image.asset('assets/images/icon.png', width: size, height: size),
       ),
+    );
+  }
+}
+
+class _WindowHeaderBrand extends StatelessWidget {
+  const _WindowHeaderBrand();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const AppIcon(),
+        const SizedBox(width: 7),
+        Text(
+          appName,
+          style: context.textTheme.bodySmall?.copyWith(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: context.quanX.textPrimary,
+          ),
+        ),
+      ],
     );
   }
 }

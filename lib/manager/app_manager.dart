@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/manager/window_manager.dart';
+import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/foundation.dart';
@@ -137,58 +137,22 @@ class AppEnvManager extends StatelessWidget {
   }
 }
 
-class AppSidebarContainer extends ConsumerWidget {
+class AppTopNavContainer extends ConsumerStatefulWidget {
   final Widget child;
 
-  const AppSidebarContainer({super.key, required this.child});
+  const AppTopNavContainer({super.key, required this.child});
 
-  // Widget _buildLoading() {
-  //   return Consumer(
-  //     builder: (_, ref, _) {
-  //       final loading = ref.watch(loadingProvider);
-  //       final isMobileView = ref.watch(isMobileViewProvider);
-  //       return loading && !isMobileView
-  //           ? RotatedBox(
-  //               quarterTurns: 1,
-  //               child: const LinearProgressIndicator(),
-  //             )
-  //           : Container();
-  //     },
-  //   );
-  // }
+  @override
+  ConsumerState<AppTopNavContainer> createState() => _AppTopNavContainerState();
+}
 
-  Widget _buildBackground({
-    required BuildContext context,
-    required Widget child,
-  }) {
-    return Material(
-      color: context.colorScheme.surfaceContainer,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(
-            right: BorderSide(color: context.quanX.separator),
-          ),
-        ),
-        child: child,
-      ),
-    );
-    // if (!system.isMacOS) {
-    //   return Material(
-    //     color: context.colorScheme.surfaceContainer,
-    //     child: child,
-    //   );
-    // }
-    // return child;
-    // return TransparentMacOSSidebar(
-    //   child: Material(color: Colors.transparent, child: child),
-    // );
-  }
-
-  void _updateSideBarWidth(WidgetRef ref, double contentWidth) {
+class _AppTopNavContainerState extends ConsumerState<AppTopNavContainer> {
+  @override
+  void initState() {
+    super.initState();
+    // 顶部导航不再占用侧边宽度,归零以保证 contentWidth 计算正确
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(sideWidthProvider.notifier).value =
-          ref.read(viewSizeProvider.select((state) => state.width)) -
-          contentWidth;
+      ref.read(sideWidthProvider.notifier).value = 0;
     });
   }
 
@@ -199,105 +163,114 @@ class AppSidebarContainer extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final navigationState = ref.watch(navigationStateProvider);
     final navigationItems = navigationState.navigationItems;
     final isMobileView = navigationState.viewMode == ViewMode.mobile;
     if (isMobileView) {
-      return child;
+      return widget.child;
     }
     final currentIndex = navigationState.currentIndex;
-    final showLabel = ref.watch(appSettingProvider).showLabel;
-    return Row(
+    return Column(
       children: [
-        _buildBackground(
-          context: context,
-          child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (system.isMacOS) const SizedBox(height: 22),
-                const SizedBox(height: 10),
-                if (!system.isMacOS) ...[
-                  const ClipRect(child: AppIcon()),
-                  const SizedBox(height: 12),
-                ],
-                Expanded(
-                  child: ScrollConfiguration(
-                    behavior: HiddenBarScrollBehavior(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: NavigationRail(
-                            scrollable: true,
-                            minExtendedWidth: 200,
-                            backgroundColor: Colors.transparent,
-                            selectedLabelTextStyle: context
-                                .textTheme
-                                .labelLarge!
-                                .copyWith(
-                                  color: context.quanX.textPrimary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                            unselectedLabelTextStyle: context
-                                .textTheme
-                                .labelLarge!
-                                .copyWith(color: context.quanX.textSecondary),
-                            destinations: navigationItems
-                                .map(
-                                  (e) => NavigationRailDestination(
-                                    icon: e.icon,
-                                    label: Text(Intl.message(e.label.name)),
-                                  ),
-                                )
-                                .toList(),
-                            onDestinationSelected: (index) {
-                              _handleToPage(navigationItems[index].label);
-                            },
-                            extended: false,
-                            selectedIndex: currentIndex,
-                            labelType: showLabel
-                                ? NavigationRailLabelType.all
-                                : NavigationRailLabelType.none,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                IconButton(
-                  onPressed: () {
-                    ref
-                        .read(appSettingProvider.notifier)
-                        .update(
-                          (state) =>
-                              state.copyWith(showLabel: !state.showLabel),
-                        );
-                  },
-                  icon: Icon(
-                    Icons.menu,
-                    color: context.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-            ),
-          ),
+        _TopNavBar(
+          items: navigationItems,
+          currentIndex: currentIndex,
+          onSelected: (index) {
+            _handleToPage(navigationItems[index].label);
+          },
         ),
-        Expanded(
-          flex: 1,
-          child: ClipRect(
-            child: LayoutBuilder(
-              builder: (_, constraints) {
-                _updateSideBarWidth(ref, constraints.maxWidth);
-                return child;
-              },
-            ),
-          ),
-        ),
+        Expanded(child: ClipRect(child: widget.child)),
       ],
+    );
+  }
+}
+
+class _TopNavBar extends StatelessWidget {
+  final List<NavigationItem> items;
+  final int currentIndex;
+  final ValueChanged<int> onSelected;
+
+  const _TopNavBar({
+    required this.items,
+    required this.currentIndex,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: context.colorScheme.surface,
+      child: Container(
+        height: 40,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: context.quanX.separator),
+          ),
+        ),
+        child: Row(
+          children: [
+            for (int i = 0; i < items.length; i++)
+              _TopNavItem(
+                icon: items[i].icon,
+                label: Intl.message(items[i].label.name),
+                selected: i == currentIndex,
+                onPressed: () {
+                  onSelected(i);
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TopNavItem extends StatelessWidget {
+  final Widget icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onPressed;
+
+  const _TopNavItem({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(right: 2),
+      child: Tooltip(
+        message: label,
+        waitDuration: const Duration(milliseconds: 400),
+        child: Material(
+          color: selected ? colorScheme.primary.opacity15 : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(8),
+            hoverColor: colorScheme.onSurface.opacity10,
+            child: SizedBox(
+              width: 36,
+              height: 28,
+              child: IconTheme(
+                data: IconThemeData(
+                  size: 18,
+                  color: selected
+                      ? colorScheme.primary
+                      : context.quanX.textSecondary,
+                ),
+                child: Center(child: icon),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
