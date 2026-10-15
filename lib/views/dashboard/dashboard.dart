@@ -4,13 +4,14 @@ import 'package:defer_pointer/defer_pointer.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/providers/providers.dart';
+import 'package:fl_clash/providers/providers.dart' hide NetworkDetection;
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'widgets/start_button.dart';
+import 'widgets/widgets.dart';
 
 typedef _IsEditWidgetBuilder = Widget Function(bool isEdit);
 
@@ -57,11 +58,9 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     globalState.container.read(coreActionProvider.notifier).restartCore();
   }
 
-  List<Widget> _buildActions(bool isEdit) {
+  Widget _buildCoreStatusAction() {
     final appLocalizations = context.appLocalizations;
-    return [
-      if (!isEdit)
-        Consumer(
+    return Consumer(
           builder: (_, ref, _) {
             final coreStatus = ref.watch(coreStatusProvider);
             return Tooltip(
@@ -149,7 +148,11 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
               ),
             );
           },
-        ),
+        );
+  }
+
+  List<Widget> _buildActions(bool isEdit) {
+    return [
       if (isEdit)
         ValueListenableBuilder(
           valueListenable: _addedWidgetsNotifier,
@@ -229,6 +232,92 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     }
   }
 
+  Widget _buildDesktopView(BuildContext context) {
+    const spacing = 14.0;
+    return CommonScaffold(
+      title: context.appLocalizations.dashboard,
+      actions: [_buildCoreStatusAction()],
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: LayoutBuilder(
+            builder: (_, constraints) {
+              final isWide = constraints.maxWidth >= 720;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const ConnectionBar(),
+                  const SizedBox(height: spacing),
+                  if (isWide)
+                    const Row(
+                      children: [
+                        Expanded(child: NetworkSpeed()),
+                        SizedBox(width: spacing),
+                        Expanded(child: TrafficUsage()),
+                        SizedBox(width: spacing),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              SystemProxyButton(),
+                              SizedBox(height: spacing),
+                              TUNButton(),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  else ...[
+                    const NetworkSpeed(),
+                    const SizedBox(height: spacing),
+                    const TrafficUsage(),
+                    const SizedBox(height: spacing),
+                    const SystemProxyButton(),
+                    const SizedBox(height: spacing),
+                    const TUNButton(),
+                  ],
+                  const SizedBox(height: spacing),
+                  if (isWide)
+                    const Row(
+                      children: [
+                        Expanded(child: OutboundModeV2()),
+                        SizedBox(width: spacing),
+                        Expanded(child: NetworkDetection()),
+                        SizedBox(width: spacing),
+                        Expanded(child: IntranetIP()),
+                        SizedBox(width: spacing),
+                        Expanded(child: MemoryInfo()),
+                      ],
+                    )
+                  else
+                    const Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(child: OutboundModeV2()),
+                            SizedBox(width: spacing),
+                            Expanded(child: NetworkDetection()),
+                          ],
+                        ),
+                        SizedBox(height: spacing),
+                        Row(
+                          children: [
+                            Expanded(child: IntranetIP()),
+                            SizedBox(width: spacing),
+                            Expanded(child: MemoryInfo()),
+                          ],
+                        ),
+                      ],
+                    ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final dashboardState = ref.watch(dashboardStateProvider);
@@ -251,6 +340,9 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
           .map((item) => item.widget)
           .toList();
     });
+    if (system.isDesktop) {
+      return _buildDesktopView(context);
+    }
     return _buildIsEdit(
       (isEdit) => CommonScaffold(
         title: context.appLocalizations.dashboard,
