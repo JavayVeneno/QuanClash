@@ -56,6 +56,22 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   }
 
   @override
+  void onWindowBlur() {
+    super.onWindowBlur();
+    final currentWindow = window;
+    if (currentWindow == null || !currentWindow.isPanelMode) {
+      return;
+    }
+    final shownAt = currentWindow.panelShownAt;
+    if (shownAt != null &&
+        DateTime.now().difference(shownAt) <
+            const Duration(milliseconds: 600)) {
+      return;
+    }
+    currentWindow.hide();
+  }
+
+  @override
   Future<void> onShouldTerminate() async {
     await ref.read(systemActionProvider.notifier).handleExit();
     super.onShouldTerminate();
@@ -64,6 +80,9 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   @override
   void onWindowMoved() {
     super.onWindowMoved();
+    if (window?.isPanelMode ?? false) {
+      return;
+    }
     windowManager.getPosition().then((offset) {
       ref
           .read(windowSettingProvider.notifier)
@@ -74,6 +93,9 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   @override
   Future<void> onWindowResized() async {
     super.onWindowResized();
+    if (window?.isPanelMode ?? false) {
+      return;
+    }
     final size = await windowManager.getSize();
     ref
         .read(windowSettingProvider.notifier)
@@ -112,23 +134,32 @@ class WindowHeaderContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(
-      builder: (_, ref, child) {
-        final isMobileView = ref.watch(isMobileViewProvider);
-        final version = ref.watch(versionProvider);
-        if ((version <= 10 || !isMobileView) && system.isMacOS) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: panelModeNotifier,
+      builder: (_, isPanel, child) {
+        if (isPanel) {
           return child!;
         }
-        return Stack(
-          children: [
-            Column(
+        return Consumer(
+          builder: (_, ref, child) {
+            final isMobileView = ref.watch(isMobileViewProvider);
+            final version = ref.watch(versionProvider);
+            if ((version <= 10 || !isMobileView) && system.isMacOS) {
+              return child!;
+            }
+            return Stack(
               children: [
-                SizedBox(height: kHeaderHeight),
-                Expanded(flex: 1, child: child!),
+                Column(
+                  children: [
+                    SizedBox(height: kHeaderHeight),
+                    Expanded(flex: 1, child: child!),
+                  ],
+                ),
+                const WindowHeader(),
               ],
-            ),
-            const WindowHeader(),
-          ],
+            );
+          },
+          child: child,
         );
       },
       child: child,

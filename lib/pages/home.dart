@@ -4,6 +4,7 @@ import 'package:fl_clash/manager/app_manager.dart';
 import 'package:fl_clash/models/common.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
+import 'package:fl_clash/views/panel/panel.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,6 +23,18 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: panelModeNotifier,
+      builder: (_, isPanel, _) {
+        if (isPanel) {
+          return const PanelView();
+        }
+        return _buildHome(context);
+      },
+    );
+  }
+
+  Widget _buildHome(BuildContext context) {
     return HomeBackScopeContainer(
       child: AppTopNavContainer(
         child: Material(
