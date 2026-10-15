@@ -57,7 +57,8 @@ class InfoHeader extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: context.colorScheme.onSurfaceVariant,
+                        color: context.quanX.textSecondary,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -232,7 +233,9 @@ class CommonCard extends StatelessWidget {
               shape:
                   shape ??
                   RoundedSuperellipseBorder(
-                    borderRadius: BorderRadius.circular(radius ?? 14),
+                    borderRadius: BorderRadius.circular(
+                      radius ?? QuanXRadius.group,
+                    ),
                   ),
               iconSize: 20,
               iconColor: _buildIconColor(context),
@@ -259,7 +262,9 @@ class CommonCard extends StatelessWidget {
               shape:
                   shape ??
                   RoundedSuperellipseBorder(
-                    borderRadius: BorderRadius.circular(radius ?? 14),
+                    borderRadius: BorderRadius.circular(
+                      radius ?? QuanXRadius.group,
+                    ),
                   ),
               iconSize: 20,
               iconColor: _buildIconColor(context),
@@ -314,6 +319,12 @@ class SettingsBlock extends StatelessWidget {
           InfoHeader(info: Info(label: title)),
           Card(
             color: context.colorScheme.surfaceContainer,
+            elevation: 0,
+            shape: const RoundedSuperellipseBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(QuanXRadius.group),
+              ),
+            ),
             child: Column(children: settings),
           ),
         ],

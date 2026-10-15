@@ -161,7 +161,17 @@ class AppSidebarContainer extends ConsumerWidget {
     required BuildContext context,
     required Widget child,
   }) {
-    return Material(color: context.colorScheme.surfaceContainer, child: child);
+    return Material(
+      color: context.colorScheme.surfaceContainer,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(
+            right: BorderSide(color: context.quanX.separator),
+          ),
+        ),
+        child: child,
+      ),
+    );
     // if (!system.isMacOS) {
     //   return Material(
     //     color: context.colorScheme.surfaceContainer,
@@ -226,11 +236,14 @@ class AppSidebarContainer extends ConsumerWidget {
                             selectedLabelTextStyle: context
                                 .textTheme
                                 .labelLarge!
-                                .copyWith(color: context.colorScheme.onSurface),
+                                .copyWith(
+                                  color: context.quanX.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
                             unselectedLabelTextStyle: context
                                 .textTheme
                                 .labelLarge!
-                                .copyWith(color: context.colorScheme.onSurface),
+                                .copyWith(color: context.quanX.textSecondary),
                             destinations: navigationItems
                                 .map(
                                   (e) => NavigationRailDestination(
