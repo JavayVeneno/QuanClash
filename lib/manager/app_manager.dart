@@ -181,6 +181,7 @@ class _AppTopNavContainerState extends ConsumerState<AppTopNavContainer> {
           },
         ),
         Expanded(child: ClipRect(child: widget.child)),
+        const _BottomStatusBar(),
       ],
     );
   }
@@ -270,6 +271,59 @@ class _TopNavItem extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+
+class _BottomStatusBar extends ConsumerWidget {
+  const _BottomStatusBar();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appLocalizations = context.appLocalizations;
+    final quanX = context.quanX;
+    final coreStatus = ref.watch(coreStatusProvider);
+    final mixedPort = ref.watch(
+      patchClashConfigProvider.select((state) => state.mixedPort),
+    );
+    final (statusText, statusColor) = switch (coreStatus) {
+      CoreStatus.connected => (appLocalizations.connected, quanX.success),
+      CoreStatus.connecting => (appLocalizations.connecting, quanX.warning),
+      _ => (appLocalizations.disconnected, quanX.textTertiary),
+    };
+    final itemStyle = context.textTheme.bodySmall?.copyWith(
+      fontSize: 11,
+      color: quanX.textSecondary,
+    );
+    return Container(
+      height: 27,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: context.colorScheme.surface,
+        border: Border(top: BorderSide(color: quanX.separator)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: statusColor,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text('$statusText · mihomo', style: itemStyle),
+          const SizedBox(width: 16),
+          Text('${appLocalizations.mixedPort} $mixedPort', style: itemStyle),
+          const Spacer(),
+          Text(
+            '$appName v${globalState.packageInfo.version}',
+            style: itemStyle,
+          ),
+        ],
       ),
     );
   }
