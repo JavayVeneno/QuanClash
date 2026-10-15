@@ -296,6 +296,16 @@ class CommonScaffoldState extends State<CommonScaffold> {
                   : Container();
             },
           ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Divider(
+              height: 1,
+              thickness: 1,
+              color: context.quanX.separator,
+            ),
+          ),
         ],
       ),
     );

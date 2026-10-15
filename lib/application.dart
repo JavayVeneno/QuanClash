@@ -161,21 +161,24 @@ class ApplicationState extends ConsumerState<Application> {
           locale: utils.getLocaleForString(locale),
           supportedLocales: AppLocalizations.delegate.supportedLocales,
           themeMode: themeProps.themeMode,
-          theme: ThemeData(
-            useMaterial3: true,
-            pageTransitionsTheme: _pageTransitionsTheme,
-            colorScheme: _getAppColorScheme(
-              brightness: Brightness.light,
-              primaryColor: themeProps.primaryColor,
+          theme: quanXThemeData(
+            colorScheme: quanXColorScheme(
+              _getAppColorScheme(
+                brightness: Brightness.light,
+                primaryColor: themeProps.primaryColor,
+              ),
             ),
-          ),
-          darkTheme: ThemeData(
-            useMaterial3: true,
             pageTransitionsTheme: _pageTransitionsTheme,
-            colorScheme: _getAppColorScheme(
-              brightness: Brightness.dark,
-              primaryColor: themeProps.primaryColor,
-            ).toPureBlack(themeProps.pureBlack),
+          ),
+          darkTheme: quanXThemeData(
+            colorScheme: quanXColorScheme(
+              _getAppColorScheme(
+                brightness: Brightness.dark,
+                primaryColor: themeProps.primaryColor,
+              ),
+              pureBlack: themeProps.pureBlack,
+            ),
+            pageTransitionsTheme: _pageTransitionsTheme,
           ),
           home: child!,
         );

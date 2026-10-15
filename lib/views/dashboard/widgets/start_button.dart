@@ -76,37 +76,58 @@ class _StartButtonState extends ConsumerState<StartButton>
     }
     final suspend = ref.watch(suspendProvider);
     final theme = Theme.of(context);
+    final colors = context.quanX;
     final appLocalizations = context.appLocalizations;
     return RepaintBoundary(
-      child: Theme(
-        data: theme.copyWith(
-          floatingActionButtonTheme: theme.floatingActionButtonTheme.copyWith(
-            sizeConstraints: const BoxConstraints(minWidth: 56, maxWidth: 200),
-          ),
-        ),
-        child: AnimatedBuilder(
-          animation: _controller!.view,
-          builder: (_, child) {
-            final textWidth = suspend
-                ? globalState.measure
-                          .computeTextSize(
-                            Text(
-                              appLocalizations.suspended,
-                              style: context.textTheme.titleMedium,
-                            ),
-                          )
-                          .width +
-                      24
-                : globalState.measure
-                          .computeTextSize(
-                            Text(
-                              utils.getTimeDifference(DateTime.now()),
-                              style: context.textTheme.titleMedium?.toSoftBold,
-                            ),
-                          )
-                          .width +
-                      16;
-            return FloatingActionButton(
+      child: AnimatedBuilder(
+        animation: _controller!.view,
+        builder: (_, _) {
+          final textWidth = suspend
+              ? globalState.measure
+                        .computeTextSize(
+                          Text(
+                            appLocalizations.suspended,
+                            style: context.textTheme.titleMedium,
+                          ),
+                        )
+                        .width +
+                    24
+              : globalState.measure
+                        .computeTextSize(
+                          Text(
+                            utils.getTimeDifference(DateTime.now()),
+                            style: context.textTheme.titleMedium?.toSoftBold,
+                          ),
+                        )
+                        .width +
+                    16;
+          final foregroundColor = isStart
+              ? colors.onAccent
+              : theme.colorScheme.onSurface;
+          return Theme(
+            data: theme.copyWith(
+              floatingActionButtonTheme: theme.floatingActionButtonTheme
+                  .copyWith(
+                    sizeConstraints: const BoxConstraints(
+                      minWidth: 56,
+                      maxWidth: 200,
+                    ),
+                    shape: const RoundedSuperellipseBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(QuanXRadius.control),
+                      ),
+                    ),
+                    elevation: 0,
+                    focusElevation: 0,
+                    hoverElevation: 0,
+                    highlightElevation: 0,
+                    backgroundColor: isStart
+                        ? colors.accent
+                        : theme.colorScheme.surfaceContainerHigh,
+                    foregroundColor: foregroundColor,
+                  ),
+            ),
+            child: FloatingActionButton(
               clipBehavior: Clip.antiAlias,
               materialTapTargetSize: MaterialTapTargetSize.padded,
               heroTag: null,
@@ -128,36 +149,37 @@ class _StartButtonState extends ConsumerState<StartButton>
                       progress: _animation,
                     ),
                   ),
-                  SizedBox(width: textWidth * _animation.value, child: child!),
+                  SizedBox(
+                    width: textWidth * _animation.value,
+                    child: suspend
+                        ? Text(
+                            appLocalizations.suspended,
+                            maxLines: 1,
+                            overflow: TextOverflow.visible,
+                            style: context.textTheme.titleMedium?.copyWith(
+                              color: foregroundColor,
+                            ),
+                          )
+                        : Consumer(
+                            builder: (_, ref, _) {
+                              final runTime = ref.watch(runTimeProvider);
+                              final text = utils.getTimeText(runTime);
+                              return Text(
+                                text,
+                                maxLines: 1,
+                                overflow: TextOverflow.visible,
+                                style: context.textTheme.titleMedium
+                                    ?.toSoftBold
+                                    .copyWith(color: foregroundColor),
+                              );
+                            },
+                          ),
+                  ),
                 ],
               ),
-            );
-          },
-          child: suspend
-              ? Text(
-                  appLocalizations.suspended,
-                  maxLines: 1,
-                  overflow: TextOverflow.visible,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: context.colorScheme.onPrimaryContainer,
-                  ),
-                )
-              : Consumer(
-                  builder: (_, ref, _) {
-                    final runTime = ref.watch(runTimeProvider);
-                    final text = utils.getTimeText(runTime);
-                    return Text(
-                      text,
-                      maxLines: 1,
-                      overflow: TextOverflow.visible,
-                      style: Theme.of(context).textTheme.titleMedium?.toSoftBold
-                          .copyWith(
-                            color: context.colorScheme.onPrimaryContainer,
-                          ),
-                    );
-                  },
-                ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

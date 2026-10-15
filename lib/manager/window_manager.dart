@@ -243,30 +243,38 @@ class _WindowHeaderState extends State<WindowHeader> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Stack(
-        alignment: AlignmentDirectional.center,
-        children: [
-          Positioned(
-            child: GestureDetector(
-              onPanStart: (_) {
-                windowManager.startDragging();
-              },
-              onDoubleTap: () {
-                _updateMaximized();
-              },
-              child: Container(
-                color: context.colorScheme.secondary.opacity15,
-                alignment: Alignment.centerLeft,
-                height: kHeaderHeight,
-              ),
+      color: Colors.transparent,
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          height: kHeaderHeight,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: context.colorScheme.surface,
+            border: Border(
+              bottom: BorderSide(color: context.quanX.separator),
             ),
           ),
-          if (system.isMacOS)
-            const Text(appName)
-          else ...[
-            Positioned(right: 0, child: _buildActions()),
-          ],
-        ],
+          child: Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onPanStart: (_) {
+                    windowManager.startDragging();
+                  },
+                  onDoubleTap: () {
+                    _updateMaximized();
+                  },
+                  child: system.isMacOS
+                      ? const Center(child: Text(appName))
+                      : const SizedBox.expand(),
+                ),
+              ),
+              if (!system.isMacOS) _buildActions(),
+            ],
+          ),
+        ),
       ),
     );
   }
