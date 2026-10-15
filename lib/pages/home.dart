@@ -23,7 +23,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HomeBackScopeContainer(
-      child: AppSidebarContainer(
+      child: AppTopNavContainer(
         child: Material(
           color: context.colorScheme.surface,
           child: Consumer(
