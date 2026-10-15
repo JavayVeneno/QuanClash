@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
 
+/// 托盘面板模式:true 时窗口以小面板形式展示
+final panelModeNotifier = ValueNotifier<bool>(false);
+
 class Window {
   static Window? _instance;
 
@@ -71,6 +74,47 @@ class Window {
 
   Future<void> show() async {
     render?.resume();
+    await windowManager.show();
+    await windowManager.focus();
+    await windowManager.setSkipTaskbar(false);
+  }
+
+  Rect? _panelEnteredBounds;
+  DateTime? _panelShownAt;
+
+  bool get isPanelMode => panelModeNotifier.value;
+
+  DateTime? get panelShownAt => _panelShownAt;
+
+  Future<void> showPanel() async {
+    _panelEnteredBounds ??= await windowManager.getBounds();
+    panelModeNotifier.value = true;
+    _panelShownAt = DateTime.now();
+    final display = await screenRetriever.getPrimaryDisplay();
+    const panelSize = Size(348, 380);
+    final visiblePosition = display.visiblePosition ?? Offset.zero;
+    final visibleSize = display.visibleSize ?? display.size;
+    final left = visiblePosition.dx + visibleSize.width - panelSize.width - 12;
+    final top = visiblePosition.dy + visibleSize.height - panelSize.height - 12;
+    render?.resume();
+    await windowManager.setResizable(false);
+    await windowManager.setBounds(
+      Rect.fromLTWH(left, top, panelSize.width, panelSize.height),
+    );
+    await windowManager.show();
+    await windowManager.focus();
+    await windowManager.setSkipTaskbar(true);
+  }
+
+  Future<void> showMain() async {
+    panelModeNotifier.value = false;
+    render?.resume();
+    await windowManager.setResizable(true);
+    final bounds = _panelEnteredBounds;
+    _panelEnteredBounds = null;
+    if (bounds != null) {
+      await windowManager.setBounds(bounds);
+    }
     await windowManager.show();
     await windowManager.focus();
     await windowManager.setSkipTaskbar(false);

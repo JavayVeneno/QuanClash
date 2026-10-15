@@ -54,8 +54,25 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener {
   }
 
   @override
-  void onTrayIconMouseDown() {
-    window?.show();
+  void onTrayIconMouseDown() async {
+    final currentWindow = window;
+    if (currentWindow == null) {
+      return;
+    }
+    final isVisible = await currentWindow.isVisible;
+    if (currentWindow.isPanelMode) {
+      if (isVisible) {
+        await currentWindow.hide();
+      } else {
+        await currentWindow.showPanel();
+      }
+      return;
+    }
+    if (isVisible) {
+      await currentWindow.show();
+    } else {
+      await currentWindow.showPanel();
+    }
   }
 
   @override
