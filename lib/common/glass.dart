@@ -283,8 +283,18 @@ class GlassPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.glass;
+    final primary = Theme.of(context).colorScheme.primary;
     final borderRadius = BorderRadius.circular(radius);
     final resolvedTint = tint ?? colors.tint;
+    // 主题色对玻璃的轻微染色:调整主题色时,所有玻璃面随之变化
+    final tintedTint = Color.alphaBlend(
+      primary.withValues(alpha: 0.06),
+      resolvedTint,
+    );
+    final tintedStrong = Color.alphaBlend(
+      primary.withValues(alpha: 0.06),
+      colors.tintStrong,
+    );
 
     Widget panel = DecoratedBox(
       decoration: BoxDecoration(
@@ -295,8 +305,8 @@ class GlassPanel extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                colors.tintStrong,
-                resolvedTint,
+                tintedStrong,
+                tintedTint,
               ],
             ),
         border: Border.all(color: stroke ?? colors.stroke),
