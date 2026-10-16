@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'card.dart';
 import 'grid.dart';
+import 'package:fl_clash/common/quanx_icons.dart';
 
 class ColorSchemeBox extends StatelessWidget {
   final Color? primaryColor;
@@ -67,7 +68,7 @@ class ColorSchemeBox extends StatelessWidget {
                   const Positioned(
                     bottom: 4,
                     right: 4,
-                    child: Icon(Icons.colorize, size: 20),
+                    child: Icon(QuanXIcons.pipette, size: 20),
                   ),
               ],
             );

@@ -74,7 +74,7 @@ class RuleItem extends StatelessWidget {
             ),
           );
         },
-        icon: Icon(Icons.info, size: 16.ap, color: context.colorScheme.error),
+        icon: Icon(QuanXIcons.info, size: 16.ap, color: context.colorScheme.error),
       ),
     );
   }

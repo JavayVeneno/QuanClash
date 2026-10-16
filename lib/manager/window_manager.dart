@@ -28,16 +28,18 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   @override
   void initState() {
     super.initState();
-    ref.listenManual(appSettingProvider.select((state) => state.autoLaunch), (
-      prev,
-      next,
-    ) {
-      if (prev != next) {
-        debouncer.call(FunctionTag.autoLaunch, () {
-          autoLaunch?.updateStatus(next);
-        });
-      }
-    });
+    if (!uiPreviewMode) {
+      ref.listenManual(appSettingProvider.select((state) => state.autoLaunch), (
+        prev,
+        next,
+      ) {
+        if (prev != next) {
+          debouncer.call(FunctionTag.autoLaunch, () {
+            autoLaunch?.updateStatus(next);
+          });
+        }
+      });
+    }
     windowExtManager.addListener(this);
     windowManager.addListener(this);
   }
@@ -232,8 +234,8 @@ class _WindowHeaderState extends State<WindowHeader> {
             valueListenable: isPinNotifier,
             builder: (_, value, _) {
               return value
-                  ? const Icon(Icons.push_pin)
-                  : const Icon(Icons.push_pin_outlined);
+                  ? const Icon(QuanXIcons.pin)
+                  : const Icon(QuanXIcons.pin);
             },
           ),
         ),
@@ -241,7 +243,7 @@ class _WindowHeaderState extends State<WindowHeader> {
           onPressed: () {
             windowManager.minimize();
           },
-          icon: const Icon(Icons.remove),
+          icon: const Icon(QuanXIcons.minus),
         ),
         IconButton(
           onPressed: () async {
@@ -251,8 +253,8 @@ class _WindowHeaderState extends State<WindowHeader> {
             valueListenable: isMaximizedNotifier,
             builder: (_, value, _) {
               return value
-                  ? const Icon(Icons.filter_none, size: 20)
-                  : const Icon(Icons.crop_square);
+                  ? const Icon(QuanXIcons.squareStack, size: 20)
+                  : const Icon(QuanXIcons.square);
             },
           ),
         ),
@@ -262,7 +264,7 @@ class _WindowHeaderState extends State<WindowHeader> {
                 .read(systemActionProvider.notifier)
                 .handleClose();
           },
-          icon: const Icon(Icons.close),
+          icon: const Icon(QuanXIcons.x),
         ),
         // const SizedBox(
         //   width: 8,

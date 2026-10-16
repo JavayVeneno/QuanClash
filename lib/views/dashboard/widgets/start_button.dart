@@ -144,9 +144,14 @@ class _StartButtonState extends ConsumerState<StartButton>
                       right: 16 - 8 * _animation.value,
                     ),
                     alignment: Alignment.centerLeft,
-                    child: AnimatedIcon(
-                      icon: AnimatedIcons.play_pause,
-                      progress: _animation,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 160),
+                      child: Icon(
+                        isStart ? QuanXIcons.pause : QuanXIcons.play,
+                        key: ValueKey(isStart),
+                        size: 22,
+                        color: foregroundColor,
+                      ),
                     ),
                   ),
                   SizedBox(

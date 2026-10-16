@@ -87,7 +87,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                         ),
                         onPressed: _handleConnection,
                         icon: const Icon(
-                          Icons.check,
+                          QuanXIcons.check,
                           fontWeight: FontWeight.w900,
                         ),
                       )
@@ -129,11 +129,11 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
                               ),
                             ),
                             CoreStatus.connected => const Icon(
-                              Icons.check_sharp,
+                              QuanXIcons.check,
                               fontWeight: FontWeight.w900,
                             ),
                             CoreStatus.disconnected => const Icon(
-                              Icons.restart_alt_sharp,
+                              QuanXIcons.rotateCw,
                               fontWeight: FontWeight.w900,
                             ),
                           },
@@ -166,19 +166,19 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
             onPressed: () {
               _showAddWidgetsModal();
             },
-            icon: const Icon(Icons.add_circle),
+            icon: const Icon(QuanXIcons.circlePlus),
           ),
         ),
       FadeRotationScaleBox(
         child: isEdit
             ? IconButton(
                 key: const ValueKey(true),
-                icon: const Icon(Icons.save, key: ValueKey('save-icon')),
+                icon: const Icon(QuanXIcons.save, key: ValueKey('save-icon')),
                 onPressed: _handleUpdateIsEdit,
               )
             : IconButton(
                 key: const ValueKey(false),
-                icon: const Icon(Icons.edit, key: ValueKey('edit-icon')),
+                icon: const Icon(QuanXIcons.pencil, key: ValueKey('edit-icon')),
                 onPressed: _handleUpdateIsEdit,
               ),
       ),
@@ -467,7 +467,7 @@ class _AddedContainerState extends State<_AddedContainer> {
                 iconSize: 20,
                 padding: const EdgeInsets.all(2),
                 onPressed: _handleAdd,
-                icon: const Icon(Icons.add),
+                icon: const Icon(QuanXIcons.plus),
               ),
             ),
           ),

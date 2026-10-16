@@ -133,17 +133,17 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
 
   IconData get backIconData {
     if (kIsWeb) {
-      return Icons.arrow_back;
+      return QuanXIcons.arrowLeft;
     }
     switch (Theme.of(context).platform) {
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
-        return Icons.arrow_back;
+        return QuanXIcons.arrowLeft;
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
-        return Icons.arrow_back_ios_new_rounded;
+        return QuanXIcons.chevronLeft;
     }
   }
 
@@ -202,7 +202,7 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
         ? (useCloseIcon
               ? buildIconButton(
                   IconButtonData(
-                    icon: Icons.close,
+                    icon: QuanXIcons.x,
                     onPressed: context.safeNestedPop,
                   ),
                 )

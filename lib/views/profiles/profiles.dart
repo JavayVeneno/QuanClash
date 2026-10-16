@@ -88,7 +88,7 @@ class _ProfilesViewState extends State<ProfilesView> {
               onPressed: () {
                 _updateProfiles(profiles);
               },
-              icon: const Icon(Icons.sync),
+              icon: const Icon(QuanXIcons.refreshCw),
             ),
             IconButton(
               onPressed: () {
@@ -99,7 +99,7 @@ class _ProfilesViewState extends State<ProfilesView> {
                   },
                 );
               },
-              icon: const Icon(Icons.sort),
+              icon: const Icon(QuanXIcons.arrowUpDown),
               iconSize: 26,
             ),
           ]
@@ -109,7 +109,7 @@ class _ProfilesViewState extends State<ProfilesView> {
   Widget _buildFAB() {
     return CommonFloatingActionButton(
       onPressed: _handleShowAddExtendPage,
-      icon: const Icon(Icons.add),
+      icon: const Icon(QuanXIcons.plus),
       label: context.appLocalizations.addProfile,
     );
   }
@@ -305,14 +305,14 @@ class ProfileItem extends StatelessWidget {
                         popup: CommonPopupMenu(
                           items: [
                             PopupMenuItemData(
-                              icon: Icons.edit_outlined,
+                              icon: QuanXIcons.pencil,
                               label: appLocalizations.edit,
                               onPressed: () {
                                 _handleShowEditExtendPage(context);
                               },
                             ),
                             PopupMenuItemData(
-                              icon: Icons.visibility_outlined,
+                              icon: QuanXIcons.eye,
                               label: appLocalizations.preview,
                               onPressed: () {
                                 _handlePreview(context);
@@ -320,7 +320,7 @@ class ProfileItem extends StatelessWidget {
                             ),
                             if (profile.type == ProfileType.url) ...[
                               PopupMenuItemData(
-                                icon: Icons.sync_alt_sharp,
+                                icon: QuanXIcons.refreshCw,
                                 label: appLocalizations.sync,
                                 onPressed: () {
                                   updateProfile();
@@ -328,11 +328,11 @@ class ProfileItem extends StatelessWidget {
                               ),
                             ],
                             PopupMenuItemData(
-                              icon: Icons.emergency_outlined,
+                              icon: QuanXIcons.siren,
                               label: appLocalizations.more,
                               subItems: [
                                 PopupMenuItemData(
-                                  icon: Icons.extension_outlined,
+                                  icon: QuanXIcons.puzzle,
                                   label: appLocalizations.override,
                                   onPressed: () {
                                     _handlePushGenProfilePage(
@@ -342,7 +342,7 @@ class ProfileItem extends StatelessWidget {
                                   },
                                 ),
                                 // PopupMenuItemData(
-                                //   icon: Icons.extension_outlined,
+                                //   icon: QuanXIcons.puzzle,
                                 //   label: appLocalizations.override + "1",
                                 //   onPressed: () {
                                 //     final overrideProfileView = OverrideProfileView(
@@ -356,7 +356,7 @@ class ProfileItem extends StatelessWidget {
                                 // ),
                                 if (profile.type == ProfileType.url) ...[
                                   PopupMenuItemData(
-                                    icon: Icons.copy,
+                                    icon: QuanXIcons.copy,
                                     label: appLocalizations.copyLink,
                                     onPressed: () {
                                       _handleCopyLink(context);
@@ -364,7 +364,7 @@ class ProfileItem extends StatelessWidget {
                                   ),
                                 ],
                                 PopupMenuItemData(
-                                  icon: Icons.file_copy_outlined,
+                                  icon: QuanXIcons.copy,
                                   label: appLocalizations.exportFile,
                                   onPressed: () {
                                     _handleExportFile(context);
@@ -374,7 +374,7 @@ class ProfileItem extends StatelessWidget {
                             ),
                             PopupMenuItemData(
                               danger: true,
-                              icon: Icons.delete_outlined,
+                              icon: QuanXIcons.trash2,
                               label: appLocalizations.delete,
                               onPressed: () {
                                 _handleDeleteProfile(context);
@@ -387,7 +387,7 @@ class ProfileItem extends StatelessWidget {
                             onPressed: () {
                               open();
                             },
-                            icon: const Icon(Icons.more_vert),
+                            icon: const Icon(QuanXIcons.ellipsisVertical),
                           );
                         },
                       ),
@@ -482,7 +482,7 @@ class _ReorderableProfilesSheetState extends State<ReorderableProfilesSheet> {
       child: DecorationListItem(
         trailing: ReorderableDelayedDragStartListener(
           index: index,
-          child: const Icon(Icons.drag_handle),
+          child: const Icon(QuanXIcons.gripHorizontal),
         ),
         title: Text(profile.realLabel),
       ),
@@ -499,7 +499,7 @@ class _ReorderableProfilesSheetState extends State<ReorderableProfilesSheet> {
     final appLocalizations = context.appLocalizations;
     return AdaptiveSheetScaffold(
       sheetTransparentToolBar: true,
-      actions: [IconButtonData(icon: Icons.check, onPressed: _handleSave)],
+      actions: [IconButtonData(icon: QuanXIcons.check, onPressed: _handleSave)],
       body: Padding(
         padding: const EdgeInsets.only(bottom: 32),
         child: ReorderableListView.builder(

@@ -113,7 +113,7 @@ class ScriptContent extends ConsumerWidget {
                         style: context.textTheme.bodyLarge,
                       ),
                     ),
-                    const Icon(Icons.arrow_forward_ios, size: 18),
+                    const Icon(QuanXIcons.chevronRight, size: 18),
                   ],
                 ),
               ),

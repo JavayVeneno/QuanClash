@@ -1,6 +1,7 @@
 import 'package:fl_clash/common/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fl_clash/common/quanx_icons.dart';
 
 class InitErrorScreen extends StatelessWidget {
   final Object error;
@@ -28,7 +29,7 @@ class InitErrorScreen extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    Icons.report_problem,
+                    QuanXIcons.triangleAlert,
                     color: colorScheme.error,
                     size: 32,
                   ),
@@ -90,7 +91,7 @@ class InitErrorScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _copyToClipboard(context),
         label: const Text('Copy Details'),
-        icon: const Icon(Icons.copy),
+        icon: const Icon(QuanXIcons.copy),
         backgroundColor: colorScheme.error,
         foregroundColor: colorScheme.onError,
       ),

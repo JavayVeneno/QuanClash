@@ -60,7 +60,7 @@ class _ProvidersViewState extends ConsumerState<ProvidersView> {
       items: ruleProviders,
     );
     return AdaptiveSheetScaffold(
-      actions: [IconButtonData(icon: Icons.sync, onPressed: _updateProviders)],
+      actions: [IconButtonData(icon: QuanXIcons.refreshCw, onPressed: _updateProviders)],
       body: generateListView([...proxySection, ...ruleSection]),
       title: appLocalizations.providers,
     );
@@ -135,7 +135,7 @@ class ProviderItem extends StatelessWidget {
             runAlignment: WrapAlignment.center,
             children: [
               CommonChip(
-                avatar: const Icon(Icons.upload),
+                avatar: const Icon(QuanXIcons.upload),
                 label: context.appLocalizations.upload,
                 onPressed: _handleSideLoadProvider,
               ),
@@ -155,7 +155,7 @@ class ProviderItem extends StatelessWidget {
                             ),
                           )
                         : CommonChip(
-                            avatar: const Icon(Icons.sync),
+                            avatar: const Icon(QuanXIcons.refreshCw),
                             label: context.appLocalizations.sync,
                             onPressed: _handleUpdateProvider,
                           );

@@ -52,9 +52,11 @@ class ApplicationState extends ConsumerState<Application> {
       } else {
         exit(0);
       }
-      _autoUpdateProfilesTask();
-      _initLink();
-      app?.initShortcuts();
+      if (!uiPreviewMode) {
+        _autoUpdateProfilesTask();
+        _initLink();
+        app?.initShortcuts();
+      }
     });
   }
 
@@ -91,16 +93,20 @@ class ApplicationState extends ConsumerState<Application> {
 
   Widget _buildPlatformState({required Widget child}) {
     if (system.isDesktop) {
+      final desktopChild = uiPreviewMode
+          ? child
+          : HotKeyManager(child: ProxyManager(child: child));
       return WindowManager(
-        child: TrayManager(
-          child: HotKeyManager(child: ProxyManager(child: child)),
-        ),
+        child: TrayManager(child: desktopChild),
       );
     }
     return AndroidManager(child: TileManager(child: child));
   }
 
   Widget _buildState({required Widget child}) {
+    if (uiPreviewMode) {
+      return child;
+    }
     return AppStateManager(
       child: CoreManager(
         child: ConnectivityManager(
@@ -198,6 +204,10 @@ class ApplicationState extends ConsumerState<Application> {
   Future<void> dispose() async {
     linkManager.destroy();
     _autoUpdateProfilesTaskTimer?.cancel();
+    if (uiPreviewMode) {
+      super.dispose();
+      return;
+    }
     await coreController.destroy();
     await ref.read(systemActionProvider.notifier).handleExit();
     super.dispose();

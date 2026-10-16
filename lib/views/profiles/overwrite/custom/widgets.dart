@@ -15,7 +15,7 @@ class InfoMessageButton extends StatelessWidget {
         onPressed: () {
           globalState.showMessage(message: TextSpan(text: message));
         },
-        icon: Icon(Icons.info, size: 20.ap, color: context.colorScheme.error),
+        icon: Icon(QuanXIcons.info, size: 20.ap, color: context.colorScheme.error),
       ),
     );
   }

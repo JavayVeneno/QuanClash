@@ -57,7 +57,7 @@ class TrafficUsage extends StatelessWidget {
         child: CommonCard(
           info: Info(
             label: appLocalizations.trafficUsage,
-            iconData: Icons.data_saver_off,
+            iconData: QuanXIcons.chartPie,
           ),
           onPressed: () {},
           child: Consumer(
@@ -183,14 +183,14 @@ class TrafficUsage extends StatelessWidget {
                     ),
                     _buildTrafficDataItem(
                       context,
-                      Icon(Icons.arrow_upward, color: primaryColor, size: 14),
+                      Icon(QuanXIcons.arrowUp, color: primaryColor, size: 14),
                       upTotalTrafficValue,
                     ),
                     const SizedBox(height: 8),
                     _buildTrafficDataItem(
                       context,
                       Icon(
-                        Icons.arrow_downward,
+                        QuanXIcons.arrowDown,
                         color: secondaryColor,
                         size: 14,
                       ),

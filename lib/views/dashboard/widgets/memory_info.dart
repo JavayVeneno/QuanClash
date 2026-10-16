@@ -53,7 +53,7 @@ class _MemoryInfoState extends State<MemoryInfo> {
       child: RepaintBoundary(
         child: CommonCard(
           info: Info(
-            iconData: Icons.memory,
+            iconData: QuanXIcons.memoryStick,
             label: appLocalizations.memoryInfo,
           ),
           onPressed: () {

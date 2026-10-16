@@ -312,12 +312,12 @@ class _EditProfileViewState extends State<EditProfileView> {
                           spacing: 12,
                           children: [
                             CommonChip(
-                              avatar: const Icon(Icons.edit),
+                              avatar: const Icon(QuanXIcons.pencil),
                               label: appLocalizations.edit,
                               onPressed: _editProfileFile,
                             ),
                             CommonChip(
-                              avatar: const Icon(Icons.upload),
+                              avatar: const Icon(QuanXIcons.upload),
                               label: appLocalizations.upload,
                               onPressed: _uploadProfileFile,
                             ),
@@ -344,7 +344,7 @@ class _EditProfileViewState extends State<EditProfileView> {
             heroTag: null,
             onPressed: _handleConfirm,
             label: Text(appLocalizations.save),
-            icon: const Icon(Icons.save),
+            icon: const Icon(QuanXIcons.save),
           ),
         ),
         child: Form(

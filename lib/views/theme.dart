@@ -91,17 +91,17 @@ class _ThemeModeItem extends ConsumerWidget {
     );
     final List<ThemeModeItem> themeModeItems = [
       ThemeModeItem(
-        iconData: Icons.auto_mode,
+        iconData: QuanXIcons.infinity,
         label: appLocalizations.auto,
         themeMode: ThemeMode.system,
       ),
       ThemeModeItem(
-        iconData: Icons.light_mode,
+        iconData: QuanXIcons.sun,
         label: appLocalizations.light,
         themeMode: ThemeMode.light,
       ),
       ThemeModeItem(
-        iconData: Icons.dark_mode,
+        iconData: QuanXIcons.moon,
         label: appLocalizations.dark,
         themeMode: ThemeMode.dark,
       ),
@@ -110,7 +110,7 @@ class _ThemeModeItem extends ConsumerWidget {
       child: ItemCard(
         info: Info(
           label: appLocalizations.themeMode,
-          iconData: Icons.brightness_high,
+          iconData: QuanXIcons.sun,
         ),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -299,7 +299,7 @@ class _PrimaryColorItemState extends ConsumerState<_PrimaryColorItem> {
         child: ItemCard(
           info: Info(
             label: appLocalizations.themeColor,
-            iconData: Icons.palette,
+            iconData: QuanXIcons.palette,
           ),
           actions: genActions([
             if (_removablePrimaryColor == null)
@@ -328,7 +328,7 @@ class _PrimaryColorItemState extends ConsumerState<_PrimaryColorItem> {
                 padding: const EdgeInsets.all(4),
                 visualDensity: VisualDensity.compact,
                 onPressed: _handleReset,
-                icon: const Icon(Icons.replay),
+                icon: const Icon(QuanXIcons.rotateCcw),
               ),
           ], space: 8),
           child: Container(
@@ -386,7 +386,7 @@ class _PrimaryColorItemState extends ConsumerState<_PrimaryColorItem> {
                                   iconSize: 30,
                                   icon: Icon(
                                     color: context.colorScheme.primary,
-                                    Icons.delete,
+                                    QuanXIcons.trash2,
                                   ),
                                 ),
                               ),
@@ -403,7 +403,7 @@ class _PrimaryColorItemState extends ConsumerState<_PrimaryColorItem> {
                           iconSize: 32,
                           icon: Icon(
                             color: context.colorScheme.primary,
-                            Icons.add,
+                            QuanXIcons.plus,
                           ),
                         ),
                       ),
@@ -429,7 +429,7 @@ class _PrueBlackItem extends ConsumerWidget {
     );
     return SliverToBoxAdapter(
       child: ListItem.switchItem(
-        leading: const Icon(Icons.contrast),
+        leading: const Icon(QuanXIcons.contrast),
         horizontalTitleGap: 12,
         title: Text(
           appLocalizations.pureBlackMode,
@@ -467,7 +467,7 @@ class _TextScaleFactorItem extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: ListItem.switchItem(
-              leading: const Icon(Icons.text_fields),
+              leading: const Icon(QuanXIcons.type),
               horizontalTitleGap: 12,
               title: Text(
                 appLocalizations.textScale,

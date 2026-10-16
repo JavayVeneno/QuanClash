@@ -103,8 +103,8 @@ class _RequestsViewState extends ConsumerState<RequestsView> {
                     );
               },
               child: autoScrollToEnd
-                  ? const Icon(Icons.block)
-                  : const Icon(Icons.vertical_align_top),
+                  ? const Icon(QuanXIcons.ban)
+                  : const Icon(QuanXIcons.arrowUpToLine),
             ),
           );
         },

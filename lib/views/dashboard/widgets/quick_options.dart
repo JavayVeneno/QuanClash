@@ -39,7 +39,7 @@ class TUNButton extends StatelessWidget {
         },
         info: Info(
           label: appLocalizations.tun,
-          iconData: Icons.stacked_line_chart,
+          iconData: QuanXIcons.chartLine,
         ),
         child: Container(
           padding: baseInfoEdgeInsets.copyWith(top: 4, bottom: 8, right: 8),
@@ -111,7 +111,7 @@ class SystemProxyButton extends StatelessWidget {
         },
         info: Info(
           label: appLocalizations.systemProxy,
-          iconData: Icons.shuffle,
+          iconData: QuanXIcons.shuffle,
         ),
         child: Container(
           padding: baseInfoEdgeInsets.copyWith(top: 4, bottom: 8, right: 8),
@@ -186,7 +186,7 @@ class VpnButton extends StatelessWidget {
             },
           );
         },
-        info: const Info(label: 'VPN', iconData: Icons.stacked_line_chart),
+        info: const Info(label: 'VPN', iconData: QuanXIcons.chartLine),
         child: Container(
           padding: baseInfoEdgeInsets.copyWith(top: 4, bottom: 8, right: 8),
           child: Row(

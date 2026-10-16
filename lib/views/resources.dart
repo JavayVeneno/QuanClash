@@ -201,7 +201,7 @@ class _GeoResourceListItemState extends ConsumerState<_GeoResourceListItem> {
                   runAlignment: WrapAlignment.center,
                   children: [
                     CommonChip(
-                      avatar: const Icon(Icons.edit),
+                      avatar: const Icon(QuanXIcons.pencil),
                       label: appLocalizations.edit,
                       onPressed: () {
                         _updateUrl(url);
@@ -221,7 +221,7 @@ class _GeoResourceListItemState extends ConsumerState<_GeoResourceListItem> {
                                   ),
                                 )
                               : CommonChip(
-                                  avatar: const Icon(Icons.sync),
+                                  avatar: const Icon(QuanXIcons.refreshCw),
                                   label: appLocalizations.sync,
                                   onPressed: () {
                                     _handleUpdateGeoDataItem();

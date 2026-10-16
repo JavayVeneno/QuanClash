@@ -72,8 +72,8 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
         return IconButton(
           onPressed: _showMoreMenu,
           icon: isMobileView
-              ? const Icon(Icons.expand_more)
-              : const Icon(Icons.chevron_right),
+              ? const Icon(QuanXIcons.chevronDown)
+              : const Icon(QuanXIcons.chevronRight),
         );
       },
     );
@@ -420,7 +420,7 @@ class _DelayTestButtonState extends State<DelayTestButton>
       child: CommonFloatingActionButton(
         onPressed: _healthcheck,
         label: appLocalizations.delayTest,
-        icon: const Icon(Icons.network_ping),
+        icon: const Icon(QuanXIcons.radar),
       ),
     );
   }

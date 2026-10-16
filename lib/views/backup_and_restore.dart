@@ -210,7 +210,7 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
           ListHeader(title: appLocalizations.remote),
           if (dav == null)
             ListItem(
-              leading: const Icon(Icons.account_box),
+              leading: const Icon(QuanXIcons.squareUser),
               title: Text(appLocalizations.noInfo),
               subtitle: Text(appLocalizations.pleaseBindWebDAV),
               trailing: FilledButton.tonal(
@@ -222,7 +222,7 @@ class _BackupAndRestoreState extends ConsumerState<BackupAndRestore>
             )
           else ...[
             ListItem(
-              leading: const Icon(Icons.account_box),
+              leading: const Icon(QuanXIcons.squareUser),
               title: TooltipText(
                 text: Text(
                   dav.user,
@@ -455,7 +455,7 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
               maxLines: 5,
               minLines: 1,
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.link),
+                prefixIcon: const Icon(QuanXIcons.link),
                 border: const OutlineInputBorder(),
                 labelText: appLocalizations.address,
                 helperText: appLocalizations.addressHelp,
@@ -471,7 +471,7 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
               controller: _userController,
               inputFormatters: TextInputLimits.limit(TextInputLimits.userName),
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.account_circle),
+                prefixIcon: const Icon(QuanXIcons.circleUserRound),
                 border: const OutlineInputBorder(),
                 labelText: appLocalizations.account,
               ),
@@ -492,11 +492,11 @@ class _WebDAVFormDialogState extends ConsumerState<WebDAVFormDialog> {
                   ),
                   obscureText: obscure,
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.password),
+                    prefixIcon: const Icon(QuanXIcons.keyRound),
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        obscure ? Icons.visibility : Icons.visibility_off,
+                        obscure ? QuanXIcons.eye : QuanXIcons.eyeOff,
                       ),
                       onPressed: () {
                         _obscureController.value = !obscure;

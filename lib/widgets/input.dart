@@ -387,7 +387,7 @@ class _ListInputPageState extends ConsumerState<ListInputPage> {
             CommonMinIconButtonTheme(
               child: IconButton.filledTonal(
                 onPressed: _handleDelete,
-                icon: const Icon(Icons.delete),
+                icon: const Icon(QuanXIcons.trash2),
               ),
             ),
             const SizedBox(width: 2),
@@ -395,7 +395,7 @@ class _ListInputPageState extends ConsumerState<ListInputPage> {
             CommonMinIconButtonTheme(
               child: IconButton.filledTonal(
                 onPressed: _handleReset,
-                icon: const Icon(Icons.replay),
+                icon: const Icon(QuanXIcons.rotateCcw),
               ),
             ),
             const SizedBox(width: 2),
@@ -639,7 +639,7 @@ class _MapInputPageState extends ConsumerState<MapInputPage> {
             CommonMinIconButtonTheme(
               child: IconButton.filledTonal(
                 onPressed: _handleDelete,
-                icon: const Icon(Icons.delete),
+                icon: const Icon(QuanXIcons.trash2),
               ),
             ),
             const SizedBox(width: 2),
@@ -650,7 +650,7 @@ class _MapInputPageState extends ConsumerState<MapInputPage> {
             CommonMinIconButtonTheme(
               child: IconButton.filledTonal(
                 onPressed: _handleReset,
-                icon: const Icon(Icons.replay),
+                icon: const Icon(QuanXIcons.rotateCcw),
               ),
             ),
             const SizedBox(width: 2),

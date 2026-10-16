@@ -49,7 +49,7 @@ class ProxyCard extends StatelessWidget {
                     child: delay == 0
                         ? const CircularProgressIndicator(strokeWidth: 2)
                         : IconButton(
-                            icon: const Icon(Icons.bolt),
+                            icon: const Icon(QuanXIcons.zap),
                             iconSize: globalState.measure.labelSmallHeight,
                             padding: EdgeInsets.zero,
                             onPressed: _handleTestCurrentDelay,

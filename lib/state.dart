@@ -313,9 +313,6 @@ class GlobalState {
       });
     };
     container.read(systemActionProvider.notifier).updateTray();
-    container.read(profilesActionProvider.notifier).autoUpdateProfiles();
-    container.read(commonActionProvider.notifier).autoCheckUpdate();
-    autoLaunch?.updateStatus(container.read(appSettingProvider).autoLaunch);
     if (!container.read(appSettingProvider).silentLaunch) {
       window?.show();
     } else {
@@ -324,6 +321,13 @@ class GlobalState {
     await _handleFailedPreference();
     await _handlerDisclaimer();
     await _showCrashlyticsTip();
+    if (uiPreviewMode) {
+      container.read(initProvider.notifier).value = true;
+      return;
+    }
+    container.read(profilesActionProvider.notifier).autoUpdateProfiles();
+    container.read(commonActionProvider.notifier).autoCheckUpdate();
+    autoLaunch?.updateStatus(container.read(appSettingProvider).autoLaunch);
     await container.read(coreActionProvider.notifier).connectCore();
     await container.read(coreActionProvider.notifier).initCore();
     await container.read(setupActionProvider.notifier).initStatus();

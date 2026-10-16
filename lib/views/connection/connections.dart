@@ -32,7 +32,7 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
           coreController.closeConnections();
           await _updateConnections();
         },
-        icon: const Icon(Icons.delete_sweep_outlined),
+        icon: const Icon(QuanXIcons.trash2),
       ),
     ];
   }
@@ -116,7 +116,7 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
                     padding: EdgeInsets.zero,
                     visualDensity: VisualDensity.compact,
                     style: IconButton.styleFrom(minimumSize: Size.zero),
-                    icon: const Icon(Icons.block),
+                    icon: const Icon(QuanXIcons.ban),
                     onPressed: () {
                       _handleBlockConnection(trackerInfo.id);
                     },

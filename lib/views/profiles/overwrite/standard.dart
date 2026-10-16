@@ -109,7 +109,7 @@ class _StandardContentState extends ConsumerState<StandardContent> {
                           onPressed: () {
                             _handleDelete();
                           },
-                          icon: const Icon(Icons.delete),
+                          icon: const Icon(QuanXIcons.trash2),
                         ),
                       ),
                       const SizedBox(width: 8),
