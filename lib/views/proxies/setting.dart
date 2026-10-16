@@ -11,16 +11,16 @@ class ProxiesSetting extends StatelessWidget {
 
   IconData _getIconWithProxiesType(ProxiesType type) {
     return switch (type) {
-      ProxiesType.tab => Icons.view_carousel,
-      ProxiesType.list => Icons.view_list,
+      ProxiesType.tab => QuanXIcons.galleryHorizontal,
+      ProxiesType.list => QuanXIcons.list,
     };
   }
 
   IconData _getIconWithProxiesSortType(ProxiesSortType type) {
     return switch (type) {
-      ProxiesSortType.none => Icons.sort,
-      ProxiesSortType.delay => Icons.network_ping,
-      ProxiesSortType.name => Icons.sort_by_alpha,
+      ProxiesSortType.none => QuanXIcons.arrowUpDown,
+      ProxiesSortType.delay => QuanXIcons.radar,
+      ProxiesSortType.name => QuanXIcons.arrowDownAZ,
     };
   }
 

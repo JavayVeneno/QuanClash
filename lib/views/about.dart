@@ -52,14 +52,14 @@ class AboutView extends StatelessWidget {
           onTap: () {
             globalState.openUrl('https://t.me/FlClash');
           },
-          trailing: const Icon(Icons.launch),
+          trailing: const Icon(QuanXIcons.externalLink),
         ),
         ListItem(
           title: Text(appLocalizations.project),
           onTap: () {
             globalState.openUrl('https://github.com/$repository');
           },
-          trailing: const Icon(Icons.launch),
+          trailing: const Icon(QuanXIcons.externalLink),
         ),
         ListItem(
           title: Text(appLocalizations.core),
@@ -68,7 +68,7 @@ class AboutView extends StatelessWidget {
               'https://github.com/chen08209/Clash.Meta/tree/FlClash',
             );
           },
-          trailing: const Icon(Icons.launch),
+          trailing: const Icon(QuanXIcons.externalLink),
         ),
       ],
     );

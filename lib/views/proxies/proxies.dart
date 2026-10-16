@@ -33,7 +33,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
           onPressed: () {
             _proxiesTabKey.currentState?.scrollToGroupSelected();
           },
-          icon: const Icon(Icons.adjust, weight: 1),
+          icon: const Icon(QuanXIcons.locate),
         ),
       CommonPopupBox(
         targetBuilder: (open) {
@@ -42,13 +42,13 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
               final isMobile = ref.read(isMobileViewProvider);
               open(offset: Offset(0, isMobile ? 0 : 20));
             },
-            icon: const Icon(Icons.more_vert),
+            icon: const Icon(QuanXIcons.ellipsisVertical),
           );
         },
         popup: CommonPopupMenu(
           items: [
             PopupMenuItemData(
-              icon: Icons.tune,
+              icon: QuanXIcons.slidersHorizontal,
               label: appLocalizations.settings,
               onPressed: () {
                 showSheet(
@@ -65,7 +65,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
             ),
             if (_hasProviders)
               PopupMenuItemData(
-                icon: Icons.poll_outlined,
+                icon: QuanXIcons.listChecks,
                 label: appLocalizations.providers,
                 onPressed: () {
                   showExtend(

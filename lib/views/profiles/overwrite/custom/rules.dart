@@ -168,7 +168,7 @@ class _CustomRulesViewState extends ConsumerState<CustomRulesView>
           CommonMinIconButtonTheme(
             child: IconButton.filledTonal(
               onPressed: _handleDelete,
-              icon: const Icon(Icons.delete),
+              icon: const Icon(QuanXIcons.trash2),
             ),
           ),
           const SizedBox(width: 2),
@@ -455,7 +455,7 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
               color: context.colorScheme.onSurfaceVariant,
             ),
           ),
-          const Icon(Icons.arrow_forward_ios),
+          const Icon(QuanXIcons.chevronRight),
         ],
       ),
     );
@@ -514,7 +514,7 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
               ),
             ),
           ),
-          const Icon(Icons.arrow_forward_ios),
+          const Icon(QuanXIcons.chevronRight),
         ],
       ),
     );
@@ -559,7 +559,7 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
                         ),
                       );
                     },
-                    icon: Icon(Icons.info, size: 16.ap, color: foregroundColor),
+                    icon: Icon(QuanXIcons.info, size: 16.ap, color: foregroundColor),
                   ),
                 ),
               Flexible(
@@ -576,7 +576,7 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
                 ),
               ),
               const SizedBox(width: 4),
-              Icon(Icons.arrow_forward_ios, color: foregroundColor),
+              Icon(QuanXIcons.chevronRight, color: foregroundColor),
             ],
           ),
         );
@@ -620,7 +620,7 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
                   ),
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios),
+              const Icon(QuanXIcons.chevronRight),
             ],
           ),
         );
@@ -663,7 +663,7 @@ class _AddOrEditRuleViewState extends ConsumerState<_AddOrEditRuleView> {
         ? globalState.container.read(viewSizeProvider).height * 0.60
         : double.maxFinite;
     return AdaptiveSheetScaffold(
-      actions: [IconButtonData(icon: Icons.check, onPressed: _handleSave)],
+      actions: [IconButtonData(icon: QuanXIcons.check, onPressed: _handleSave)],
       sheetTransparentToolBar: true,
       body: Container(
         constraints: BoxConstraints(maxHeight: height),
@@ -757,7 +757,7 @@ class _RuleTypeSelectedView extends ConsumerWidget {
                 subtitle: Text(ruleAction.getDesc(context)),
                 title: Text(ruleAction.name),
                 trailing: ruleAction == currentRuleAction
-                    ? const Icon(Icons.check)
+                    ? const Icon(QuanXIcons.check)
                     : null,
               ),
             );
@@ -788,7 +788,7 @@ class _RuleTargetSelectedView extends ConsumerWidget {
           text: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
         ),
         isSelected: isSelected,
-        trailing: isSelected ? const Icon(Icons.check) : null,
+        trailing: isSelected ? const Icon(QuanXIcons.check) : null,
       ),
     );
   }
@@ -926,7 +926,7 @@ class _RuleProviderSelectedView extends ConsumerWidget {
     return DecorationListItem(
       onPressed: onPressed,
       isSelected: isSelected,
-      trailing: isSelected ? const Icon(Icons.check) : null,
+      trailing: isSelected ? const Icon(QuanXIcons.check) : null,
       title: title,
     );
   }
@@ -997,7 +997,7 @@ class _SubRuleSelectedView extends ConsumerWidget {
       isSelected: isSelected,
       onPressed: onPressed,
       title: title,
-      trailing: isSelected ? const Icon(Icons.check) : null,
+      trailing: isSelected ? const Icon(QuanXIcons.check) : null,
     );
   }
 

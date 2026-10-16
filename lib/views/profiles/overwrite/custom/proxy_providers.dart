@@ -106,7 +106,7 @@ class _EditProxyProvidersViewState extends ConsumerState<EditProxyProvidersView>
                     onPressed: () {
                       _handleRemove(providerName);
                     },
-                    icon: const Icon(Icons.remove, size: 18),
+                    icon: const Icon(QuanXIcons.minus, size: 18),
                     padding: EdgeInsets.zero,
                   ),
                 ),
@@ -124,7 +124,7 @@ class _EditProxyProvidersViewState extends ConsumerState<EditProxyProvidersView>
                       child: Container(
                         color: Colors.transparent,
                         padding: const EdgeInsets.all(16),
-                        child: const Icon(Icons.drag_handle),
+                        child: const Icon(QuanXIcons.gripHorizontal),
                       ),
                     ),
                   ],
@@ -207,7 +207,7 @@ class _EditProxyProvidersViewState extends ConsumerState<EditProxyProvidersView>
                             },
                             icon: Icon(
                               size: 16.ap,
-                              Icons.info_outline,
+                              QuanXIcons.info,
                               color: context.colorScheme.onSurfaceVariant,
                             ),
                           ),
@@ -360,7 +360,7 @@ class _AddProxyProvidersViewState extends ConsumerState<_AddProxyProvidersView>
             trailing: CommonMinIconButtonTheme(
               child: IconButton.filledTonal(
                 onPressed: onAdd,
-                icon: const Icon(Icons.add, size: 18),
+                icon: const Icon(QuanXIcons.plus, size: 18),
               ),
             ),
           ),

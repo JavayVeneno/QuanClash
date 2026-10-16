@@ -205,7 +205,7 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
                 onPressed: () {
                   _handleDelScript(selectedScriptId);
                 },
-                icon: const Icon(Icons.delete),
+                icon: const Icon(QuanXIcons.trash2),
               ),
             ),
             const SizedBox(width: 2),

@@ -84,7 +84,7 @@ class MoreActionButton extends StatelessWidget {
             vertical: 16,
           ),
           title: Text(label, style: context.textTheme.bodyLarge),
-          trailing: trailing ?? const Icon(Icons.arrow_forward_ios, size: 18),
+          trailing: trailing ?? const Icon(QuanXIcons.chevronRight, size: 18),
         ),
       ),
     );

@@ -23,7 +23,7 @@ class AdvancedConfigView extends StatelessWidget {
       ListItem.open(
         title: Text(appLocalizations.network),
         subtitle: Text(appLocalizations.networkDesc),
-        leading: const Icon(Icons.vpn_key),
+        leading: const Icon(QuanXIcons.keyRound),
         delegate: OpenDelegate(
           blur: false,
           widget: BaseScaffold(
@@ -35,13 +35,13 @@ class AdvancedConfigView extends StatelessWidget {
       ListItem.open(
         title: Text(appLocalizations.onDemand),
         subtitle: Text(appLocalizations.onDemandDesc),
-        leading: const Icon(Icons.ssid_chart, fontWeight: FontWeight.w900),
+        leading: const Icon(QuanXIcons.wifi, fontWeight: FontWeight.w900),
         delegate: const OpenDelegate(widget: OnDemandView(), blur: false),
       ),
       ListItem.open(
         title: const Text('DNS'),
         subtitle: Text(appLocalizations.dnsDesc),
-        leading: const Icon(Icons.dns),
+        leading: const Icon(QuanXIcons.server),
         delegate: OpenDelegate(
           widget: BaseScaffold(
             title: 'DNS',
@@ -62,7 +62,7 @@ class AdvancedConfigView extends StatelessWidget {
                           .update((state) => state.copyWith(dns: defaultDns));
                     },
                     tooltip: appLocalizations.reset,
-                    icon: const Icon(Icons.replay),
+                    icon: const Icon(QuanXIcons.rotateCcw),
                   );
                 },
               ),
@@ -75,13 +75,13 @@ class AdvancedConfigView extends StatelessWidget {
       ListItem.open(
         title: Text(appLocalizations.addedRules),
         subtitle: Text(appLocalizations.controlGlobalAddedRules),
-        leading: const Icon(Icons.library_books),
+        leading: const Icon(QuanXIcons.library),
         delegate: const OpenDelegate(widget: AddedRulesView(), blur: false),
       ),
       ListItem.open(
         title: Text(appLocalizations.script),
         subtitle: Text(appLocalizations.overrideScript),
-        leading: const Icon(Icons.rocket, fontWeight: FontWeight.w900),
+        leading: const Icon(QuanXIcons.rocket, fontWeight: FontWeight.w900),
         delegate: const OpenDelegate(widget: ScriptsView(), blur: false),
       ),
     ];

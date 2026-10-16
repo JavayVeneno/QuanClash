@@ -7,6 +7,7 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/activate_box.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:fl_clash/common/quanx_icons.dart';
 
 class ScanPage extends StatefulWidget {
   const ScanPage({super.key});
@@ -91,26 +92,26 @@ class _ScanPageState extends State<ScanPage> with WidgetsBindingObserver {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              icon: const Icon(Icons.close),
+              icon: const Icon(QuanXIcons.x),
             ),
             actions: [
               ValueListenableBuilder<MobileScannerState>(
                 valueListenable: controller,
                 builder: (context, state, _) {
-                  var icon = const Icon(Icons.flash_off);
+                  var icon = const Icon(QuanXIcons.zapOff);
                   var backgroundColor = Colors.black12;
                   switch (state.torchState) {
                     case TorchState.off:
-                      icon = const Icon(Icons.flash_off);
+                      icon = const Icon(QuanXIcons.zapOff);
                       backgroundColor = Colors.black12;
                     case TorchState.on:
-                      icon = const Icon(Icons.flash_on);
+                      icon = const Icon(QuanXIcons.zap);
                       backgroundColor = Colors.orange;
                     case TorchState.unavailable:
-                      icon = const Icon(Icons.flash_off);
+                      icon = const Icon(QuanXIcons.zapOff);
                       backgroundColor = Colors.transparent;
                     case TorchState.auto:
-                      icon = const Icon(Icons.flash_auto);
+                      icon = const Icon(QuanXIcons.zap);
                       backgroundColor = Colors.orange;
                   }
                   return Container(
@@ -146,7 +147,7 @@ class _ScanPageState extends State<ScanPage> with WidgetsBindingObserver {
               onPressed: globalState.container
                   .read(profilesActionProvider.notifier)
                   .addProfileFormQrCode,
-              icon: const Icon(Icons.photo_camera_back),
+              icon: const Icon(QuanXIcons.camera),
             ),
           ),
         ],

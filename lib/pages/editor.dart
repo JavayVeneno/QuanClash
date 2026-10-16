@@ -218,7 +218,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
                             );
                           }
                         : null,
-                    icon: const Icon(Icons.save),
+                    icon: const Icon(QuanXIcons.save),
                   ),
                 ),
               ),
@@ -230,29 +230,29 @@ class _EditorPageState extends ConsumerState<EditorPage> {
                       final isMobile = ref.read(isMobileViewProvider);
                       open(offset: Offset(0, isMobile ? 0 : 20));
                     },
-                    icon: const Icon(Icons.more_vert),
+                    icon: const Icon(QuanXIcons.ellipsisVertical),
                   );
                 },
                 popup: CommonPopupMenu(
                   items: [
                     PopupMenuItemData(
-                      icon: Icons.search,
+                      icon: QuanXIcons.search,
                       label: appLocalizations.search,
                       onPressed: _handleSearch,
                     ),
                     PopupMenuItemData(
-                      icon: Icons.undo,
+                      icon: QuanXIcons.undo2,
                       label: appLocalizations.undo,
                       onPressed: _controller.canUndo ? _controller.undo : null,
                     ),
                     PopupMenuItemData(
-                      icon: Icons.redo,
+                      icon: QuanXIcons.redo2,
                       label: appLocalizations.redo,
                       onPressed: _controller.canRedo ? _controller.redo : null,
                     ),
                     if (widget.supportRemoteDownload && !readOnly)
                       PopupMenuItemData(
-                        icon: Icons.arrow_downward,
+                        icon: QuanXIcons.arrowDown,
                         label: appLocalizations.externalFetch,
                         subItems: [
                           PopupMenuItemData(
@@ -418,7 +418,7 @@ class FindPanel extends StatelessWidget implements PreferredSizeWidget {
                       : () {
                           controller.previousMatch();
                         },
-                  icon: Icons.arrow_upward,
+                  icon: QuanXIcons.arrowUp,
                 ),
                 _buildIconButton(
                   onPressed: value.result == null
@@ -426,12 +426,12 @@ class FindPanel extends StatelessWidget implements PreferredSizeWidget {
                       : () {
                           controller.nextMatch();
                         },
-                  icon: Icons.arrow_downward,
+                  icon: QuanXIcons.arrowDown,
                 ),
                 const SizedBox(width: 2),
                 IconButton.filledTonal(
                   onPressed: controller.close,
-                  icon: const Icon(Icons.close, size: 16),
+                  icon: const Icon(QuanXIcons.x, size: 16),
                 ),
               ],
             ),

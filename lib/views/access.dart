@@ -72,14 +72,14 @@ class _AccessViewState extends ConsumerState<AccessView> {
               key: const ValueKey(true),
               onPressed: onPressed,
               label: Text(appLocalizations.cancelSelectAll),
-              icon: const Icon(Icons.deselect),
+              icon: const Icon(QuanXIcons.squareDashed),
             )
           : FloatingActionButton.extended(
               key: const ValueKey(false),
               tooltip: appLocalizations.selectAll,
               onPressed: onPressed,
               label: Text(appLocalizations.selectAll),
-              icon: const Icon(Icons.select_all),
+              icon: const Icon(QuanXIcons.boxSelect),
             ),
     );
   }
@@ -255,44 +255,44 @@ class _AccessViewState extends ConsumerState<AccessView> {
             onPressed: () {
               open(offset: const Offset(0, 0));
             },
-            icon: const Icon(Icons.more_vert),
+            icon: const Icon(QuanXIcons.ellipsisVertical),
           );
         },
         popup: CommonPopupMenu(
           items: [
             PopupMenuItemData(
-              icon: Icons.swap_horiz,
+              icon: QuanXIcons.arrowRightLeft,
               label: enable
                   ? appLocalizations.turnOff
                   : appLocalizations.turnOn,
               onPressed: _handleToggle,
             ),
             PopupMenuItemData(
-              icon: Icons.search,
+              icon: QuanXIcons.search,
               label: appLocalizations.search,
               onPressed: _handleSearch,
             ),
             PopupMenuItemData(
-              icon: Icons.tune,
+              icon: QuanXIcons.slidersHorizontal,
               label: appLocalizations.settings,
               onPressed: _handleToSetting,
             ),
             PopupMenuItemData(
-              icon: Icons.emergency_outlined,
+              icon: QuanXIcons.siren,
               label: appLocalizations.action,
               subItems: [
                 PopupMenuItemData(
-                  icon: Icons.auto_awesome,
+                  icon: QuanXIcons.sparkles,
                   label: appLocalizations.intelligentSelected,
                   onPressed: _intelligentSelected,
                 ),
                 PopupMenuItemData(
-                  icon: Icons.content_copy,
+                  icon: QuanXIcons.copy,
                   label: appLocalizations.clipboardExport,
                   onPressed: _exportToClipboard,
                 ),
                 PopupMenuItemData(
-                  icon: Icons.paste,
+                  icon: QuanXIcons.clipboardPaste,
                   label: appLocalizations.clipboardImport,
                   onPressed: _importFormClipboard,
                 ),
@@ -498,8 +498,8 @@ class AccessControlPanel extends ConsumerStatefulWidget {
 class _AccessControlPanelState extends ConsumerState<AccessControlPanel> {
   IconData _getIconWithAccessControlMode(AccessControlMode mode) {
     return switch (mode) {
-      AccessControlMode.acceptSelected => Icons.adjust_outlined,
-      AccessControlMode.rejectSelected => Icons.block_outlined,
+      AccessControlMode.acceptSelected => QuanXIcons.locate,
+      AccessControlMode.rejectSelected => QuanXIcons.ban,
     };
   }
 
@@ -522,9 +522,9 @@ class _AccessControlPanelState extends ConsumerState<AccessControlPanel> {
 
   IconData _getIconWithProxiesSortType(AccessSortType type) {
     return switch (type) {
-      AccessSortType.none => Icons.sort,
-      AccessSortType.name => Icons.sort_by_alpha,
-      AccessSortType.time => Icons.timeline,
+      AccessSortType.none => QuanXIcons.arrowUpDown,
+      AccessSortType.name => QuanXIcons.arrowDownAZ,
+      AccessSortType.time => QuanXIcons.activity,
     };
   }
 

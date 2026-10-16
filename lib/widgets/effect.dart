@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:fl_clash/widgets/inherited.dart';
 import 'package:flutter/material.dart';
+import 'package:fl_clash/common/quanx_icons.dart';
 
 class EffectGestureDetector extends StatefulWidget {
   final Widget child;
@@ -119,7 +120,7 @@ class _CommonExpandIconState extends State<CommonExpandIcon>
       builder: (_, child) {
         return RotationTransition(turns: _iconTurns, child: child!);
       },
-      child: const Icon(Icons.expand_more),
+      child: const Icon(QuanXIcons.chevronDown),
     );
   }
 }

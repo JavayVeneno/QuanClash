@@ -113,7 +113,7 @@ class PanelView extends ConsumerWidget {
                 const SizedBox(height: 9),
                 Row(
                   children: [
-                    Icon(Icons.arrow_upward, size: 13, color: quanX.accent),
+                    Icon(QuanXIcons.arrowUp, size: 13, color: quanX.accent),
                     const SizedBox(width: 4),
                     Text(
                       '${lastTraffic.up.traffic.show}/s',
@@ -123,7 +123,7 @@ class PanelView extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 14),
-                    Icon(Icons.arrow_downward, size: 13, color: quanX.info),
+                    Icon(QuanXIcons.arrowDown, size: 13, color: quanX.info),
                     const SizedBox(width: 4),
                     Text(
                       '${lastTraffic.down.traffic.show}/s',
@@ -151,7 +151,7 @@ class PanelView extends ConsumerWidget {
                           : colorScheme.onSurfaceVariant,
                     ),
                     icon: Icon(
-                      isStart ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                      isStart ? QuanXIcons.pause : QuanXIcons.play,
                       size: 17,
                     ),
                     label: Text(
@@ -231,7 +231,7 @@ class PanelView extends ConsumerWidget {
                       minimumSize: const Size(0, 30),
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                     ),
-                    icon: const Icon(Icons.open_in_new, size: 15),
+                    icon: const Icon(QuanXIcons.externalLink, size: 15),
                     label: Text('打开 $appName'),
                   ),
                   const SizedBox(width: 4),
@@ -274,21 +274,21 @@ class PanelView extends ConsumerWidget {
           const Spacer(),
           _buildIconButton(
             context,
-            Icons.open_in_new,
+            QuanXIcons.externalLink,
             () {
               _handleOpen();
             },
           ),
           _buildIconButton(
             context,
-            Icons.settings_outlined,
+            QuanXIcons.settings,
             () {
               _handleOpen(PageLabel.tools);
             },
           ),
           _buildIconButton(
             context,
-            Icons.close,
+            QuanXIcons.x,
             () {
               window?.hide();
             },
@@ -344,7 +344,7 @@ class PanelView extends ConsumerWidget {
             ),
             if (onTap != null) ...[
               const SizedBox(width: 4),
-              Icon(Icons.chevron_right, size: 15, color: quanX.textTertiary),
+              Icon(QuanXIcons.chevronRight, size: 15, color: quanX.textTertiary),
             ],
           ],
         ),

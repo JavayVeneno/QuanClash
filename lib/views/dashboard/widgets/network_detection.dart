@@ -55,7 +55,7 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
                           _countryCodeToEmoji(ipInfo.countryCode),
                           style: emojiTextStyle,
                         )
-                      : Icon(Icons.network_check, color: titleTextStyle),
+                      : Icon(QuanXIcons.gauge, color: titleTextStyle),
                   const SizedBox(width: 8),
                   Flexible(
                     flex: 1,
@@ -84,7 +84,7 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
                       },
                       icon: Icon(
                         size: 16.ap,
-                        Icons.info_outline,
+                        QuanXIcons.info,
                         color: context.colorScheme.onSurfaceVariant,
                       ),
                     ),

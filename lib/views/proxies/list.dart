@@ -562,7 +562,7 @@ class _ListHeaderState extends State<ListHeader> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     iconSize: 19,
-                    icon: const Icon(Icons.adjust),
+                    icon: const Icon(QuanXIcons.locate),
                   ),
                   const SizedBox(width: 2),
                   IconButton(
@@ -573,7 +573,7 @@ class _ListHeaderState extends State<ListHeader> {
                     style: const ButtonStyle(
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    icon: const Icon(Icons.network_ping),
+                    icon: const Icon(QuanXIcons.radar),
                   ),
                   const SizedBox(width: 6),
                 ] else

@@ -181,6 +181,9 @@ class SetupAction extends _$SetupAction {
   }
 
   Future<void> updateStatus(bool isStart, {bool isInit = false}) async {
+    if (uiPreviewMode) {
+      return;
+    }
     if (isStart) {
       if (!isInit) {
         final res = await ref
@@ -575,6 +578,10 @@ class SystemAction extends _$SystemAction {
   }
 
   Future<void> handleExit([bool needSave = false]) async {
+    if (uiPreviewMode) {
+      await system.exit();
+      return;
+    }
     Future.delayed(const Duration(seconds: 3), () {
       system.exit();
     });

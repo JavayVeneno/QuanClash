@@ -21,7 +21,7 @@ class LogLevelItem extends ConsumerWidget {
       patchClashConfigProvider.select((state) => state.logLevel),
     );
     return ListItem<LogLevel>.options(
-      leading: const Icon(Icons.info_outline),
+      leading: const Icon(QuanXIcons.info),
       title: Text(appLocalizations.logLevel),
       subtitle: Text(logLevel.name),
       delegate: OptionsDelegate<LogLevel>(
@@ -76,7 +76,7 @@ class UaItem extends ConsumerWidget {
       patchClashConfigProvider.select((state) => state.globalUa),
     );
     return ListItem(
-      leading: const Icon(Icons.computer_outlined),
+      leading: const Icon(QuanXIcons.monitor),
       title: Text(appLocalizations.userAgent),
       subtitle: Text(globalUa ?? appLocalizations.defaultText),
       onTap: () => _handleShowUaDialog(ref),
@@ -275,7 +275,7 @@ class KeepAliveIntervalItem extends ConsumerWidget {
       patchClashConfigProvider.select((state) => state.keepAliveInterval),
     );
     return ListItem.input(
-      leading: const Icon(Icons.timer_outlined),
+      leading: const Icon(QuanXIcons.timer),
       title: Text(appLocalizations.keepAliveIntervalDesc),
       subtitle: Text(appLocalizations.secondsCount(keepAliveInterval)),
       delegate: InputDelegate(
@@ -318,7 +318,7 @@ class TestUrlItem extends ConsumerWidget {
       appSettingProvider.select((state) => state.testUrl),
     );
     return ListItem.input(
-      leading: const Icon(Icons.timeline),
+      leading: const Icon(QuanXIcons.activity),
       title: Text(appLocalizations.testUrl),
       subtitle: Text(testUrl),
       delegate: InputDelegate(
@@ -363,7 +363,7 @@ class PortItem extends ConsumerWidget {
       patchClashConfigProvider.select((state) => state.mixedPort),
     );
     return ListItem(
-      leading: const Icon(Icons.adjust_outlined),
+      leading: const Icon(QuanXIcons.locate),
       title: Text(appLocalizations.port),
       subtitle: Text('$mixedPort'),
       onTap: () {
@@ -412,7 +412,7 @@ class HostsItem extends ConsumerWidget {
       patchClashConfigProvider.select((state) => state.hosts),
     );
     return ListItem.open(
-      leading: const Icon(Icons.view_list_outlined),
+      leading: const Icon(QuanXIcons.list),
       title: const Text('Hosts'),
       subtitle: Text(appLocalizations.hostsDesc),
       delegate: OpenDelegate(
@@ -445,7 +445,7 @@ class Ipv6Item extends ConsumerWidget {
       patchClashConfigProvider.select((state) => state.ipv6),
     );
     return ListItem.switchItem(
-      leading: const Icon(Icons.water_outlined),
+      leading: const Icon(QuanXIcons.droplet),
       title: const Text('IPv6'),
       subtitle: Text(appLocalizations.ipv6Desc),
       delegate: SwitchDelegate(
@@ -470,7 +470,7 @@ class AppendSystemDNSItem extends ConsumerWidget {
       networkSettingProvider.select((state) => state.appendSystemDns),
     );
     return ListItem.switchItem(
-      leading: const Icon(Icons.dns_outlined),
+      leading: const Icon(QuanXIcons.server),
       title: Text(appLocalizations.appendSystemDns),
       subtitle: Text(appLocalizations.appendSystemDnsTip),
       delegate: SwitchDelegate(
@@ -495,7 +495,7 @@ class AllowLanItem extends ConsumerWidget {
       patchClashConfigProvider.select((state) => state.allowLan),
     );
     return ListItem.switchItem(
-      leading: const Icon(Icons.device_hub),
+      leading: const Icon(QuanXIcons.waypoints),
       title: Text(appLocalizations.allowLan),
       subtitle: Text(appLocalizations.allowLanDesc),
       delegate: SwitchDelegate(
@@ -521,7 +521,7 @@ class UnifiedDelayItem extends ConsumerWidget {
     );
 
     return ListItem.switchItem(
-      leading: const Icon(Icons.compress_outlined),
+      leading: const Icon(QuanXIcons.minimize2),
       title: Text(appLocalizations.unifiedDelay),
       subtitle: Text(appLocalizations.unifiedDelayDesc),
       delegate: SwitchDelegate(
@@ -549,7 +549,7 @@ class FindProcessItem extends ConsumerWidget {
     );
 
     return ListItem.switchItem(
-      leading: const Icon(Icons.polymer_outlined),
+      leading: const Icon(QuanXIcons.waypoints),
       title: Text(appLocalizations.findProcessMode),
       subtitle: Text(appLocalizations.findProcessModeDesc),
       delegate: SwitchDelegate(
@@ -580,7 +580,7 @@ class TcpConcurrentItem extends ConsumerWidget {
       patchClashConfigProvider.select((state) => state.tcpConcurrent),
     );
     return ListItem.switchItem(
-      leading: const Icon(Icons.double_arrow_outlined),
+      leading: const Icon(QuanXIcons.chevronsRight),
       title: Text(appLocalizations.tcpConcurrent),
       subtitle: Text(appLocalizations.tcpConcurrentDesc),
       delegate: SwitchDelegate(
@@ -607,7 +607,7 @@ class GeodataLoaderItem extends ConsumerWidget {
       ),
     );
     return ListItem.switchItem(
-      leading: const Icon(Icons.memory),
+      leading: const Icon(QuanXIcons.memoryStick),
       title: Text(appLocalizations.geodataLoader),
       subtitle: Text(appLocalizations.geodataLoaderDesc),
       delegate: SwitchDelegate(
@@ -640,7 +640,7 @@ class ExternalControllerItem extends ConsumerWidget {
       ),
     );
     return ListItem.switchItem(
-      leading: const Icon(Icons.api_outlined),
+      leading: const Icon(QuanXIcons.braces),
       title: Text(appLocalizations.externalController),
       subtitle: Text(appLocalizations.externalControllerDesc),
       delegate: SwitchDelegate(

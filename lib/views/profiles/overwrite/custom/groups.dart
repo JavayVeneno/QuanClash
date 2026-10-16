@@ -237,7 +237,7 @@ class _ProxyGroupItem extends ConsumerWidget {
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       color: Colors.transparent,
-                      child: const Icon(Icons.drag_handle),
+                      child: const Icon(QuanXIcons.gripHorizontal),
                     ),
                   ),
                 ],
@@ -518,7 +518,7 @@ class _EditProxyGroupViewState extends ConsumerState<_EditProxyGroupView> {
                   : (!includeAllProviders
                         ? _NumberCard(number: use.length)
                         : const _CheckIcon()),
-              const Icon(Icons.arrow_forward_ios),
+              const Icon(QuanXIcons.chevronRight),
             ],
           ),
           onPressed: _handleToProvidersView,
@@ -701,7 +701,7 @@ class _EditProxyGroupViewState extends ConsumerState<_EditProxyGroupView> {
                   : (!includeAllProxies
                         ? _NumberCard(number: proxies.length)
                         : const _CheckIcon()),
-              const Icon(Icons.arrow_forward_ios),
+              const Icon(QuanXIcons.chevronRight),
             ],
           ),
           onPressed: _handleToProxiesView,
@@ -856,7 +856,7 @@ class _EditProxyGroupViewState extends ConsumerState<_EditProxyGroupView> {
         : double.maxFinite;
     return AdaptiveSheetScaffold(
       sheetTransparentToolBar: true,
-      actions: [IconButtonData(icon: Icons.check, onPressed: _handleSave)],
+      actions: [IconButtonData(icon: QuanXIcons.check, onPressed: _handleSave)],
       body: SizedBox(
         height: height,
         child: ListView(
@@ -935,7 +935,7 @@ class _CheckIcon extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(6),
       child: Icon(
-        Icons.check_circle_outline,
+        QuanXIcons.circleCheck,
         size: 20.ap,
         color: Colors.greenAccent.harmonizeWith(context.colorScheme.primary),
       ),

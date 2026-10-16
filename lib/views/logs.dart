@@ -47,7 +47,7 @@ class _LogsViewState extends ConsumerState<LogsView> {
         onPressed: () {
           _handleExport();
         },
-        icon: const Icon(Icons.save_as_outlined),
+        icon: const Icon(QuanXIcons.save),
       ),
     ];
   }
@@ -124,8 +124,8 @@ class _LogsViewState extends ConsumerState<LogsView> {
                 );
               },
               child: autoScrollToEnd
-                  ? const Icon(Icons.block)
-                  : const Icon(Icons.vertical_align_top),
+                  ? const Icon(QuanXIcons.ban)
+                  : const Icon(QuanXIcons.arrowUpToLine),
             ),
           );
         },

@@ -122,7 +122,7 @@ class ConnectionBar extends ConsumerWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.arrow_upward, size: 13, color: quanX.accent),
+                      Icon(QuanXIcons.arrowUp, size: 13, color: quanX.accent),
                       const SizedBox(width: 4),
                       Text(
                         '${lastTraffic.up.traffic.show}/s',
@@ -132,7 +132,7 @@ class ConnectionBar extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Icon(Icons.arrow_downward, size: 13, color: quanX.info),
+                      Icon(QuanXIcons.arrowDown, size: 13, color: quanX.info),
                       const SizedBox(width: 4),
                       Text(
                         '${lastTraffic.down.traffic.show}/s',
@@ -222,7 +222,7 @@ class ConnectionBar extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                   ),
                   icon: Icon(
-                    isStart ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                    isStart ? QuanXIcons.pause : QuanXIcons.play,
                     size: 18,
                   ),
                   label: Text(
