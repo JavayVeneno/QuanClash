@@ -78,7 +78,7 @@ class _SideSheetState extends State<SideSheet> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final Color color = widget.backgroundColor ?? colorScheme.surface;
+    final Color color = widget.backgroundColor ?? Colors.transparent;
     final Color surfaceTintColor = colorScheme.surfaceTint;
     final Color shadowColor = widget.shadowColor ?? Colors.transparent;
     final double elevation = widget.elevation ?? 0;

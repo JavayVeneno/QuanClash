@@ -333,7 +333,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
             FadeBox(
               child: widget.content == null
                   ? Container(
-                      color: context.colorScheme.surface,
+                      color: Colors.transparent,
                       alignment: Alignment.center,
                       child: const SizedBox.square(
                         dimension: 200,

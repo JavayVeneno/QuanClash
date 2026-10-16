@@ -1,5 +1,4 @@
 import 'package:animations/animations.dart';
-import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/material.dart';
@@ -100,7 +99,7 @@ class CommonRoute<T> extends PageRoute<T> {
         animation: animation,
         secondaryAnimation: secondaryAnimation,
         transitionType: SharedAxisTransitionType.horizontal,
-        fillColor: context.colorScheme.surface,
+        fillColor: Colors.transparent,
         child: result,
       ),
     );
