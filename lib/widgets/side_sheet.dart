@@ -519,10 +519,9 @@ class ModalSideSheetRoute<T> extends PopupRoute<T> {
       anchorPoint: anchorPoint,
       child: Builder(
         builder: (BuildContext context) {
-          final colorScheme = Theme.of(context).colorScheme;
           return _ModalSideSheet<T>(
             route: this,
-            backgroundColor: backgroundColor ?? colorScheme.surface,
+            backgroundColor: backgroundColor ?? Colors.transparent,
             elevation: elevation ?? 0,
             shape: shape,
             clipBehavior: clipBehavior,
