@@ -45,9 +45,10 @@ class InfoHeader extends StatelessWidget {
                 if (info.iconData != null) ...[
                   Icon(
                     info.iconData,
+                    size: 15,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 7),
                 ],
                 Flexible(
                   flex: 1,
@@ -82,6 +83,10 @@ class InfoHeader extends StatelessWidget {
   }
 }
 
+/// 玻璃卡片。
+///
+/// 与 FlClash 原版「平面填充 + 硬描边 + hover 变色」不同,这里改为
+/// 半透明玻璃 + 背景模糊 + 高光描边 + 柔和阴影;交互反馈由 ink 微光承担。
 class CommonCard extends StatelessWidget {
   const CommonCard({
     super.key,
@@ -112,93 +117,6 @@ class CommonCard extends StatelessWidget {
   final double? radius;
   final OutlinedBorder? shape;
 
-  BorderSide _buildBorderSide(BuildContext context, Set<WidgetState> states) {
-    final colorScheme = context.colorScheme;
-    if (isError) {
-      if (type == CommonCardType.filled) {
-        return BorderSide(color: colorScheme.error);
-      }
-      final hoverColor = isSelected
-          ? colorScheme.error.opacity80
-          : colorScheme.error.opacity38;
-      if (states.contains(WidgetState.hovered) ||
-          states.contains(WidgetState.focused) ||
-          states.contains(WidgetState.pressed)) {
-        return BorderSide(color: hoverColor);
-      }
-      return BorderSide(
-        color: isSelected
-            ? colorScheme.error.opacity60
-            : colorScheme.error.opacity30,
-      );
-    }
-    if (type == CommonCardType.filled) {
-      return BorderSide.none;
-    }
-    final hoverColor = isSelected
-        ? colorScheme.primary.opacity80
-        : colorScheme.primary.opacity60;
-    if (states.contains(WidgetState.hovered) ||
-        states.contains(WidgetState.focused) ||
-        states.contains(WidgetState.pressed)) {
-      return BorderSide(color: hoverColor);
-    }
-    return BorderSide(
-      color: isSelected
-          ? colorScheme.primary
-          : colorScheme.surfaceContainerHighest,
-    );
-  }
-
-  Color? _buildBackgroundColor(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    // if (isError) {
-    //   if (type == CommonCardType.filled) {
-    //     return isSelected
-    //         ? colorScheme.errorContainer.opacity80
-    //         : colorScheme.errorContainer;
-    //   }
-    //   return isSelected
-    //       ? colorScheme.errorContainer.opacity60
-    //       : colorScheme.errorContainer.opacity12;
-    // }
-    if (type == CommonCardType.filled) {
-      if (isSelected) {
-        return colorScheme.secondaryContainer.opacity80;
-      }
-      return colorScheme.surfaceContainerHigh;
-    }
-    if (isSelected) {
-      return colorScheme.secondaryContainer;
-    }
-    return colorScheme.surfaceContainerLow;
-  }
-
-  Color? _buildForegroundColor(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    if (isError) {
-      return colorScheme.error;
-    }
-    if (type == CommonCardType.filled) {
-      if (isSelected) {
-        return colorScheme.onSecondaryContainer;
-      }
-      return colorScheme.onSurfaceVariant;
-    }
-    if (isSelected) {
-      return colorScheme.onSecondaryContainer;
-    }
-    return colorScheme.onSurfaceVariant;
-  }
-
-  Color? _buildIconColor(BuildContext context) {
-    final colorScheme = context.colorScheme;
-    if (isError) {
-      return colorScheme.error;
-    }
-    return colorScheme.primary;
-  }
-
   @override
   Widget build(BuildContext context) {
     var childWidget = child;
@@ -223,63 +141,46 @@ class CommonCard extends StatelessWidget {
       childWidget = Stack(children: children);
     }
 
-    final card = switch (type == CommonCardType.filled) {
-      true => FilledButton(
-        onLongPress: onLongPress,
-        clipBehavior: Clip.antiAlias,
-        style:
-            FilledButton.styleFrom(
-              padding: padding ?? EdgeInsets.zero,
-              shape:
-                  shape ??
-                  RoundedSuperellipseBorder(
-                    borderRadius: BorderRadius.circular(
-                      radius ?? QuanXRadius.group,
-                    ),
-                  ),
-              iconSize: 20,
-              iconColor: _buildIconColor(context),
-              foregroundColor: _buildForegroundColor(context),
-              side: BorderSide.none,
-              elevation: 0,
-            ).copyWith(
-              backgroundColor: WidgetStatePropertyAll(
-                _buildBackgroundColor(context),
-              ),
-              side: WidgetStateProperty.resolveWith(
-                (states) => _buildBorderSide(context, states),
-              ),
-            ),
-        onPressed: onPressed,
-        child: childWidget,
+    final colorScheme = context.colorScheme;
+    final glass = context.glass;
+
+    // 选中 / 错误态:在原玻璃底色上叠一层语义色,而不是整块换成实色。
+    final Color? overlay = isError
+        ? colorScheme.error.opacity12
+        : isSelected
+        ? colorScheme.primary.opacity15
+        : type == CommonCardType.filled
+        ? Colors.white.withValues(alpha: glass == GlassColors.dark ? 0.08 : 0.24)
+        : null;
+
+    final Color tint = overlay == null
+        ? glass.tint
+        : Color.alphaBlend(overlay, glass.tint);
+
+    final card = GlassPanel(
+      radius: radius ?? GlassRadius.panel,
+      blurSigma: type == CommonCardType.filled ? 18 : 14,
+      tint: tint,
+      stroke: isError
+          ? colorScheme.error.opacity38
+          : isSelected
+          ? colorScheme.primary.opacity38
+          : null,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          onLongPress: onLongPress,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: colorScheme.onSurface.opacity10,
+          child: Padding(
+            padding: padding ?? EdgeInsets.zero,
+            child: childWidget,
+          ),
+        ),
       ),
-      false => OutlinedButton(
-        onLongPress: onLongPress,
-        clipBehavior: Clip.antiAlias,
-        style:
-            OutlinedButton.styleFrom(
-              padding: padding ?? EdgeInsets.zero,
-              shape:
-                  shape ??
-                  RoundedSuperellipseBorder(
-                    borderRadius: BorderRadius.circular(
-                      radius ?? QuanXRadius.group,
-                    ),
-                  ),
-              iconSize: 20,
-              iconColor: _buildIconColor(context),
-              backgroundColor: _buildBackgroundColor(context),
-              foregroundColor: _buildForegroundColor(context),
-              elevation: 0,
-            ).copyWith(
-              side: WidgetStateProperty.resolveWith(
-                (states) => _buildBorderSide(context, states),
-              ),
-            ),
-        onPressed: onPressed,
-        child: childWidget,
-      ),
-    };
+    );
 
     return switch (enterAnimated) {
       true => FadeScaleEnterBox(child: card),
@@ -304,6 +205,7 @@ class SelectIcon extends StatelessWidget {
   }
 }
 
+/// 设置分组:标题 + 玻璃分组容器。
 class SettingsBlock extends StatelessWidget {
   final String title;
   final List<Widget> settings;
@@ -317,14 +219,8 @@ class SettingsBlock extends StatelessWidget {
       child: Column(
         children: [
           InfoHeader(info: Info(label: title)),
-          Card(
-            color: context.colorScheme.surfaceContainer,
-            elevation: 0,
-            shape: const RoundedSuperellipseBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(QuanXRadius.group),
-              ),
-            ),
+          GlassPanel(
+            radius: GlassRadius.panel,
             child: Column(children: settings),
           ),
         ],

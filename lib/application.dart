@@ -149,9 +149,16 @@ class ApplicationState extends ConsumerState<Application> {
           ],
           builder: (_, child) {
             return AppEnvManager(
-              child: _buildApp(
-                child: _buildPlatformState(
-                  child: _buildState(child: _buildPlatformApp(child: child!)),
+              child: GlassScope(
+                plain: themeProps.pureBlack,
+                child: GlassBackdrop(
+                  child: _buildApp(
+                    child: _buildPlatformState(
+                      child: _buildState(
+                        child: _buildPlatformApp(child: child!),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             );

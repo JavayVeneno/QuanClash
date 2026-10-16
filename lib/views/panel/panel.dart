@@ -66,8 +66,10 @@ class PanelView extends ConsumerWidget {
       CoreStatus.connected => (appLocalizations.connected, quanX.success),
       _ => (appLocalizations.disconnected, quanX.textTertiary),
     };
-    return Material(
-      color: colorScheme.surface,
+    return GlassPanel(
+      radius: 0,
+      blurSigma: 24,
+      shadow: false,
       child: Column(
         children: [
           _buildHeader(context),
