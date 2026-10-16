@@ -380,7 +380,7 @@ class FindPanel extends StatelessWidget implements PreferredSizeWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       margin: const EdgeInsets.only(bottom: 8),
-      color: context.colorScheme.surface,
+      color: context.glass.tintStrong,
       alignment: Alignment.centerLeft,
       height: height,
       child: _buildFindInputView(context),

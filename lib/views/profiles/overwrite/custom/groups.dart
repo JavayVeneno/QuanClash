@@ -362,9 +362,7 @@ class _AddOrEditProxyGroupNestedSheetState
       },
     );
     final sheetProvider = SheetProvider.of(context);
-    final fillColor = sheetProvider?.type == SheetType.bottomSheet
-        ? context.colorScheme.surfaceContainerLow
-        : context.colorScheme.surface;
+    final fillColor = context.glass.tintStrong;
     return CommonPopScope(
       onPop: (_) async {
         _handlePop();
