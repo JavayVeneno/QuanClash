@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 
 /// 玻璃材质令牌与基础组件。
@@ -67,21 +68,21 @@ class GlassColors {
 
   /// 深色玻璃:深色底 + 低透明度彩色柔光。
   static const GlassColors dark = GlassColors(
-    backdropTop: Color(0xFF0A0E15),
-    backdropBottom: Color(0xFF07090E),
+    backdropTop: Color(0xFF0D1220),
+    backdropBottom: Color(0xFF090C14),
     blobs: [
       Color(0xFF2ED3C0),
       Color(0xFF3B7CFF),
       Color(0xFFA66BFF),
       Color(0xFFFF9F43),
     ],
-    blobOpacity: 0.16,
-    tint: Color(0x0DFFFFFF),
-    tintStrong: Color(0x1AFFFFFF),
-    stroke: Color(0x1FFFFFFF),
-    highlight: Color(0x14FFFFFF),
-    shadow: Color(0x59000000),
-    divider: Color(0x14FFFFFF),
+    blobOpacity: 0.24,
+    tint: Color(0x14FFFFFF),
+    tintStrong: Color(0x24FFFFFF),
+    stroke: Color(0x2EFFFFFF),
+    highlight: Color(0x1FFFFFFF),
+    shadow: Color(0x66000000),
+    divider: Color(0x1AFFFFFF),
   );
 
   static GlassColors of(Brightness brightness) {
@@ -155,7 +156,7 @@ class GlassScope extends InheritedWidget {
 /// 应用氛围背景:底部渐变 + 若干柔光色斑。
 ///
 /// 它铺在整棵界面树的最底层,玻璃层叠通过 [BackdropFilter] 对它取景,
-/// 从而得到毛玻璃观感。
+/// 从而得到毛玻璃观感。色斑会向主题色谐调,调整主题色时整体观感随动。
 class GlassBackdrop extends StatelessWidget {
   const GlassBackdrop({super.key, this.child});
 
@@ -164,22 +165,24 @@ class GlassBackdrop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.glass;
+    final primary = Theme.of(context).colorScheme.primary;
     return Stack(
       fit: StackFit.expand,
       children: [
         RepaintBoundary(
-          child: CustomPaint(painter: _AmbientPainter(colors)),
+          child: CustomPaint(painter: _AmbientPainter(colors, primary)),
         ),
-        if (child != null) child!,
+        ?child,
       ],
     );
   }
 }
 
 class _AmbientPainter extends CustomPainter {
-  const _AmbientPainter(this.colors);
+  const _AmbientPainter(this.colors, this.primary);
 
   final GlassColors colors;
+  final Color primary;
 
   /// 色斑位置(x, y, 半径系数),均为相对尺寸的比例。
   static const List<List<double>> _spots = [
@@ -213,7 +216,9 @@ class _AmbientPainter extends CustomPainter {
       final spot = _spots[i];
       final center = Offset(size.width * spot[0], size.height * spot[1]);
       final radius = baseRadius * spot[2];
-      final color = blobs[i].withValues(alpha: colors.blobOpacity);
+      // 每颗色斑向主题色方向谐调一半,保证既有个性又随主题而动
+      final harmonized = Color.lerp(blobs[i], blobs[i].harmonizeWith(primary), 0.5)!;
+      final color = harmonized.withValues(alpha: colors.blobOpacity);
       canvas.drawCircle(
         center,
         radius,
@@ -227,7 +232,7 @@ class _AmbientPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_AmbientPainter oldDelegate) =>
-      oldDelegate.colors != colors;
+      oldDelegate.colors != colors || oldDelegate.primary != primary;
 }
 
 /// 玻璃面板:毛玻璃卡片 / 浮层的基础构件。

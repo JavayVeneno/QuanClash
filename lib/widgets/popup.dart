@@ -210,11 +210,9 @@ class CommonPopupMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 12,
-      color: context.colorScheme.surfaceContainer,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(14)),
+    return GlassPanel(
+      radius: 16,
+      blurSigma: 20,
       child: IntrinsicWidth(
         child: _CommonPopupMenuItems(
           items: items,

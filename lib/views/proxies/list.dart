@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -345,19 +346,27 @@ class _ProxiesListViewState extends State<ProxiesListView> {
                         children: [
                           Positioned(
                             top: -headerState.offset,
-                            child: Container(
-                              width: container.maxWidth,
-                              color: context.colorScheme.surface,
-                              padding: const EdgeInsets.only(
-                                top: 16,
-                                left: 16,
-                                right: 16,
-                                bottom: 8,
-                              ),
-                              child: _buildHeader(
-                                ref,
-                                group: state.groups[index],
-                                currentUnfoldSet: state.currentUnfoldSet,
+                            child: ClipRect(
+                              child: BackdropFilter(
+                                filter: ui.ImageFilter.blur(
+                                  sigmaX: 18,
+                                  sigmaY: 18,
+                                ),
+                                child: Container(
+                                  width: container.maxWidth,
+                                  color: context.glass.tintStrong,
+                                  padding: const EdgeInsets.only(
+                                    top: 16,
+                                    left: 16,
+                                    right: 16,
+                                    bottom: 8,
+                                  ),
+                                  child: _buildHeader(
+                                    ref,
+                                    group: state.groups[index],
+                                    currentUnfoldSet: state.currentUnfoldSet,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
