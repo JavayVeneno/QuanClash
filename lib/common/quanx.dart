@@ -226,5 +226,13 @@ ThemeData quanXThemeData({
       ),
       trackColor: const WidgetStatePropertyAll<Color?>(Colors.transparent),
     ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: glass.tintStrong,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      shape: RoundedSuperellipseBorder(
+        borderRadius: BorderRadius.circular(GlassRadius.panel),
+      ),
+    ),
   );
 }

@@ -267,8 +267,8 @@ class _CommonPopupMenuItemsState extends State<_CommonPopupMenuItems> {
         : context.colorScheme.onSurface;
     final foregroundColor = disabled ? color.opacity30 : color;
     final backgroundColor = item.danger
-        ? context.colorScheme.error
-        : context.colorScheme.surfaceContainer;
+        ? context.colorScheme.error.opacity80
+        : Colors.transparent;
     return TextButton(
       style: TextButton.styleFrom(
         padding: EdgeInsets.zero,
