@@ -58,22 +58,19 @@ class ConnectionBar extends ConsumerWidget {
     final separator = Container(
       width: 1,
       height: double.infinity,
-      color: quanX.separator,
+      color: quanX.separator.opacity60,
     );
     return LayoutBuilder(
       builder: (_, constraints) {
         final width = constraints.maxWidth;
         final showSpeeds = width >= 560;
         final showNode = width >= 680;
-        return Container(
-          height: 76,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(QuanXRadius.group),
-            border: Border.all(color: colorScheme.surfaceContainerHighest),
-          ),
-          child: Row(
+        return GlassPanel(
+          radius: GlassRadius.bar,
+          blurSigma: 18,
+          child: SizedBox(
+            height: 76,
+            child: Row(
             children: [
               _BarSegment(
                 child: Row(
@@ -234,6 +231,7 @@ class ConnectionBar extends ConsumerWidget {
                 ),
               ),
             ],
+          ),
           ),
         );
       },

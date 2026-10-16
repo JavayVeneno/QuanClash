@@ -273,6 +273,7 @@ class _WindowHeaderState extends State<WindowHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final glass = context.glass;
     return Material(
       color: Colors.transparent,
       child: Align(
@@ -281,9 +282,9 @@ class _WindowHeaderState extends State<WindowHeader> {
           height: kHeaderHeight,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: context.colorScheme.surface,
+            color: glass.tintStrong,
             border: Border(
-              bottom: BorderSide(color: context.quanX.separator),
+              bottom: BorderSide(color: glass.divider),
             ),
           ),
           child: Row(

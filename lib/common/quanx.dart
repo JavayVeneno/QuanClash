@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'color.dart';
+import 'glass.dart';
 
 /// Quantumult X 风格的视觉令牌与主题组装。
 ///
@@ -82,9 +83,9 @@ class QuanXColors {
 }
 
 class QuanXRadius {
-  static const double group = 12;
-  static const double control = 10;
-  static const double chip = 6;
+  static const double group = 14;
+  static const double control = 11;
+  static const double chip = 7;
 
   const QuanXRadius._();
 }
@@ -134,6 +135,7 @@ ThemeData quanXThemeData({
   required PageTransitionsTheme pageTransitionsTheme,
 }) {
   final colors = QuanXColors.of(colorScheme.brightness);
+  final glass = GlassColors.of(colorScheme.brightness);
   final textTheme = ThemeData(
     useMaterial3: true,
     colorScheme: colorScheme,
@@ -145,15 +147,16 @@ ThemeData quanXThemeData({
     useMaterial3: true,
     colorScheme: colorScheme,
     pageTransitionsTheme: pageTransitionsTheme,
-    scaffoldBackgroundColor: colorScheme.surface,
-    canvasColor: colorScheme.surface,
+    // 透明底色,让氛围背景透出,毛玻璃层叠才有取景对象
+    scaffoldBackgroundColor: Colors.transparent,
+    canvasColor: Colors.transparent,
     dividerTheme: DividerThemeData(
-      color: colors.separator,
+      color: glass.divider,
       space: 1,
       thickness: 1,
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: Colors.transparent,
       foregroundColor: colorScheme.primary,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
@@ -206,9 +209,9 @@ ThemeData quanXThemeData({
     ),
     tooltipTheme: TooltipThemeData(
       decoration: BoxDecoration(
-        color: colors.surfaceElevated,
+        color: glass.tintStrong,
         borderRadius: BorderRadius.circular(QuanXRadius.chip),
-        border: Border.all(color: colors.separator),
+        border: Border.all(color: glass.stroke),
       ),
       textStyle: textTheme.bodySmall?.copyWith(color: colors.textPrimary),
       waitDuration: const Duration(milliseconds: 500),

@@ -167,9 +167,10 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
     final nestedNavigatorPop = sheetProvider?.nestedNavigatorPop;
     final ModalRoute<dynamic>? route = ModalRoute.of(context);
     final type = sheetProvider?.type ?? SheetType.page;
+    final glass = context.glass;
     final backgroundColor = type == SheetType.bottomSheet
-        ? context.colorScheme.surfaceContainerLow
-        : context.colorScheme.surface;
+        ? glass.tintStrong
+        : glass.tintStrong;
     final useCloseIcon =
         type != SheetType.page &&
         (nestedNavigatorPop != null && route?.impliesAppBarDismissal == false ||

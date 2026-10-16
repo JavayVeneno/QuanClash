@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
@@ -200,28 +201,32 @@ class _TopNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: context.colorScheme.surface,
-      child: Container(
-        height: 40,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: context.quanX.separator),
+    final glass = context.glass;
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        child: Container(
+          height: 40,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            color: glass.tintStrong,
+            border: Border(
+              bottom: BorderSide(color: glass.divider),
+            ),
           ),
-        ),
-        child: Row(
-          children: [
-            for (int i = 0; i < items.length; i++)
-              _TopNavItem(
-                icon: items[i].icon,
-                label: Intl.message(items[i].label.name),
-                selected: i == currentIndex,
-                onPressed: () {
-                  onSelected(i);
-                },
-              ),
-          ],
+          child: Row(
+            children: [
+              for (int i = 0; i < items.length; i++)
+                _TopNavItem(
+                  icon: items[i].icon,
+                  label: Intl.message(items[i].label.name),
+                  selected: i == currentIndex,
+                  onPressed: () {
+                    onSelected(i);
+                  },
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -284,6 +289,7 @@ class _BottomStatusBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
     final quanX = context.quanX;
+    final glass = context.glass;
     final coreStatus = ref.watch(coreStatusProvider);
     final mixedPort = ref.watch(
       patchClashConfigProvider.select((state) => state.mixedPort),
@@ -297,33 +303,38 @@ class _BottomStatusBar extends ConsumerWidget {
       fontSize: 11,
       color: quanX.textSecondary,
     );
-    return Container(
-      height: 27,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: context.colorScheme.surface,
-        border: Border(top: BorderSide(color: quanX.separator)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 6,
-            height: 6,
-            decoration: BoxDecoration(
-              color: statusColor,
-              shape: BoxShape.circle,
-            ),
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: Container(
+          height: 27,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: glass.tintStrong,
+            border: Border(top: BorderSide(color: glass.divider)),
           ),
-          const SizedBox(width: 6),
-          Text('$statusText · mihomo', style: itemStyle),
-          const SizedBox(width: 16),
-          Text('${appLocalizations.mixedPort} $mixedPort', style: itemStyle),
-          const Spacer(),
-          Text(
-            '$appName v${globalState.packageInfo.version}',
-            style: itemStyle,
+          child: Row(
+            children: [
+              Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: statusColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text('$statusText · mihomo', style: itemStyle),
+              const SizedBox(width: 16),
+              Text('${appLocalizations.mixedPort} $mixedPort', style: itemStyle),
+              const Spacer(),
+              Text(
+                '$appName v${globalState.packageInfo.version}',
+                style: itemStyle,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -38,7 +38,7 @@ class HomePage extends StatelessWidget {
     return HomeBackScopeContainer(
       child: AppTopNavContainer(
         child: Material(
-          color: context.colorScheme.surface,
+          color: Colors.transparent,
           child: Consumer(
             builder: (context, ref, child) {
               final state = ref.watch(navigationStateProvider);
