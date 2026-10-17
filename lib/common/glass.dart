@@ -113,16 +113,16 @@ class _PlainGlassColors {
 /// 玻璃材质的形状令牌。
 class GlassRadius {
   /// 玻璃卡片。
-  static const double panel = 20;
+  static const double panel = 8;
 
   /// 玻璃浮层 / 工具条。
-  static const double bar = 16;
+  static const double bar = 8;
 
   /// 玻璃控件(按钮、输入框)。
-  static const double control = 12;
+  static const double control = 6;
 
   /// 玻璃标签。
-  static const double chip = 9;
+  static const double chip = 4;
 
   const GlassRadius._();
 }

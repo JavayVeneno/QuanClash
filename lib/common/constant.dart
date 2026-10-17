@@ -23,8 +23,8 @@ const helperPort = 47890;
 const maxTextScale = 1.4;
 const minTextScale = 0.8;
 final baseInfoEdgeInsets = EdgeInsets.symmetric(
-  vertical: 16.mAp,
-  horizontal: 16.mAp,
+  vertical: 12.mAp,
+  horizontal: 12.mAp,
 );
 final listHeaderPadding = EdgeInsets.only(
   left: 16.mAp,
@@ -50,8 +50,8 @@ const GEOIP = 'GEOIP.dat';
 const GEOSITE = 'GEOSITE.dat';
 final double kHeaderHeight = system.isDesktop
     ? !system.isMacOS
-          ? 40
-          : 28
+          ? 34
+          : 26
     : 0;
 const profilesDirectoryName = 'profiles';
 const localhost = '127.0.0.1';
@@ -107,8 +107,8 @@ const profilesStoreKey = PageStorageKey<String>('profiles');
 const defaultPrimaryColor = 0XFFD8C0C3;
 
 double getWidgetHeight(num lines) {
-  final space = 14.mAp;
-  return max(lines * (80.ap + space) - space, 0);
+  final space = 10.mAp;
+  return max(lines * (72.ap + space) - space, 0);
 }
 
 const maxLength = 1000;

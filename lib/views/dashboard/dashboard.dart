@@ -233,7 +233,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
   }
 
   Widget _buildDesktopView(BuildContext context) {
-    const spacing = 14.0;
+    const spacing = 10.0;
     return CommonScaffold(
       title: context.appLocalizations.dashboard,
       actions: [_buildCoreStatusAction()],

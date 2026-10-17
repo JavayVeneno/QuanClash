@@ -83,9 +83,9 @@ class QuanXColors {
 }
 
 class QuanXRadius {
-  static const double group = 14;
-  static const double control = 11;
-  static const double chip = 7;
+  static const double group = 8;
+  static const double control = 6;
+  static const double chip = 4;
 
   const QuanXRadius._();
 }
@@ -136,16 +136,18 @@ ThemeData quanXThemeData({
 }) {
   final colors = QuanXColors.of(colorScheme.brightness);
   final glass = GlassColors.of(colorScheme.brightness);
+  // 桌面密度:整体字号收紧 8%
   final textTheme = ThemeData(
     useMaterial3: true,
     colorScheme: colorScheme,
-  ).textTheme;
+  ).textTheme.apply(fontSizeFactor: 0.92);
   const controlShape = RoundedSuperellipseBorder(
     borderRadius: BorderRadius.all(Radius.circular(QuanXRadius.control)),
   );
   return ThemeData(
     useMaterial3: true,
     colorScheme: colorScheme,
+    textTheme: textTheme,
     pageTransitionsTheme: pageTransitionsTheme,
     // 透明底色,让氛围背景透出,毛玻璃层叠才有取景对象
     scaffoldBackgroundColor: Colors.transparent,

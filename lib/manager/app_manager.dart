@@ -202,7 +202,7 @@ class _TopNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final glass = context.glass;
     return Container(
-          height: 40,
+          height: 34,
           padding: const EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
             color: glass.tintStrong,
@@ -256,11 +256,11 @@ class _TopNavItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             hoverColor: colorScheme.onSurface.opacity10,
             child: SizedBox(
-              width: 36,
-              height: 28,
+              width: 32,
+              height: 24,
               child: IconTheme(
                 data: IconThemeData(
-                  size: 18,
+                  size: 16,
                   color: selected
                       ? colorScheme.primary
                       : context.quanX.textSecondary,
@@ -294,11 +294,11 @@ class _BottomStatusBar extends ConsumerWidget {
       _ => (appLocalizations.disconnected, quanX.textTertiary),
     };
     final itemStyle = context.textTheme.bodySmall?.copyWith(
-      fontSize: 11,
+      fontSize: 10,
       color: quanX.textSecondary,
     );
     return Container(
-          height: 27,
+          height: 22,
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: glass.tintStrong,

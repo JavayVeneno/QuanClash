@@ -91,7 +91,7 @@ class Window {
     panelModeNotifier.value = true;
     _panelShownAt = DateTime.now();
     final display = await screenRetriever.getPrimaryDisplay();
-    const panelSize = Size(348, 380);
+    const panelSize = Size(340, 332);
     final visiblePosition = display.visiblePosition ?? Offset.zero;
     final visibleSize = display.visibleSize ?? display.size;
     final left = visiblePosition.dx + visibleSize.width - panelSize.width - 12;
