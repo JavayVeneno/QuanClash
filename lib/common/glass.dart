@@ -321,7 +321,12 @@ class GlassPanel extends StatelessWidget {
       );
     }
 
-    panel = ClipRRect(borderRadius: borderRadius, child: panel);
+    panel = ClipRRect(
+      borderRadius: borderRadius,
+      // 玻璃面板内部补一个透明的 Material:Switch / InkWell / TextButton 等
+      // 组件都依赖 Material 祖先,缺失时会直接在 debug 下抛断言。
+      child: Material(type: MaterialType.transparency, child: panel),
+    );
 
     if (shadow) {
       panel = DecoratedBox(

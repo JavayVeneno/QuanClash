@@ -276,15 +276,18 @@ class _WindowHeaderState extends State<WindowHeader> {
   @override
   Widget build(BuildContext context) {
     final glass = context.glass;
-    return Material(
-      color: Colors.transparent,
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: Container(
-          height: kHeaderHeight,
-          width: double.infinity,
+    // 子树高度必须严格等于 kHeaderHeight。
+    //
+    // 之前是 Material > Align > Container(height: kHeaderHeight) 的结构:Align 在
+    // Stack 的松散约束下会撑满整个窗口,导致里层的 Material(PhysicalModel)一并
+    // 覆盖全屏,吞掉标题栏以外的所有点击 —— 表现为「鼠标点不动,只有 Tab 能用」。
+    return SizedBox(
+      height: kHeaderHeight,
+      width: double.infinity,
+      child: Material(
+        color: glass.tintStrong,
+        child: DecoratedBox(
           decoration: BoxDecoration(
-            color: glass.tintStrong,
             border: Border(
               bottom: BorderSide(color: glass.divider),
             ),
