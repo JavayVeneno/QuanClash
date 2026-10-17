@@ -137,11 +137,19 @@ ThemeData quanXThemeData({
   final colors = QuanXColors.of(colorScheme.brightness);
   final glass = GlassColors.of(colorScheme.brightness);
   // 桌面密度:整体字号收紧 8%。
-  // 注意:`ThemeData(...).textTheme` 的 fontSize 全为 null(字号由 Typography
-  // 几何主题在运行时合并),直接 apply 会触发断言,故显式从几何主题取基准。
-  final textTheme = Typography.material2021()
-      .englishLike
-      .apply(fontSizeFactor: 0.92);
+  //
+  // 注意:`ThemeData(...).textTheme` 的 fontSize 全为 null(字号在 Typography
+  // 的几何主题里,由 Theme widget 运行时合并),而几何主题本身又不带颜色。
+  // 因此必须先把几何(字号)与调色板(颜色)合并,再缩放字号:
+  //   1. 只取几何 → 文字没有颜色(正文会变白,页面像空白)
+  //   2. 只取颜色 → 字号为 null,apply 会触发断言
+  final typography = Typography.material2021(colorScheme: colorScheme);
+  final baseTextTheme = typography.englishLike.merge(
+    colorScheme.brightness == Brightness.dark
+        ? typography.white
+        : typography.black,
+  );
+  final textTheme = baseTextTheme.apply(fontSizeFactor: 0.92);
   const controlShape = RoundedSuperellipseBorder(
     borderRadius: BorderRadius.all(Radius.circular(QuanXRadius.control)),
   );
