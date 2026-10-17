@@ -159,3 +159,13 @@ Material 图标整体替换为 **Lucide** 线性图标(子集化 115 字形,~44K
 ### 6.5 纯黑模式
 
 纯黑模式(`pureBlack`)下关闭氛围色斑,仅保留玻璃层叠本身。
+
+## 7. 品牌(2026-10-17)
+
+- **应用名**:QuanClash(窗口标题、托盘提示、通知、安装包名)。
+- **包名**:`com.quanclash.app`(Android applicationId/namespace、macOS Bundle ID、Linux APPLICATION_ID、Dart packageName)。
+- **图标**:极简线框云(透明底 + 主题青绿 #0FA795,1.5px 圆头描边),全平台导出:
+  Windows `.ico`、macOS appiconset(16–1024)、Android mipmap/自适应/Play Store、应用内 `assets/images/icon.png`。
+- **内部组件名**(Dart/Rust/Go/build_tool 四端同步):`QuanClashCore`、`QuanClashHelperService`、
+  socket/pipe/锁文件/isolate 名、URL 协议 scheme `quanclash`。
+- **保留指向上游**:`repository` 常量、Telegram/项目链接、README 徽章 —— 改了会导致更新检查失败或死链。
