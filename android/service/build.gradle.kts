@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.follow.clash.service"
+    namespace = "com.quanclash.app.service"
     compileSdk = 36
 
     defaultConfig {
