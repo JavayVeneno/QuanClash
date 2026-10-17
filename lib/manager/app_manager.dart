@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui' as ui;
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
@@ -202,10 +201,7 @@ class _TopNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final glass = context.glass;
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-        child: Container(
+    return Container(
           height: 40,
           padding: const EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
@@ -227,9 +223,7 @@ class _TopNavBar extends StatelessWidget {
                 ),
             ],
           ),
-        ),
-      ),
-    );
+        );
   }
 }
 
@@ -303,10 +297,7 @@ class _BottomStatusBar extends ConsumerWidget {
       fontSize: 11,
       color: quanX.textSecondary,
     );
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
+    return Container(
           height: 27,
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
@@ -334,8 +325,6 @@ class _BottomStatusBar extends ConsumerWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
+        );
   }
 }

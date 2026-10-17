@@ -304,7 +304,7 @@ class ListItem<T> extends StatelessWidget {
       final onChanged = openDelegate.onChanged;
       return OpenContainer<T>(
         closedColor: Colors.transparent,
-        openColor: Colors.transparent,
+        openColor: context.glass.tintStrong,
         closedElevation: 0,
         openElevation: 0,
         openShape: const RoundedSuperellipseBorder(
