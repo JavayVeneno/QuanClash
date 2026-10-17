@@ -74,7 +74,7 @@ class PanelView extends ConsumerWidget {
         children: [
           _buildHeader(context),
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
             child: Column(
               children: [
                 Row(
@@ -137,7 +137,7 @@ class PanelView extends ConsumerWidget {
                 const SizedBox(height: 11),
                 SizedBox(
                   width: double.infinity,
-                  height: 38,
+                  height: 32,
                   child: FilledButton.icon(
                     onPressed: () {
                       _handleSwitchStart(ref);
@@ -215,7 +215,7 @@ class PanelView extends ConsumerWidget {
             ),
           ),
           SizedBox(
-            height: 46,
+            height: 40,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Row(
@@ -255,7 +255,7 @@ class PanelView extends ConsumerWidget {
   Widget _buildHeader(BuildContext context) {
     final quanX = context.quanX;
     return Container(
-      height: 38,
+      height: 32,
       padding: const EdgeInsets.only(left: 12, right: 4),
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: quanX.separator)),
@@ -322,7 +322,7 @@ class PanelView extends ConsumerWidget {
     return InkWell(
       onTap: onTap,
       child: SizedBox(
-        height: 38,
+        height: 32,
         child: Row(
           children: [
             Text(
@@ -359,7 +359,7 @@ class PanelView extends ConsumerWidget {
     required ValueChanged<bool> onChanged,
   }) {
     return SizedBox(
-      height: 38,
+      height: 32,
       child: Row(
         children: [
           Text(

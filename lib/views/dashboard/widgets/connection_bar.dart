@@ -69,7 +69,7 @@ class ConnectionBar extends ConsumerWidget {
           radius: GlassRadius.bar,
           blurSigma: 18,
           child: SizedBox(
-            height: 76,
+            height: 62,
             child: Row(
             children: [
               _BarSegment(
@@ -218,8 +218,8 @@ class ConnectionBar extends ConsumerWidget {
                     foregroundColor: isStart
                         ? quanX.onAccent
                         : colorScheme.onSurfaceVariant,
-                    minimumSize: const Size(0, 36),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    minimumSize: const Size(0, 30),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
                   icon: Icon(
                     isStart ? QuanXIcons.pause : QuanXIcons.play,
