@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui' as ui;
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
@@ -346,13 +345,7 @@ class _ProxiesListViewState extends State<ProxiesListView> {
                         children: [
                           Positioned(
                             top: -headerState.offset,
-                            child: ClipRect(
-                              child: BackdropFilter(
-                                filter: ui.ImageFilter.blur(
-                                  sigmaX: 18,
-                                  sigmaY: 18,
-                                ),
-                                child: Container(
+                            child: Container(
                                   width: container.maxWidth,
                                   color: context.glass.tintStrong,
                                   padding: const EdgeInsets.only(
@@ -366,8 +359,6 @@ class _ProxiesListViewState extends State<ProxiesListView> {
                                     group: state.groups[index],
                                     currentUnfoldSet: state.currentUnfoldSet,
                                   ),
-                                ),
-                              ),
                             ),
                           ),
                         ],

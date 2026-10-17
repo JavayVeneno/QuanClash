@@ -156,7 +156,7 @@ ThemeData quanXThemeData({
       thickness: 1,
     ),
     appBarTheme: AppBarTheme(
-      backgroundColor: Colors.transparent,
+      backgroundColor: glass.tintStrong,
       foregroundColor: colorScheme.primary,
       surfaceTintColor: Colors.transparent,
       elevation: 0,

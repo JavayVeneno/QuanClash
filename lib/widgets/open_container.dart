@@ -417,7 +417,7 @@ class _OpenContainerRoute<T> extends ModalRoute<T> {
     _colorTween = _getColorTween(
       transitionType: transitionType,
       closedColor: Colors.transparent,
-      openColor: Colors.transparent,
+      openColor: const Color(0xFFFFFFFF),
       middleColor: middleColor,
     );
     return Align(

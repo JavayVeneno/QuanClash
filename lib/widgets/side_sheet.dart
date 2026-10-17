@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:fl_clash/common/color.dart';
+import 'package:fl_clash/common/glass.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -78,7 +79,7 @@ class _SideSheetState extends State<SideSheet> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final Color color = widget.backgroundColor ?? Colors.transparent;
+    final Color color = widget.backgroundColor ?? context.glass.tintStrong;
     final Color surfaceTintColor = colorScheme.surfaceTint;
     final Color shadowColor = widget.shadowColor ?? Colors.transparent;
     final double elevation = widget.elevation ?? 0;
@@ -521,7 +522,7 @@ class ModalSideSheetRoute<T> extends PopupRoute<T> {
         builder: (BuildContext context) {
           return _ModalSideSheet<T>(
             route: this,
-            backgroundColor: backgroundColor ?? Colors.transparent,
+            backgroundColor: backgroundColor,
             elevation: elevation ?? 0,
             shape: shape,
             clipBehavior: clipBehavior,

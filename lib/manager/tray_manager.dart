@@ -60,19 +60,12 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener {
       return;
     }
     final isVisible = await currentWindow.isVisible;
-    if (currentWindow.isPanelMode) {
-      if (isVisible) {
-        await currentWindow.hide();
-      } else {
-        await currentWindow.showPanel();
-      }
+    // 托盘图标 = 面板入口:面板已弹出则收起,否则一律弹出面板
+    if (isVisible && currentWindow.isPanelMode) {
+      await currentWindow.hide();
       return;
     }
-    if (isVisible) {
-      await currentWindow.show();
-    } else {
-      await currentWindow.showPanel();
-    }
+    await currentWindow.showPanel();
   }
 
   @override
