@@ -4,7 +4,9 @@
 
 </div>
 
-## FlClash
+## QuanClash
+
+> QuanClash 是基于 [FlClash](https://github.com/chen08209/FlClash) 的桌面定制分支：毛玻璃视觉体系、顶部图标导航与托盘小面板。
 
 [![Downloads](https://img.shields.io/github/downloads/chen08209/FlClash/total?style=flat-square&logo=github)](https://github.com/chen08209/FlClash/releases/)[![Last Version](https://img.shields.io/github/release/chen08209/FlClash/all.svg?style=flat-square)](https://github.com/chen08209/FlClash/releases/)[![License](https://img.shields.io/github/license/chen08209/FlClash?style=flat-square)](LICENSE)
 
@@ -50,11 +52,11 @@ on Mobile:
 支持下列操作
 
    ```bash
-    com.follow.clash.action.START
+    com.quanclash.app.action.START
     
-    com.follow.clash.action.STOP
+    com.quanclash.app.action.STOP
     
-    com.follow.clash.action.TOGGLE
+    com.quanclash.app.action.TOGGLE
    ```
 
 ## Download

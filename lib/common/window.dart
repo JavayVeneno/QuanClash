@@ -27,7 +27,7 @@ class Window {
     if (system.isWindows) {
       protocol.register('clash');
       protocol.register('clashmeta');
-      protocol.register('flclash');
+      protocol.register('quanclash');
     }
     await windowManager.ensureInitialized();
     // kDebugMode ? Size(680, 580) :

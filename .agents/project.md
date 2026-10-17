@@ -1,6 +1,6 @@
 # Project Context
 
-FlClash is a multi-platform proxy client based on ClashMeta (mihomo), built with Flutter. It supports Android, Windows, macOS, and Linux, using a Material You design with Surfboard-like UI.
+QuanClash is a multi-platform proxy client based on ClashMeta (mihomo), built with Flutter. It is a desktop-focused fork of [FlClash](https://github.com/chen08209/FlClash) with an in-app frosted-glass visual system, top icon navigation and a tray panel. It supports Android, Windows, macOS, and Linux.
 
 ## Version Notes
 

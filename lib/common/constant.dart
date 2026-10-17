@@ -10,15 +10,15 @@ import 'package:fl_clash/models/models.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 
-const appName = 'FlClash';
-const appHelperService = 'FlClashHelperService';
+const appName = 'QuanClash';
+const appHelperService = 'QuanClashHelperService';
 const coreName = 'clash.meta';
 const uiPreviewMode = bool.fromEnvironment('UI_PREVIEW') && kDebugMode;
 const browserUa =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-const packageName = 'com.follow.clash';
-final unixSocketPath = '/tmp/FlClashSocket_${Random().nextInt(10000)}.sock';
-final windowsPipeName = '\\\\.\\pipe\\FlClashCore_${Random().nextInt(10000)}';
+const packageName = 'com.quanclash.app';
+final unixSocketPath = '/tmp/QuanClashSocket_${Random().nextInt(10000)}.sock';
+final windowsPipeName = '\\\\.\\pipe\\QuanClashCore_${Random().nextInt(10000)}';
 const helperPort = 47890;
 const maxTextScale = 1.4;
 const minTextScale = 0.8;
@@ -113,9 +113,9 @@ double getWidgetHeight(num lines) {
 
 const maxLength = 1000;
 
-const mainIsolate = 'FlClashMainIsolate';
+const mainIsolate = 'QuanClashMainIsolate';
 
-const serviceIsolate = 'FlClashServiceIsolate';
+const serviceIsolate = 'QuanClashServiceIsolate';
 
 const defaultPrimaryColors = [
   0xFF795548,
