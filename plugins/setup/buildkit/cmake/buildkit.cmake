@@ -19,9 +19,17 @@ function(apply_buildkit)
   # lives in linux/ or windows/, so project root is the parent).
   get_filename_component(PROJECT_ROOT "${CMAKE_SOURCE_DIR}" DIRECTORY)
 
-  # The output files the build_tool produces
+  # The output files the build_tool produces.
+  #
+  # Both Windows artifacts must be declared here. If only the core were listed,
+  # a missing helper would never trigger a rebuild - the custom command counts
+  # as "up to date" as soon as the core exists - while the packaging step still
+  # requires the helper, so the build would fail with no way to recover short
+  # of deleting the whole build directory.
   if(WIN32)
-    set(_output "${PROJECT_ROOT}/libclash/windows/QuanClashCore.exe")
+    set(_output
+      "${PROJECT_ROOT}/libclash/windows/QuanClashCore.exe"
+      "${PROJECT_ROOT}/libclash/windows/QuanClashHelperService.exe")
     set(_platform_args "windows")
   else()
     set(_output "${PROJECT_ROOT}/libclash/linux/QuanClashCore")
