@@ -1,5 +1,6 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
@@ -7,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-/// 桌面版连接控制条:状态 / 时长 / 速率 / 当前节点 / 启停主控
+import 'dashboard_style.dart';
+
+/// Desktop connection summary: status, session, selected node and throughput.
 class ConnectionBar extends ConsumerWidget {
   const ConnectionBar({super.key});
 
@@ -22,18 +25,32 @@ class ConnectionBar extends ConsumerWidget {
 
   Group? _getCurrentGroup(List<Group> groups) {
     for (final group in groups) {
-      if (group.type == GroupType.Selector && (group.now?.isNotEmpty ?? false)) {
+      if (group.type == GroupType.Selector &&
+          (group.now?.isNotEmpty ?? false)) {
         return group;
       }
     }
     return null;
   }
 
+  String _tagline(AppLocalizations appLocalizations) {
+    final hour = DateTime.now().hour;
+    if (hour >= 6 && hour < 12) {
+      return appLocalizations.overviewPhraseMorning;
+    }
+    if (hour >= 12 && hour < 18) {
+      return appLocalizations.overviewPhraseAfternoon;
+    }
+    if (hour >= 18 && hour < 22) {
+      return appLocalizations.overviewPhraseEvening;
+    }
+    return appLocalizations.overviewPhraseNight;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
     final quanX = context.quanX;
-    final colorScheme = context.colorScheme;
     final isStart = ref.watch(isStartProvider);
     final coreStatus = ref.watch(coreStatusProvider);
     final runTime = ref.watch(runTimeProvider);
@@ -55,200 +72,454 @@ class ConnectionBar extends ConsumerWidget {
       Group(:final name, :final now) when now != null => delayMap[name]?[now],
       _ => null,
     };
-    final separator = Container(
-      width: 1,
-      height: double.infinity,
-      color: quanX.separator.opacity60,
+    return ConnectionHeroSurface(
+      statusText: statusText,
+      statusColor: statusColor,
+      tagline: coreStatus == CoreStatus.connected
+          ? _tagline(appLocalizations)
+          : '',
+      overviewTitle: appLocalizations.overviewTitle,
+      eyebrow: '${appName.toUpperCase()} / '
+          '${appLocalizations.overviewTitle} // 01',
+      serviceRunning: appLocalizations.serviceRunning,
+      connected: coreStatus == CoreStatus.connected,
+      mode: Intl.message(mode.name),
+      runTime: isStart ? utils.getTimeText(runTime) : '--:--:--',
+      isStart: isStart,
+      actionLabel: isStart ? appLocalizations.stop : appLocalizations.start,
+      nodeName: group?.now ?? '',
+      groupName: group?.name ?? '',
+      delay: delay,
+      upload: lastTraffic.up.traffic.show,
+      download: lastTraffic.down.traffic.show,
+      onToggle: () => _handleSwitchStart(ref),
     );
+  }
+}
+
+/// Presentational surface so the layout can be verified without the core.
+class ConnectionHeroSurface extends StatelessWidget {
+  const ConnectionHeroSurface({
+    super.key,
+    required this.statusText,
+    required this.statusColor,
+    this.tagline = '',
+    this.overviewTitle = 'Overview',
+    this.eyebrow = '',
+    this.serviceRunning = 'Service running',
+    required this.connected,
+    required this.mode,
+    required this.runTime,
+    required this.isStart,
+    required this.actionLabel,
+    required this.nodeName,
+    required this.groupName,
+    required this.delay,
+    required this.upload,
+    required this.download,
+    required this.onToggle,
+  });
+
+  final String statusText;
+  final Color statusColor;
+  final String tagline;
+  final String overviewTitle;
+  final String eyebrow;
+  final String serviceRunning;
+  final bool connected;
+  final String mode;
+  final String runTime;
+  final bool isStart;
+  final String actionLabel;
+  final String nodeName;
+  final String groupName;
+  final int? delay;
+  final String upload;
+  final String download;
+  final VoidCallback onToggle;
+
+  TextStyle get _labelStyle => const TextStyle(
+    fontFamily: 'JetBrainsMono',
+    fontSize: 9,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 1.6,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final quanX = context.quanX;
+    final isDark = Theme.brightnessOf(context) == Brightness.dark;
+    const primary = DashboardPalette.primary;
     return LayoutBuilder(
-      builder: (_, constraints) {
+      builder: (context, constraints) {
         final width = constraints.maxWidth;
-        final showSpeeds = width >= 560;
-        final showNode = width >= 680;
+        final stacked = width < 720;
+        final labelStyle = _labelStyle.copyWith(color: quanX.textTertiary);
         return GlassPanel(
-          radius: GlassRadius.bar,
-          blurSigma: 18,
-          child: SizedBox(
-            height: 62,
-            child: Row(
+          radius: 20,
+          blurSigma: 20,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              primary.withValues(alpha: 0.13),
+              isDark
+                  ? context.glass.tint
+                  : Colors.white.withValues(alpha: 0.90),
+              primary.withValues(alpha: 0.05),
+            ],
+            stops: const [0, 0.55, 1],
+          ),
+          child: Stack(
             children: [
-              _BarSegment(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: statusColor,
-                        shape: BoxShape.circle,
-                      ),
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: CustomPaint(
+                    painter: _HeroGridPainter(
+                      quanX.textTertiary.withValues(alpha: 0.07),
                     ),
-                    const SizedBox(width: 10),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          statusText,
-                          style: context.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          Intl.message(mode.name),
-                          style: context.textTheme.bodySmall?.copyWith(
-                            color: quanX.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              separator,
-              _BarSegment(
-                child: Text(
-                  isStart ? utils.getTimeText(runTime) : '--:--:--',
-                  style: context.textTheme.titleMedium?.adjustSize(2).copyWith(
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              if (showSpeeds) ...[
-                separator,
-                _BarSegment(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(QuanXIcons.arrowUp, size: 13, color: quanX.accent),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${lastTraffic.up.traffic.show}/s',
-                        style: context.textTheme.bodySmall?.copyWith(
-                          color: quanX.accent,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Icon(QuanXIcons.arrowDown, size: 13, color: quanX.info),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${lastTraffic.down.traffic.show}/s',
-                        style: context.textTheme.bodySmall?.copyWith(
-                          color: quanX.info,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 24,
                 ),
-              ],
-              if (showNode)
-                Expanded(
-                  child: _BarSegment(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            group?.now ?? '',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        if (delay != null && delay > 0) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color:
-                                  (delay < 200 ? quanX.success : quanX.warning)
-                                      .opacity12,
-                              borderRadius: BorderRadius.circular(
-                                QuanXRadius.chip,
-                              ),
-                            ),
-                            child: Text(
-                              '${delay}ms',
-                              style: context.textTheme.bodySmall?.copyWith(
-                                fontSize: 10,
-                                color: delay < 200
-                                    ? quanX.success
-                                    : quanX.warning,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            group?.name ?? '',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.bodySmall?.copyWith(
-                              color: quanX.textSecondary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              else
-                const Spacer(),
-              separator,
-              _BarSegment(
-                child: FilledButton.icon(
-                  onPressed: () {
-                    _handleSwitchStart(ref);
-                  },
-                  style: FilledButton.styleFrom(
-                    backgroundColor: isStart
-                        ? quanX.accent
-                        : colorScheme.surfaceContainerHigh,
-                    foregroundColor: isStart
-                        ? quanX.onAccent
-                        : colorScheme.onSurfaceVariant,
-                    minimumSize: const Size(0, 30),
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                  ),
-                  icon: Icon(
-                    isStart ? QuanXIcons.pause : QuanXIcons.play,
-                    size: 18,
-                  ),
-                  label: Text(
-                    isStart ? appLocalizations.stop : appLocalizations.start,
-                  ),
-                ),
+                child: stacked
+                    ? _buildStacked(context, labelStyle)
+                    : _buildWide(context, labelStyle),
               ),
             ],
-          ),
           ),
         );
       },
     );
   }
+
+  Widget _buildWide(BuildContext context, TextStyle labelStyle) {
+    final quanX = context.quanX;
+    return SizedBox(
+      height: 132,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  eyebrow,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: labelStyle.copyWith(
+                    color: DashboardPalette.primary.withValues(alpha: 0.75),
+                    letterSpacing: 1.8,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  overviewTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _StatusBlock(
+                  statusText: statusText,
+                  statusColor: statusColor,
+                  tagline: tagline,
+                  serviceRunning: serviceRunning,
+                  connected: connected,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          SizedBox(
+            width: 140,
+            height: 88,
+            child: CustomPaint(
+              painter: _HeroNetworkPainter(
+                color: DashboardPalette.primary,
+                guideColor: quanX.textTertiary,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          _ActionButton(
+            isStart: isStart,
+            actionLabel: actionLabel,
+            onToggle: onToggle,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStacked(BuildContext context, TextStyle labelStyle) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          eyebrow,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: labelStyle.copyWith(
+            color: DashboardPalette.primary.withValues(alpha: 0.75),
+            letterSpacing: 1.8,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          overviewTitle,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: context.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _StatusBlock(
+                statusText: statusText,
+                statusColor: statusColor,
+                tagline: tagline,
+                serviceRunning: serviceRunning,
+                connected: connected,
+              ),
+            ),
+            const SizedBox(width: 12),
+            _ActionButton(
+              isStart: isStart,
+              actionLabel: actionLabel,
+              onToggle: onToggle,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }
 
-class _BarSegment extends StatelessWidget {
-  final Widget child;
+class _StatusBlock extends StatelessWidget {
+  const _StatusBlock({
+    required this.statusText,
+    required this.statusColor,
+    required this.tagline,
+    required this.serviceRunning,
+    required this.connected,
+  });
 
-  const _BarSegment({required this.child});
+  final String statusText;
+  final Color statusColor;
+  final String tagline;
+  final String serviceRunning;
+  final bool connected;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: child,
+    final quanX = context.quanX;
+    final statusLine = connected
+        ? '$serviceRunning · $statusText'
+        : statusText;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _StatusOrb(color: statusColor, connected: connected),
+        const SizedBox(width: 12),
+        Flexible(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                statusLine,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              if (tagline.isNotEmpty) ...[
+                const SizedBox(height: 3),
+                Text(
+                  tagline,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    color: quanX.textSecondary,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
+}
+
+class _StatusOrb extends StatelessWidget {
+  const _StatusOrb({required this.color, required this.connected});
+
+  final Color color;
+  final bool connected;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 44,
+      height: 44,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          if (connected)
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: color.withValues(alpha: 0.18)),
+              ),
+            ),
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color.withValues(alpha: 0.12),
+              border: Border.all(color: color.withValues(alpha: 0.30)),
+            ),
+          ),
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color,
+              boxShadow: [
+                BoxShadow(
+                  color: color.withValues(alpha: 0.55),
+                  blurRadius: 12,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({
+    required this.isStart,
+    required this.actionLabel,
+    required this.onToggle,
+  });
+
+  final bool isStart;
+  final String actionLabel;
+  final VoidCallback onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final quanX = context.quanX;
+    return FilledButton.icon(
+      onPressed: onToggle,
+      style: FilledButton.styleFrom(
+        minimumSize: const Size(0, 38),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        backgroundColor: isStart
+            ? quanX.accent
+            : DashboardPalette.primary,
+        foregroundColor: isStart ? quanX.onAccent : Colors.white,
+        shape: const RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.all(Radius.circular(QuanXRadius.control)),
+        ),
+      ),
+      icon: Icon(isStart ? QuanXIcons.pause : QuanXIcons.play, size: 17),
+      label: Text(actionLabel),
+    );
+  }
+}
+
+class _HeroGridPainter extends CustomPainter {
+  const _HeroGridPainter(this.color);
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    const step = 22.0;
+    for (var x = 0.0; x < size.width; x += step) {
+      for (var y = 0.0; y < size.height; y += step) {
+        canvas.drawCircle(Offset(x, y), 0.8, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_HeroGridPainter oldDelegate) =>
+      oldDelegate.color != color;
+}
+
+/// 运行概览右侧的抽象网络拓扑装饰。
+class _HeroNetworkPainter extends CustomPainter {
+  const _HeroNetworkPainter({required this.color, required this.guideColor});
+
+  final Color color;
+  final Color guideColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width * 0.68, size.height * 0.5);
+    final ringPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    for (final factor in const [0.44, 0.32, 0.20]) {
+      ringPaint.color = color.withValues(alpha: 0.14);
+      canvas.drawCircle(center, size.height * factor, ringPaint);
+    }
+    final guidePaint = Paint()
+      ..color = color.withValues(alpha: 0.10)
+      ..strokeWidth = 1;
+    final nodePaint = Paint()..color = color.withValues(alpha: 0.45);
+    final nodes = [
+      Offset(size.width * 0.24, size.height * 0.20),
+      Offset(size.width * 0.92, size.height * 0.24),
+      Offset(size.width * 0.86, size.height * 0.82),
+      Offset(size.width * 0.14, size.height * 0.78),
+    ];
+    for (final node in nodes) {
+      canvas.drawLine(center, node, guidePaint);
+      canvas.drawCircle(node, 2.5, nodePaint);
+    }
+    canvas.drawCircle(center, 8, Paint()..color = color.withValues(alpha: 0.12));
+    canvas.drawCircle(center, 4, nodePaint);
+    final dotPaint = Paint()..color = guideColor.withValues(alpha: 0.18);
+    for (var i = 0; i < 6; i++) {
+      canvas.drawCircle(
+        Offset(
+          size.width * (0.10 + i * 0.15),
+          size.height * (0.12 + (i % 3) * 0.30),
+        ),
+        1.2,
+        dotPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _HeroNetworkPainter oldDelegate) =>
+      oldDelegate.color != color || oldDelegate.guideColor != guideColor;
 }

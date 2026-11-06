@@ -65,9 +65,7 @@ class CommonAction extends _$CommonAction {
   }
 
   Future<void> autoCheckUpdate() async {
-    if (!ref.read(appSettingProvider).autoCheckUpdate) return;
-    final res = await request.checkForUpdate();
-    checkUpdateResultHandle(data: res);
+    return;
   }
 
   Future<void> checkUpdateResultHandle({
@@ -114,6 +112,7 @@ class CommonAction extends _$CommonAction {
 class SetupAction extends _$SetupAction {
   Timer? _updateTimer;
   DateTime? startTime;
+  String? _lastDnsSafetyError;
 
   bool get isStart => startTime != null && startTime!.isBeforeNow;
 
@@ -191,8 +190,11 @@ class SetupAction extends _$SetupAction {
             .tryStartCore(true);
         if (res) return;
         if (!ref.read(initProvider)) return;
-        await _handleStart();
-        applyProfileDebounce(force: true, silence: true);
+        try {
+          await applyProfile(force: true, preloadInvoke: _handleStart);
+        } catch (_) {
+          ref.read(runTimeProvider.notifier).value = null;
+        }
       } else {
         globalState.needInitStatus = false;
         ref.read(runTimeProvider.notifier).value = 0;
@@ -269,7 +271,7 @@ class SetupAction extends _$SetupAction {
   Future<void> applyProfile({
     bool silence = false,
     bool force = false,
-    VoidCallback? preloadInvoke,
+    FutureOr<void> Function()? preloadInvoke,
   }) async {
     await _setupConfig(
       force: force,
@@ -282,21 +284,24 @@ class SetupAction extends _$SetupAction {
     );
   }
 
-  Future<VM2<String, String>> getProfile({
+  Future<RealProfileResult> getProfile({
     required SetupState setupState,
     required PatchClashConfig patchConfig,
   }) async {
     final profileId = setupState.profileId;
-    if (profileId == null) return const VM2('', '');
+    if (profileId == null) {
+      return const RealProfileResult(
+        yaml: '',
+        md5: '',
+        dnsWarnings: [],
+        dnsErrors: [],
+      );
+    }
     final defaultUA = globalState.packageInfo.ua;
-    final networkVM2 = ref.read(
-      networkSettingProvider.select(
-        (state) => VM2(state.appendSystemDns, state.routeMode),
-      ),
-    );
+    final networkProps = ref.read(networkSettingProvider);
     final overrideDns = ref.read(overrideDnsProvider);
-    final appendSystemDns = networkVM2.a;
-    final routeMode = networkVM2.b;
+    final appendSystemDns = networkProps.appendSystemDns;
+    final routeMode = networkProps.routeMode;
     final configMap = await coreController.getConfig(profileId);
     String? scriptContent;
     final List<Rule> addedRules = [];
@@ -328,6 +333,8 @@ class SetupAction extends _$SetupAction {
         realPatchConfig: realPatchConfig,
         overrideDns: overrideDns,
         appendSystemDns: appendSystemDns,
+        dnsSafetyMode: networkProps.dnsSafetyMode,
+        dnsProxyTarget: networkProps.dnsProxyTarget,
         addedRules: addedRules,
         defaultUA: defaultUA,
       ),
@@ -343,7 +350,14 @@ class SetupAction extends _$SetupAction {
         setupState: setupState,
         patchConfig: patchClashConfig,
       );
-      return res.a;
+      if (res.dnsErrors.isNotEmpty) {
+        throw StateError(
+          currentAppLocalizations.dnsSafetyInvalidConfig(
+            res.dnsErrors.join(', '),
+          ),
+        );
+      }
+      return res.yaml;
     } catch (e) {
       globalState.showNotifier(e.toString());
     }
@@ -372,7 +386,7 @@ class SetupAction extends _$SetupAction {
   Future<void> _setupConfig({
     bool force = false,
     bool silence = false,
-    VoidCallback? preloadInvoke,
+    FutureOr<void> Function()? preloadInvoke,
     FutureOr Function()? onUpdated,
   }) async {
     var profile = ref.read(currentProfileProvider);
@@ -393,26 +407,44 @@ class SetupAction extends _$SetupAction {
       final sharedState = ref.read(sharedStateProvider);
       preferences.saveShareState(sharedState);
     }
-    final vm2 = await getProfile(
+    final result = await getProfile(
       setupState: setupState,
       patchConfig: realPatchConfig,
     );
-    final yamlString = vm2.a;
-    final yamlMd5 = vm2.b;
+    if (result.dnsErrors.isNotEmpty) {
+      final message = currentAppLocalizations.dnsSafetyInvalidConfig(
+        result.dnsErrors.join(', '),
+      );
+      if (_lastDnsSafetyError != message) {
+        _lastDnsSafetyError = message;
+        globalState.showNotifier(message);
+      }
+      // Never write or apply a strict-mode config that failed validation.
+      if (preloadInvoke != null) {
+        throw StateError(message);
+      }
+      return;
+    }
+    if (result.dnsWarnings.isNotEmpty) {
+      commonPrint.log('dns safety ===> ${result.dnsWarnings.join(', ')}');
+    }
+    _lastDnsSafetyError = null;
+    final yamlString = result.yaml;
+    final yamlMd5 = result.md5;
     if (yamlMd5 == globalState.lastConfigMd5 && force == false) return;
     await globalState.loadingRun(
       () async {
         final configFilePath = await appPath.configFilePath;
         await File(configFilePath).safeWriteAsString(yamlString);
-        globalState.lastConfigMd5 = yamlMd5;
         final message = await coreController.setupConfig(
           setupState: setupState,
           params: _setupParams,
           preloadInvoke: preloadInvoke,
         );
-        if (message.isNotEmpty && !message.endsWith('is empty')) {
+        if (message.isNotEmpty) {
           throw message;
         }
+        globalState.lastConfigMd5 = yamlMd5;
         ref.read(checkIpNumProvider.notifier).add();
         await onUpdated?.call();
       },

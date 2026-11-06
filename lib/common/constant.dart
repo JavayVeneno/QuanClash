@@ -57,6 +57,8 @@ const profilesDirectoryName = 'profiles';
 const localhost = '127.0.0.1';
 const clashConfigKey = 'clash_config';
 const configKey = 'config';
+const nodeUsageKey = 'node_usage';
+const proxiesGroupModeKey = 'proxies_group_mode';
 const double dialogCommonWidth = 300;
 const repository = 'chen08209/FlClash';
 const defaultExternalController = '127.0.0.1:9090';
@@ -104,7 +106,11 @@ const proxiesListStoreKey = PageStorageKey<String>('proxies_list');
 const toolsStoreKey = PageStorageKey<String>('tools');
 const profilesStoreKey = PageStorageKey<String>('profiles');
 
-const defaultPrimaryColor = 0XFFD8C0C3;
+/// 设计稿主色（靛蓝），同时作为应用默认主色。
+const defaultPrimaryColor = 0xFF6C5CE7;
+
+/// 旧版本默认主色（玫瑰粉），仅用于把旧配置迁移到 [defaultPrimaryColor]。
+const legacyDefaultPrimaryColor = 0XFFD8C0C3;
 
 double getWidgetHeight(num lines) {
   final space = 10.mAp;
@@ -123,6 +129,7 @@ const defaultPrimaryColors = [
   0xFFFFFF00,
   0XFFBBC9CC,
   0XFFABD397,
+  legacyDefaultPrimaryColor,
   defaultPrimaryColor,
   0XFF665390,
 ];

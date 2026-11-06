@@ -1,6 +1,5 @@
 import 'dart:ui' as ui;
 
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 
 /// 玻璃材质令牌与基础组件。
@@ -153,10 +152,9 @@ class GlassScope extends InheritedWidget {
   bool updateShouldNotify(GlassScope oldWidget) => plain != oldWidget.plain;
 }
 
-/// 应用氛围背景:底部渐变 + 若干柔光色斑。
+/// 应用背景:设计稿的纯色底(浅色为浅灰,深色为近黑)。
 ///
-/// 它铺在整棵界面树的最底层,玻璃层叠通过 [BackdropFilter] 对它取景,
-/// 从而得到毛玻璃观感。色斑会向主题色谐调,调整主题色时整体观感随动。
+/// 之前这里是渐变 + 柔光色斑,为了让整体更接近设计稿,改为纯色底。
 class GlassBackdrop extends StatelessWidget {
   const GlassBackdrop({super.key, this.child});
 
@@ -164,75 +162,15 @@ class GlassBackdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.glass;
-    final primary = Theme.of(context).colorScheme.primary;
+    final colorScheme = Theme.of(context).colorScheme;
     return Stack(
       fit: StackFit.expand,
       children: [
-        RepaintBoundary(
-          child: CustomPaint(painter: _AmbientPainter(colors, primary)),
-        ),
+        ColoredBox(color: colorScheme.surface),
         ?child,
       ],
     );
   }
-}
-
-class _AmbientPainter extends CustomPainter {
-  const _AmbientPainter(this.colors, this.primary);
-
-  final GlassColors colors;
-  final Color primary;
-
-  /// 色斑位置(x, y, 半径系数),均为相对尺寸的比例。
-  static const List<List<double>> _spots = [
-    [-0.05, 0.02, 0.62],
-    [0.66, -0.12, 0.55],
-    [1.02, 0.52, 0.66],
-    [0.28, 0.98, 0.60],
-    [0.78, 1.08, 0.48],
-  ];
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-    canvas.drawRect(
-      rect,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [colors.backdropTop, colors.backdropBottom],
-        ).createShader(rect),
-    );
-
-    if (colors.blobOpacity <= 0) {
-      return;
-    }
-
-    final baseRadius = ui.lerpDouble(size.width, size.height, 0.5) ?? size.width;
-    final blobs = colors.blobs;
-    for (var i = 0; i < blobs.length && i < _spots.length; i++) {
-      final spot = _spots[i];
-      final center = Offset(size.width * spot[0], size.height * spot[1]);
-      final radius = baseRadius * spot[2];
-      // 每颗色斑向主题色方向谐调一半,保证既有个性又随主题而动
-      final harmonized = Color.lerp(blobs[i], blobs[i].harmonizeWith(primary), 0.5)!;
-      final color = harmonized.withValues(alpha: colors.blobOpacity);
-      canvas.drawCircle(
-        center,
-        radius,
-        Paint()
-          ..shader = RadialGradient(
-            colors: [color, color.withValues(alpha: 0)],
-          ).createShader(Rect.fromCircle(center: center, radius: radius)),
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(_AmbientPainter oldDelegate) =>
-      oldDelegate.colors != colors || oldDelegate.primary != primary;
 }
 
 /// 玻璃面板:毛玻璃卡片 / 浮层的基础构件。

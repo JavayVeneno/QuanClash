@@ -4493,6 +4493,1766 @@ class AppLocalizations {
       args: [count],
     );
   }
+
+  /// `DNS safety mode`
+  String get dnsSafetyMode {
+    return Intl.message(
+      'DNS safety mode',
+      name: 'dnsSafetyMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Proxy-only requires a static all-proxy target and explicit IP-address bootstrap resolvers. Bootstrap is direct; this is not a DNS leak test.`
+  String get dnsSafetyModeDesc {
+    return Intl.message(
+      'Proxy-only requires a static all-proxy target and explicit IP-address bootstrap resolvers. Bootstrap is direct; this is not a DNS leak test.',
+      name: 'dnsSafetyModeDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Compatible`
+  String get dnsSafetyModeCompatible {
+    return Intl.message(
+      'Compatible',
+      name: 'dnsSafetyModeCompatible',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Proxy only`
+  String get dnsSafetyModeProxyOnly {
+    return Intl.message(
+      'Proxy only',
+      name: 'dnsSafetyModeProxyOnly',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Custom`
+  String get dnsSafetyModeCustom {
+    return Intl.message(
+      'Custom',
+      name: 'dnsSafetyModeCustom',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DNS proxy target`
+  String get dnsProxyTarget {
+    return Intl.message(
+      'DNS proxy target',
+      name: 'dnsProxyTarget',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use an existing static proxy or group without DIRECT, provider auto-inclusion or filtering. Ordinary and direct-traffic DNS use this target.`
+  String get dnsProxyTargetDesc {
+    return Intl.message(
+      'Use an existing static proxy or group without DIRECT, provider auto-inclusion or filtering. Ordinary and direct-traffic DNS use this target.',
+      name: 'dnsProxyTargetDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DNS safety check failed: {codes}`
+  String dnsSafetyInvalidConfig(Object codes) {
+    return Intl.message(
+      'DNS safety check failed: $codes',
+      name: 'dnsSafetyInvalidConfig',
+      desc: '',
+      args: [codes],
+    );
+  }
+
+  /// `Active DNS paths`
+  String get dnsDiagnosticTitle {
+    return Intl.message(
+      'Active DNS paths',
+      name: 'dnsDiagnosticTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Inspect the configuration currently installed in the core; no DNS probes`
+  String get dnsDiagnosticDescription {
+    return Intl.message(
+      'Inspect the configuration currently installed in the core; no DNS probes',
+      name: 'dnsDiagnosticDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Refresh snapshot`
+  String get dnsDiagnosticRefresh {
+    return Intl.message(
+      'Refresh snapshot',
+      name: 'dnsDiagnosticRefresh',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Configuration snapshot, not a DNS leak verdict`
+  String get dnsDiagnosticScope {
+    return Intl.message(
+      'Configuration snapshot, not a DNS leak verdict',
+      name: 'dnsDiagnosticScope',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Shows the active core configuration, not pending settings. Routes are configured paths, not captured packets. Proxy groups may choose DIRECT. Application-owned DoH/DoT and traffic outside TUN need separate testing. DNS privacy is separate from IP reputation.`
+  String get dnsDiagnosticLimitations {
+    return Intl.message(
+      'Shows the active core configuration, not pending settings. Routes are configured paths, not captured packets. Proxy groups may choose DIRECT. Application-owned DoH/DoT and traffic outside TUN need separate testing. DNS privacy is separate from IP reputation.',
+      name: 'dnsDiagnosticLimitations',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DNS diagnostic unavailable`
+  String get dnsDiagnosticUnavailable {
+    return Intl.message(
+      'DNS diagnostic unavailable',
+      name: 'dnsDiagnosticUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No current result. Refresh to retry; an older core may not support this action.`
+  String get dnsDiagnosticRetryHint {
+    return Intl.message(
+      'No current result. Refresh to retry; an older core may not support this action.',
+      name: 'dnsDiagnosticRetryHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Core not ready`
+  String get dnsDiagnosticInactive {
+    return Intl.message(
+      'Core not ready',
+      name: 'dnsDiagnosticInactive',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connect and initialize the core before reading its DNS configuration.`
+  String get dnsDiagnosticInactiveHint {
+    return Intl.message(
+      'Connect and initialize the core before reading its DNS configuration.',
+      name: 'dnsDiagnosticInactiveHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Active configuration read`
+  String get dnsDiagnosticReady {
+    return Intl.message(
+      'Active configuration read',
+      name: 'dnsDiagnosticReady',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Core DNS is disabled`
+  String get dnsDiagnosticDisabled {
+    return Intl.message(
+      'Core DNS is disabled',
+      name: 'dnsDiagnosticDisabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No active DNS configuration`
+  String get dnsDiagnosticNotConfigured {
+    return Intl.message(
+      'No active DNS configuration',
+      name: 'dnsDiagnosticNotConfigured',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Snapshot read at {time}`
+  String dnsDiagnosticReadAt(Object time) {
+    return Intl.message(
+      'Snapshot read at $time',
+      name: 'dnsDiagnosticReadAt',
+      desc: '',
+      args: [time],
+    );
+  }
+
+  /// `Resolver inheritance`
+  String get dnsDiagnosticInheritance {
+    return Intl.message(
+      'Resolver inheritance',
+      name: 'dnsDiagnosticInheritance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dedicated resolvers`
+  String get dnsDiagnosticDedicated {
+    return Intl.message(
+      'Dedicated resolvers',
+      name: 'dnsDiagnosticDedicated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Inherits ordinary resolvers`
+  String get dnsDiagnosticInheritsMain {
+    return Intl.message(
+      'Inherits ordinary resolvers',
+      name: 'dnsDiagnosticInheritsMain',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ordinary queries: main / fallback / policy`
+  String get dnsDiagnosticOrdinary {
+    return Intl.message(
+      'Ordinary queries: main / fallback / policy',
+      name: 'dnsDiagnosticOrdinary',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bootstrap: resolver / proxy hostnames`
+  String get dnsDiagnosticBootstrap {
+    return Intl.message(
+      'Bootstrap: resolver / proxy hostnames',
+      name: 'dnsDiagnosticBootstrap',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Direct-traffic queries`
+  String get dnsDiagnosticDirect {
+    return Intl.message(
+      'Direct-traffic queries',
+      name: 'dnsDiagnosticDirect',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Path warnings and limitations`
+  String get dnsDiagnosticWarnings {
+    return Intl.message(
+      'Path warnings and limitations',
+      name: 'dnsDiagnosticWarnings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No warning codes returned; this does not prove the absence of leaks.`
+  String get dnsDiagnosticNoWarnings {
+    return Intl.message(
+      'No warning codes returned; this does not prove the absence of leaks.',
+      name: 'dnsDiagnosticNoWarnings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No network endpoint`
+  String get dnsDiagnosticNoEndpoint {
+    return Intl.message(
+      'No network endpoint',
+      name: 'dnsDiagnosticNoEndpoint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Configured target: {target}`
+  String dnsDiagnosticTarget(Object target) {
+    return Intl.message(
+      'Configured target: $target',
+      name: 'dnsDiagnosticTarget',
+      desc: '',
+      args: [target],
+    );
+  }
+
+  /// `Direct path`
+  String get dnsDiagnosticPathDirect {
+    return Intl.message(
+      'Direct path',
+      name: 'dnsDiagnosticPathDirect',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rules-routed; may select DIRECT`
+  String get dnsDiagnosticPathRules {
+    return Intl.message(
+      'Rules-routed; may select DIRECT',
+      name: 'dnsDiagnosticPathRules',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Configured proxy path; not empirically verified`
+  String get dnsDiagnosticPathProxy {
+    return Intl.message(
+      'Configured proxy path; not empirically verified',
+      name: 'dnsDiagnosticPathProxy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Interface-bound direct path`
+  String get dnsDiagnosticPathInterface {
+    return Intl.message(
+      'Interface-bound direct path',
+      name: 'dnsDiagnosticPathInterface',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Host system resolver`
+  String get dnsDiagnosticPathSystem {
+    return Intl.message(
+      'Host system resolver',
+      name: 'dnsDiagnosticPathSystem',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Resolver obtained through DHCP`
+  String get dnsDiagnosticPathDhcp {
+    return Intl.message(
+      'Resolver obtained through DHCP',
+      name: 'dnsDiagnosticPathDhcp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Overlay resolver; not verified proxy-only`
+  String get dnsDiagnosticPathOverlay {
+    return Intl.message(
+      'Overlay resolver; not verified proxy-only',
+      name: 'dnsDiagnosticPathOverlay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Synthetic DNS response`
+  String get dnsDiagnosticPathSynthetic {
+    return Intl.message(
+      'Synthetic DNS response',
+      name: 'dnsDiagnosticPathSynthetic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Blocked by configured target`
+  String get dnsDiagnosticPathBlocked {
+    return Intl.message(
+      'Blocked by configured target',
+      name: 'dnsDiagnosticPathBlocked',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `System or DHCP resolver path is present.`
+  String get dnsDiagnosticWarningHost {
+    return Intl.message(
+      'System or DHCP resolver path is present.',
+      name: 'dnsDiagnosticWarningHost',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DNS rules may select DIRECT; respecting rules is not proxy-only.`
+  String get dnsDiagnosticWarningRules {
+    return Intl.message(
+      'DNS rules may select DIRECT; respecting rules is not proxy-only.',
+      name: 'dnsDiagnosticWarningRules',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bootstrap DNS can query directly. Review the explicit bootstrap endpoints.`
+  String get dnsDiagnosticWarningBootstrap {
+    return Intl.message(
+      'Bootstrap DNS can query directly. Review the explicit bootstrap endpoints.',
+      name: 'dnsDiagnosticWarningBootstrap',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An ordinary or direct-traffic resolver can query directly.`
+  String get dnsDiagnosticWarningDirect {
+    return Intl.message(
+      'An ordinary or direct-traffic resolver can query directly.',
+      name: 'dnsDiagnosticWarningDirect',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A proxy or overlay is configured, but its actual egress has not been verified.`
+  String get dnsDiagnosticWarningProxy {
+    return Intl.message(
+      'A proxy or overlay is configured, but its actual egress has not been verified.',
+      name: 'dnsDiagnosticWarningProxy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An unknown or unverified path requires further inspection.`
+  String get dnsDiagnosticWarningUnknown {
+    return Intl.message(
+      'An unknown or unverified path requires further inspection.',
+      name: 'dnsDiagnosticWarningUnknown',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Node quality`
+  String get nodeQualityTitle {
+    return Intl.message(
+      'Node quality',
+      name: 'nodeQualityTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manual HTTPS checks through this node. Cloudflare measures reachability, egress IP and edge TTFB, not IP purity. Adapter DNS/bootstrap may still be direct. DIRECT tests your direct connection.`
+  String get nodeQualityScope {
+    return Intl.message(
+      'Manual HTTPS checks through this node. Cloudflare measures reachability, egress IP and edge TTFB, not IP purity. Adapter DNS/bootstrap may still be direct. DIRECT tests your direct connection.',
+      name: 'nodeQualityScope',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Include IPPure risk check`
+  String get nodeQualityOptIn {
+    return Intl.message(
+      'Include IPPure risk check',
+      name: 'nodeQualityOptIn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Opt-in for this dialog only: IPPure receives the node's egress IP and request metadata. No account or proxy credentials are sent by QuanClash. Cloudflare receives its own probe. Nothing runs automatically.`
+  String get nodeQualityPrivacy {
+    return Intl.message(
+      'Opt-in for this dialog only: IPPure receives the node\'s egress IP and request metadata. No account or proxy credentials are sent by QuanClash. Cloudflare receives its own probe. Nothing runs automatically.',
+      name: 'nodeQualityPrivacy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check now`
+  String get nodeQualityRun {
+    return Intl.message(
+      'Check now',
+      name: 'nodeQualityRun',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Probe succeeded`
+  String get nodeQualityOk {
+    return Intl.message(
+      'Probe succeeded',
+      name: 'nodeQualityOk',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unknown: check unavailable or failed. Retry manually; older cores may not support this feature.`
+  String get nodeQualityFailed {
+    return Intl.message(
+      'Unknown: check unavailable or failed. Retry manually; older cores may not support this feature.',
+      name: 'nodeQualityFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unknown: check timed out`
+  String get nodeQualityTimeout {
+    return Intl.message(
+      'Unknown: check timed out',
+      name: 'nodeQualityTimeout',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start and initialize the core before checking.`
+  String get nodeQualityInactive {
+    return Intl.message(
+      'Start and initialize the core before checking.',
+      name: 'nodeQualityInactive',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not requested`
+  String get nodeQualityNotRequested {
+    return Intl.message(
+      'Not requested',
+      name: 'nodeQualityNotRequested',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select a concrete node. Mutable or load-balancing groups are not supported.`
+  String get nodeQualityConcreteOnly {
+    return Intl.message(
+      'Select a concrete node. Mutable or load-balancing groups are not supported.',
+      name: 'nodeQualityConcreteOnly',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Other checks are running. Retry shortly.`
+  String get nodeQualityBusy {
+    return Intl.message(
+      'Other checks are running. Retry shortly.',
+      name: 'nodeQualityBusy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Egress IP`
+  String get nodeQualityEgressIp {
+    return Intl.message(
+      'Egress IP',
+      name: 'nodeQualityEgressIp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edge / country`
+  String get nodeQualityEdge {
+    return Intl.message(
+      'Edge / country',
+      name: 'nodeQualityEdge',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `IP risk score (IPPure)`
+  String get nodeQualityRiskScore {
+    return Intl.message(
+      'IP risk score (IPPure)',
+      name: 'nodeQualityRiskScore',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `IP type`
+  String get nodeQualityIpType {
+    return Intl.message(
+      'IP type',
+      name: 'nodeQualityIpType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Residential`
+  String get nodeQualityResidential {
+    return Intl.message(
+      'Residential',
+      name: 'nodeQualityResidential',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Non-residential (not necessarily a data center)`
+  String get nodeQualityNonResidential {
+    return Intl.message(
+      'Non-residential (not necessarily a data center)',
+      name: 'nodeQualityNonResidential',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `IPPure Beta risk data is advisory, not a purity percentage, a Cloudflare score or a security guarantee. Missing or unverified IPv6 scores remain unknown.`
+  String get nodeQualityScoreScope {
+    return Intl.message(
+      'IPPure Beta risk data is advisory, not a purity percentage, a Cloudflare score or a security guarantee. Missing or unverified IPv6 scores remain unknown.',
+      name: 'nodeQualityScoreScope',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The providers observed different egress IPs. Do not attribute the risk score to the Cloudflare IP.`
+  String get nodeQualityMismatch {
+    return Intl.message(
+      'The providers observed different egress IPs. Do not attribute the risk score to the Cloudflare IP.',
+      name: 'nodeQualityMismatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sampled at {time}`
+  String nodeQualitySampledAt(Object time) {
+    return Intl.message(
+      'Sampled at $time',
+      name: 'nodeQualitySampledAt',
+      desc: '',
+      args: [time],
+    );
+  }
+
+  /// `Cloudflare request score`
+  String get nodeQualityCloudflareScore {
+    return Intl.message(
+      'Cloudflare request score',
+      name: 'nodeQualityCloudflareScore',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unavailable: /cdn-cgi/trace does not return a Bot Score; this app does not estimate or fabricate one.`
+  String get nodeQualityCloudflareScoreUnavailable {
+    return Intl.message(
+      'Unavailable: /cdn-cgi/trace does not return a Bot Score; this app does not estimate or fabricate one.',
+      name: 'nodeQualityCloudflareScoreUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Each manual check sends one HTTPS request per selected provider: no automatic retries, no shared cookies and no spoofed browser fingerprint. Third parties may still log it; zero impact cannot be guaranteed.`
+  String get nodeQualityProbeFootprint {
+    return Intl.message(
+      'Each manual check sends one HTTPS request per selected provider: no automatic retries, no shared cookies and no spoofed browser fingerprint. Third parties may still log it; zero impact cannot be guaranteed.',
+      name: 'nodeQualityProbeFootprint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Checked recently. Try again in {seconds}s.`
+  String nodeQualityCooldown(Object seconds) {
+    return Intl.message(
+      'Checked recently. Try again in ${seconds}s.',
+      name: 'nodeQualityCooldown',
+      desc: '',
+      args: [seconds],
+    );
+  }
+
+  /// `Select a concrete proxy on the Proxies page first.`
+  String get nodeQualityPickNode {
+    return Intl.message(
+      'Select a concrete proxy on the Proxies page first.',
+      name: 'nodeQualityPickNode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Available nodes`
+  String get dashboardAvailableNodes {
+    return Intl.message(
+      'Available nodes',
+      name: 'dashboardAvailableNodes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Coverage`
+  String get dashboardCoverage {
+    return Intl.message(
+      'Coverage',
+      name: 'dashboardCoverage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Node update`
+  String get dashboardNodeUpdate {
+    return Intl.message(
+      'Node update',
+      name: 'dashboardNodeUpdate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Uptime`
+  String get dashboardUptime {
+    return Intl.message('Uptime', name: 'dashboardUptime', desc: '', args: []);
+  }
+
+  /// `Risk index`
+  String get riskIndex {
+    return Intl.message('Risk index', name: 'riskIndex', desc: '', args: []);
+  }
+
+  /// `Not checked`
+  String get riskIndexNotChecked {
+    return Intl.message(
+      'Not checked',
+      name: 'riskIndexNotChecked',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Overview`
+  String get overviewTitle {
+    return Intl.message('Overview', name: 'overviewTitle', desc: '', args: []);
+  }
+
+  /// `Service running`
+  String get serviceRunning {
+    return Intl.message(
+      'Service running',
+      name: 'serviceRunning',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Main`
+  String get sectionMain {
+    return Intl.message('Main', name: 'sectionMain', desc: '', args: []);
+  }
+
+  /// `Monitor`
+  String get sectionMonitor {
+    return Intl.message('Monitor', name: 'sectionMonitor', desc: '', args: []);
+  }
+
+  /// `System`
+  String get sectionSystem {
+    return Intl.message('System', name: 'sectionSystem', desc: '', args: []);
+  }
+
+  /// `Fresh start, steady protection all day.`
+  String get overviewPhraseMorning {
+    return Intl.message(
+      'Fresh start, steady protection all day.',
+      name: 'overviewPhraseMorning',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Going strong, staying connected.`
+  String get overviewPhraseAfternoon {
+    return Intl.message(
+      'Going strong, staying connected.',
+      name: 'overviewPhraseAfternoon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Still going strong through the evening.`
+  String get overviewPhraseEvening {
+    return Intl.message(
+      'Still going strong through the evening.',
+      name: 'overviewPhraseEvening',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Late night, rock-solid protection.`
+  String get overviewPhraseNight {
+    return Intl.message(
+      'Late night, rock-solid protection.',
+      name: 'overviewPhraseNight',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View`
+  String get proxiesViewMode {
+    return Intl.message('View', name: 'proxiesViewMode', desc: '', args: []);
+  }
+
+  /// `All nodes`
+  String get proxiesViewAll {
+    return Intl.message(
+      'All nodes',
+      name: 'proxiesViewAll',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group by region`
+  String get proxiesViewRegion {
+    return Intl.message(
+      'Group by region',
+      name: 'proxiesViewRegion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Locate current node`
+  String get proxiesLocateSelected {
+    return Intl.message(
+      'Locate current node',
+      name: 'proxiesLocateSelected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recent`
+  String get proxiesRecent {
+    return Intl.message('Recent', name: 'proxiesRecent', desc: '', args: []);
+  }
+
+  /// `Frequently used`
+  String get proxiesFrequent {
+    return Intl.message(
+      'Frequently used',
+      name: 'proxiesFrequent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Provider info`
+  String get proxiesProviderInfo {
+    return Intl.message(
+      'Provider info',
+      name: 'proxiesProviderInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Other regions`
+  String get proxiesOtherRegion {
+    return Intl.message(
+      'Other regions',
+      name: 'proxiesOtherRegion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Low risk`
+  String get riskIndexLow {
+    return Intl.message('Low risk', name: 'riskIndexLow', desc: '', args: []);
+  }
+
+  /// `Medium risk`
+  String get riskIndexMedium {
+    return Intl.message(
+      'Medium risk',
+      name: 'riskIndexMedium',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `High risk`
+  String get riskIndexHigh {
+    return Intl.message('High risk', name: 'riskIndexHigh', desc: '', args: []);
+  }
+
+  /// `No score`
+  String get riskIndexNoScore {
+    return Intl.message(
+      'No score',
+      name: 'riskIndexNoScore',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `OK`
+  String get nodeQualityStatusOk {
+    return Intl.message('OK', name: 'nodeQualityStatusOk', desc: '', args: []);
+  }
+
+  /// `Timeout`
+  String get nodeQualityStatusTimeout {
+    return Intl.message(
+      'Timeout',
+      name: 'nodeQualityStatusTimeout',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed`
+  String get nodeQualityStatusFailed {
+    return Intl.message(
+      'Failed',
+      name: 'nodeQualityStatusFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unavailable`
+  String get nodeQualityStatusUnavailable {
+    return Intl.message(
+      'Unavailable',
+      name: 'nodeQualityStatusUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `In use`
+  String get profileActive {
+    return Intl.message('In use', name: 'profileActive', desc: '', args: []);
+  }
+
+  /// `Not in use`
+  String get profileInactive {
+    return Intl.message(
+      'Not in use',
+      name: 'profileInactive',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remote`
+  String get profileRemote {
+    return Intl.message('Remote', name: 'profileRemote', desc: '', args: []);
+  }
+
+  /// `Local file`
+  String get profileLocalFile {
+    return Intl.message(
+      'Local file',
+      name: 'profileLocalFile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remaining`
+  String get profileRemainingTraffic {
+    return Intl.message(
+      'Remaining',
+      name: 'profileRemainingTraffic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Used {percent}%`
+  String profileUsedPercent(Object percent) {
+    return Intl.message(
+      'Used $percent%',
+      name: 'profileUsedPercent',
+      desc: '',
+      args: [percent],
+    );
+  }
+
+  /// `Expires`
+  String get profileExpire {
+    return Intl.message('Expires', name: 'profileExpire', desc: '', args: []);
+  }
+
+  /// `{days} days left`
+  String profileDaysLeft(Object days) {
+    return Intl.message(
+      '$days days left',
+      name: 'profileDaysLeft',
+      desc: '',
+      args: [days],
+    );
+  }
+
+  /// `{days} d left`
+  String profileDaysLeftShort(Object days) {
+    return Intl.message(
+      '$days d left',
+      name: 'profileDaysLeftShort',
+      desc: '',
+      args: [days],
+    );
+  }
+
+  /// `Nodes`
+  String get profileNodeCount {
+    return Intl.message('Nodes', name: 'profileNodeCount', desc: '', args: []);
+  }
+
+  /// `Current node`
+  String get profileCurrentNode {
+    return Intl.message(
+      'Current node',
+      name: 'profileCurrentNode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Group`
+  String get profileStrategyGroup {
+    return Intl.message(
+      'Group',
+      name: 'profileStrategyGroup',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Auto update`
+  String get profileAutoUpdate {
+    return Intl.message(
+      'Auto update',
+      name: 'profileAutoUpdate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Set as current`
+  String get profileSetCurrent {
+    return Intl.message(
+      'Set as current',
+      name: 'profileSetCurrent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current`
+  String get profileCurrentConfig {
+    return Intl.message(
+      'Current',
+      name: 'profileCurrentConfig',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update now`
+  String get profileUpdateNow {
+    return Intl.message(
+      'Update now',
+      name: 'profileUpdateNow',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Replace file`
+  String get profileReplaceFile {
+    return Intl.message(
+      'Replace file',
+      name: 'profileReplaceFile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription URL`
+  String get profileSubscriptionUrl {
+    return Intl.message(
+      'Subscription URL',
+      name: 'profileSubscriptionUrl',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap for details`
+  String get profileTapToExpand {
+    return Intl.message(
+      'Tap for details',
+      name: 'profileTapToExpand',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Collapse`
+  String get profileCollapse {
+    return Intl.message(
+      'Collapse',
+      name: 'profileCollapse',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last update`
+  String get profileLastUpdate {
+    return Intl.message(
+      'Last update',
+      name: 'profileLastUpdate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Every {hours} h`
+  String profileEveryHours(Object hours) {
+    return Intl.message(
+      'Every $hours h',
+      name: 'profileEveryHours',
+      desc: '',
+      args: [hours],
+    );
+  }
+
+  /// `Every {minutes} min`
+  String profileEveryMinutes(Object minutes) {
+    return Intl.message(
+      'Every $minutes min',
+      name: 'profileEveryMinutes',
+      desc: '',
+      args: [minutes],
+    );
+  }
+
+  /// `Off`
+  String get profileOff {
+    return Intl.message('Off', name: 'profileOff', desc: '', args: []);
+  }
+
+  /// `No traffic info`
+  String get profileNoTrafficInfo {
+    return Intl.message(
+      'No traffic info',
+      name: 'profileNoTrafficInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Local YAML`
+  String get profileLocalYaml {
+    return Intl.message(
+      'Local YAML',
+      name: 'profileLocalYaml',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap a card for details; drag or use arrow keys to switch`
+  String get profileCarouselHint {
+    return Intl.message(
+      'Tap a card for details; drag or use arrow keys to switch',
+      name: 'profileCarouselHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Shown after switching`
+  String get profileNotLoaded {
+    return Intl.message(
+      'Shown after switching',
+      name: 'profileNotLoaded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Used`
+  String get profileUsed {
+    return Intl.message('Used', name: 'profileUsed', desc: '', args: []);
+  }
+
+  /// `Days left`
+  String get profileRemainingDays {
+    return Intl.message(
+      'Days left',
+      name: 'profileRemainingDays',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Subscription`
+  String get profileSubscription {
+    return Intl.message(
+      'Subscription',
+      name: 'profileSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Interval`
+  String get profileUpdateInterval {
+    return Intl.message(
+      'Interval',
+      name: 'profileUpdateInterval',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manual`
+  String get profileManualUpdate {
+    return Intl.message(
+      'Manual',
+      name: 'profileManualUpdate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit profile`
+  String get profileEditTitle {
+    return Intl.message(
+      'Edit profile',
+      name: 'profileEditTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open full editor`
+  String get profileOpenEditor {
+    return Intl.message(
+      'Open full editor',
+      name: 'profileOpenEditor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save changes`
+  String get profileSaveChanges {
+    return Intl.message(
+      'Save changes',
+      name: 'profileSaveChanges',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} nodes`
+  String profileNodeCountValue(Object count) {
+    return Intl.message(
+      '$count nodes',
+      name: 'profileNodeCountValue',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{days} days`
+  String profileDaysCount(Object days) {
+    return Intl.message(
+      '$days days',
+      name: 'profileDaysCount',
+      desc: '',
+      args: [days],
+    );
+  }
+
+  /// `Show link`
+  String get profileShowLink {
+    return Intl.message(
+      'Show link',
+      name: 'profileShowLink',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hide link`
+  String get profileHideLink {
+    return Intl.message(
+      'Hide link',
+      name: 'profileHideLink',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a subscription URL`
+  String get profileUrlRequired {
+    return Intl.message(
+      'Enter a subscription URL',
+      name: 'profileUrlRequired',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New profile`
+  String get profileNew {
+    return Intl.message('New profile', name: 'profileNew', desc: '', args: []);
+  }
+
+  /// `Enter a name and subscription URL; the config is fetched on save`
+  String get profileDraftHint {
+    return Intl.message(
+      'Enter a name and subscription URL; the config is fetched on save',
+      name: 'profileDraftHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Import file`
+  String get profileImportFile {
+    return Intl.message(
+      'Import file',
+      name: 'profileImportFile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copy info`
+  String get copyInfo {
+    return Intl.message('Copy info', name: 'copyInfo', desc: '', args: []);
+  }
+
+  /// `Traffic`
+  String get traffic {
+    return Intl.message('Traffic', name: 'traffic', desc: '', args: []);
+  }
+
+  /// `Upload speed`
+  String get uploadSpeed {
+    return Intl.message(
+      'Upload speed',
+      name: 'uploadSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download speed`
+  String get downloadSpeed {
+    return Intl.message(
+      'Download speed',
+      name: 'downloadSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close all connections`
+  String get closeAllConnections {
+    return Intl.message(
+      'Close all connections',
+      name: 'closeAllConnections',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Auto scroll`
+  String get autoScroll {
+    return Intl.message('Auto scroll', name: 'autoScroll', desc: '', args: []);
+  }
+
+  /// `Appearance`
+  String get appearance {
+    return Intl.message('Appearance', name: 'appearance', desc: '', args: []);
+  }
+
+  /// `Startup`
+  String get startup {
+    return Intl.message('Startup', name: 'startup', desc: '', args: []);
+  }
+
+  /// `Data`
+  String get data {
+    return Intl.message('Data', name: 'data', desc: '', args: []);
+  }
+
+  /// `Behavior`
+  String get behavior {
+    return Intl.message('Behavior', name: 'behavior', desc: '', args: []);
+  }
+
+  /// `Diagnostics`
+  String get diagnostics {
+    return Intl.message('Diagnostics', name: 'diagnostics', desc: '', args: []);
+  }
+
+  /// `Version`
+  String get version {
+    return Intl.message('Version', name: 'version', desc: '', args: []);
+  }
+
+  /// `Licenses`
+  String get licenses {
+    return Intl.message('Licenses', name: 'licenses', desc: '', args: []);
+  }
+
+  /// `Feedback`
+  String get feedback {
+    return Intl.message('Feedback', name: 'feedback', desc: '', args: []);
+  }
+
+  /// `Links`
+  String get links {
+    return Intl.message('Links', name: 'links', desc: '', args: []);
+  }
+
+  /// `Appearance, network, core and data`
+  String get settingsDesc {
+    return Intl.message(
+      'Appearance, network, core and data',
+      name: 'settingsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Text size`
+  String get settingsTextScale {
+    return Intl.message(
+      'Text size',
+      name: 'settingsTextScale',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Brand color`
+  String get settingsThemeColor {
+    return Intl.message(
+      'Brand color',
+      name: 'settingsThemeColor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open logs`
+  String get settingsOpenLogs {
+    return Intl.message(
+      'Open logs',
+      name: 'settingsOpenLogs',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current core`
+  String get settingsCurrentCore {
+    return Intl.message(
+      'Current core',
+      name: 'settingsCurrentCore',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Log level`
+  String get settingsLogLevel {
+    return Intl.message(
+      'Log level',
+      name: 'settingsLogLevel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `About QuanClash`
+  String get settingsAboutApp {
+    return Intl.message(
+      'About QuanClash',
+      name: 'settingsAboutApp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `General`
+  String get settingsGeneral {
+    return Intl.message('General', name: 'settingsGeneral', desc: '', args: []);
+  }
+
+  /// `Local`
+  String get settingsBackupLocal {
+    return Intl.message(
+      'Local',
+      name: 'settingsBackupLocal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `WebDAV`
+  String get settingsBackupRemote {
+    return Intl.message(
+      'WebDAV',
+      name: 'settingsBackupRemote',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restore from file`
+  String get settingsImportFile {
+    return Intl.message(
+      'Restore from file',
+      name: 'settingsImportFile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Back up now`
+  String get settingsBackupNow {
+    return Intl.message(
+      'Back up now',
+      name: 'settingsBackupNow',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bind`
+  String get settingsBindDav {
+    return Intl.message('Bind', name: 'settingsBindDav', desc: '', args: []);
+  }
+
+  /// `Edit`
+  String get settingsEditDav {
+    return Intl.message('Edit', name: 'settingsEditDav', desc: '', args: []);
+  }
+
+  /// `Sync to remote`
+  String get settingsSyncDav {
+    return Intl.message(
+      'Sync to remote',
+      name: 'settingsSyncDav',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restore from remote`
+  String get settingsRestoreDav {
+    return Intl.message(
+      'Restore from remote',
+      name: 'settingsRestoreDav',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `WebDAV not bound`
+  String get settingsNoDav {
+    return Intl.message(
+      'WebDAV not bound',
+      name: 'settingsNoDav',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset all shortcuts`
+  String get settingsResetHotkeys {
+    return Intl.message(
+      'Reset all shortcuts',
+      name: 'settingsResetHotkeys',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Advanced`
+  String get advanced {
+    return Intl.message('Advanced', name: 'advanced', desc: '', args: []);
+  }
+
+  /// `How existing data is handled on restore`
+  String get restoreStrategyDesc {
+    return Intl.message(
+      'How existing data is handled on restore',
+      name: 'restoreStrategyDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit global basic configuration`
+  String get settingsEnterBasic {
+    return Intl.message(
+      'Edit global basic configuration',
+      name: 'settingsEnterBasic',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Network, DNS, rules and scripts`
+  String get settingsEnterAdvanced {
+    return Intl.message(
+      'Network, DNS, rules and scripts',
+      name: 'settingsEnterAdvanced',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `GeoIP / GeoSite resources`
+  String get settingsEnterResources {
+    return Intl.message(
+      'GeoIP / GeoSite resources',
+      name: 'settingsEnterResources',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Configure per-app proxy access`
+  String get settingsEnterAccess {
+    return Intl.message(
+      'Configure per-app proxy access',
+      name: 'settingsEnterAccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Network options`
+  String get settingsNetworkOptions {
+    return Intl.message(
+      'Network options',
+      name: 'settingsNetworkOptions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DNS settings`
+  String get settingsDns {
+    return Intl.message(
+      'DNS settings',
+      name: 'settingsDns',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset DNS`
+  String get settingsResetDns {
+    return Intl.message(
+      'Reset DNS',
+      name: 'settingsResetDns',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Access mode`
+  String get settingsAccessMode {
+    return Intl.message(
+      'Access mode',
+      name: 'settingsAccessMode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `App source`
+  String get settingsAccessSource {
+    return Intl.message(
+      'App source',
+      name: 'settingsAccessSource',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save access control`
+  String get settingsSaveAccess {
+    return Intl.message(
+      'Save access control',
+      name: 'settingsSaveAccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Resource actions`
+  String get settingsResourceActions {
+    return Intl.message(
+      'Resource actions',
+      name: 'settingsResourceActions',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

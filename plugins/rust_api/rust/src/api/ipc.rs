@@ -4,7 +4,6 @@ use flutter_rust_bridge::frb;
 use interprocess::local_socket::prelude::*;
 use interprocess::local_socket::{GenericFilePath, ListenerNonblockingMode, ListenerOptions};
 use std::io::{self, Read, Write};
-use std::path::Path;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc::{self, Sender};
 use std::sync::{Arc, Mutex};
@@ -13,6 +12,8 @@ use std::time::Duration;
 
 #[cfg(unix)]
 use std::os::unix::io::RawFd;
+#[cfg(unix)]
+use std::path::Path;
 
 macro_rules! ipc_debug {
     ($($arg:tt)*) => {
@@ -144,13 +145,18 @@ pub fn stop_ipc_server() -> Result<(), String> {
 
     RUNNING.store(false, Ordering::SeqCst);
     CONNECTED.store(false, Ordering::SeqCst);
-    if let Ok(mut guard) = STATE.lock() {
+    let old_handle = if let Ok(mut guard) = STATE.lock() {
         guard.tx = None;
-        if let Some(handle) = guard.handle.take() {
-            ipc_debug!("[IPC] stop_ipc_server: joining old thread...");
-            let _ = handle.join();
-            ipc_debug!("[IPC] stop_ipc_server: old thread joined");
-        }
+        guard.handle.take()
+    } else {
+        None
+    };
+    // io_loop also locks STATE during exit. Never join while holding that lock.
+    // On Windows the owner must disconnect the core before stopping the server.
+    if let Some(handle) = old_handle {
+        ipc_debug!("[IPC] stop_ipc_server: joining old thread...");
+        let _ = handle.join();
+        ipc_debug!("[IPC] stop_ipc_server: old thread joined");
     }
     Ok(())
 }
@@ -401,6 +407,44 @@ fn io_loop(name: String, sink: StreamSink<Vec<u8>, SseCodec>, gen: u64) {
         ipc_debug!(
             "[IPC] io_loop[{gen}]: stale gen (current={}), skipping cleanup",
             GENERATION.load(Ordering::SeqCst)
+        );
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn stop_releases_state_lock_before_joining_worker() {
+        RUNNING.store(true, Ordering::SeqCst);
+        let worker = thread::spawn(|| {
+            while RUNNING.load(Ordering::SeqCst) {
+                thread::sleep(Duration::from_millis(5));
+            }
+            let mut guard = STATE.lock().unwrap();
+            guard.tx = None;
+        });
+        STATE.lock().unwrap().handle = Some(worker);
+        let (done_tx, done_rx) = mpsc::channel();
+        let stopper = thread::spawn(move || {
+            let _ = done_tx.send(stop_ipc_server());
+        });
+        assert_eq!(
+            done_rx.recv_timeout(Duration::from_secs(2)).unwrap(),
+            Ok(())
+        );
+        stopper.join().unwrap();
+        assert!(STATE.lock().unwrap().handle.is_none());
+        assert!(!RUNNING.load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn read_frame_rejects_truncated_payload() {
+        let mut source = io::Cursor::new([3, 0, 0, 0, b'a', b'b']);
+        assert_eq!(
+            read_frame(&mut source).unwrap_err().kind(),
+            io::ErrorKind::UnexpectedEof
         );
     }
 }

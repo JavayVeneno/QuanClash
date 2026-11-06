@@ -26,6 +26,19 @@ class CommonScaffold extends StatefulWidget {
   final AppBarSearchState? searchState;
   final OnKeywordsUpdateCallback? onKeywordsUpdate;
   final bool? resizeToAvoidBottomInset;
+  final bool hideTitle;
+
+  /// 不渲染顶部 AppBar，由页面自己绘制工具栏。
+  final bool hideAppBar;
+
+  /// 标题栏左侧的操作按钮（桌面端标题被隐藏时，作为页面工具条使用）。
+  final List<Widget>? leadingActions;
+
+  /// 覆盖标题栏背景色，让页面底色（如浅灰）延伸到标题栏。
+  final Color? appBarBackgroundColor;
+
+  /// 是否绘制标题栏底部分隔线。
+  final bool showAppBarDivider;
 
   const CommonScaffold({
     super.key,
@@ -41,6 +54,11 @@ class CommonScaffold extends StatefulWidget {
     this.floatingActionButton,
     this.onKeywordsUpdate,
     this.resizeToAvoidBottomInset,
+    this.hideTitle = false,
+    this.hideAppBar = false,
+    this.leadingActions,
+    this.appBarBackgroundColor,
+    this.showAppBarDivider = true,
   });
 
   @override
@@ -196,7 +214,8 @@ class CommonScaffoldState extends State<CommonScaffold> {
 
   Widget _buildTitle(AppBarSearchState? startState) {
     final appLocalizations = context.appLocalizations;
-    return _isSearch
+    final hideTitle = widget.hideTitle && !_isSearch && !_isEdit && system.isDesktop;
+    final title = _isSearch
         ? TextField(
             autofocus: true,
             controller: _textController,
@@ -216,6 +235,23 @@ class CommonScaffoldState extends State<CommonScaffold> {
                     '${_appBarState.value.editState?.editCount ?? 0}',
                   ),
           );
+    final leadingActions = widget.leadingActions;
+    if (!_isSearch &&
+        !_isEdit &&
+        leadingActions != null &&
+        leadingActions.isNotEmpty) {
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          ...leadingActions,
+          if (!hideTitle) Expanded(child: title),
+        ],
+      );
+    }
+    if (hideTitle) {
+      return const SizedBox.shrink();
+    }
+    return title;
   }
 
   List<Widget> _buildActions(bool hasSearch, List<Widget> actions) {
@@ -272,6 +308,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
                           ? false
                           : true,
                       animateColor: true,
+                      backgroundColor: widget.appBarBackgroundColor,
                       centerTitle: widget.centerTitle ?? false,
                       leading: _buildLeading(backAction),
                       title: _buildTitle(state.searchState),
@@ -293,16 +330,17 @@ class CommonScaffoldState extends State<CommonScaffold> {
                   : Container();
             },
           ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Divider(
-              height: 1,
-              thickness: 1,
-              color: context.quanX.separator,
+          if (widget.showAppBarDivider)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Divider(
+                height: 1,
+                thickness: 1,
+                color: context.quanX.separator,
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -354,7 +392,9 @@ class CommonScaffoldState extends State<CommonScaffold> {
       ),
     );
     return Scaffold(
-      appBar: _buildAppBar(backActionProvider?.backAction),
+      appBar: widget.hideAppBar
+          ? null
+          : _buildAppBar(backActionProvider?.backAction),
       body: NotificationListener<UserScrollNotification>(
         child: body,
         onNotification: (notification) {

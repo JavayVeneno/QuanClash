@@ -6,6 +6,7 @@ import 'package:archive/archive_io.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/common/dns_config.dart';
 import 'package:fl_clash/database/database.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
@@ -82,19 +83,32 @@ Future<List<Group>> _toGroupsTask(ComputeGroupsState state) async {
   );
 }
 
-Future<VM2<String, String>> makeRealProfileTask(
-  MakeRealProfileState data,
-) async {
-  return compute<MakeRealProfileState, VM2<String, String>>(
+class RealProfileResult {
+  const RealProfileResult({
+    required this.yaml,
+    required this.md5,
+    required this.dnsWarnings,
+    required this.dnsErrors,
+  });
+
+  final String yaml;
+  final String md5;
+  final List<String> dnsWarnings;
+  final List<String> dnsErrors;
+}
+
+Future<RealProfileResult> makeRealProfileTask(MakeRealProfileState data) async {
+  return compute<MakeRealProfileState, RealProfileResult>(
     _makeRealProfileTask,
     data,
   );
 }
 
-Future<VM2<String, String>> _makeRealProfileTask(
+Future<RealProfileResult> _makeRealProfileTask(
   MakeRealProfileState data,
 ) async {
-  final rawConfig = Map.from(data.rawConfig);
+  final rawConfig =
+      jsonDecode(jsonEncode(data.rawConfig)) as Map<String, dynamic>;
   final realPatchConfig = data.realPatchConfig;
   final profilesPath = data.profilesPath;
   final profileId = data.profileId;
@@ -191,33 +205,6 @@ Future<VM2<String, String>> _makeRealProfileTask(
   for (final host in realPatchConfig.hosts.entries) {
     rawConfig['hosts'][host.key] = host.value.splitByMultipleSeparators;
   }
-  if (rawConfig['dns'] == null) {
-    rawConfig['dns'] = {};
-  }
-  final isEnableDns = rawConfig['dns']['enable'] == true;
-  const systemDns = 'system://';
-  if (overrideDns || !isEnableDns) {
-    final dns = switch (!isEnableDns) {
-      true => realPatchConfig.dns.copyWith(
-        nameserver: [...realPatchConfig.dns.nameserver, systemDns],
-      ),
-      false => realPatchConfig.dns,
-    };
-    rawConfig['dns'] = dns.toJson();
-    rawConfig['dns']['nameserver-policy'] = {};
-    for (final entry in dns.nameserverPolicy.entries) {
-      rawConfig['dns']['nameserver-policy'][entry.key] =
-          entry.value.splitByMultipleSeparators;
-    }
-  }
-  if (appendSystemDns) {
-    final List<String> nameserver = List<String>.from(
-      rawConfig['dns']['nameserver'] ?? [],
-    );
-    if (!nameserver.contains(systemDns)) {
-      rawConfig['dns']['nameserver'] = [...nameserver, systemDns];
-    }
-  }
   List<String> rules = [];
   if (data.rules.isEmpty) {
     if (rawConfig['rules'] != null) {
@@ -264,11 +251,34 @@ Future<VM2<String, String>> _makeRealProfileTask(
     rules = data.rules.map((item) => item.rawValue).toList();
   }
   if (data.proxyGroups.isNotEmpty) {
-    rawConfig['proxy-groups'] = data.proxyGroups;
+    rawConfig['proxy-groups'] = jsonDecode(jsonEncode(data.proxyGroups));
   }
   rawConfig['rules'] = rules;
+  final effectiveDns = buildEffectiveDnsConfig(
+    profileDns: rawConfig['dns'] as Map?,
+    patchDns: realPatchConfig.dns,
+    overrideDns: overrideDns,
+    appendSystemDns: appendSystemDns,
+    safetyMode: data.dnsSafetyMode,
+    proxyTarget: data.dnsProxyTarget,
+    proxyConfig: rawConfig,
+  );
+  rawConfig['dns'] = effectiveDns.config;
+  if (!effectiveDns.isValid) {
+    return RealProfileResult(
+      yaml: '',
+      md5: '',
+      dnsWarnings: effectiveDns.warnings,
+      dnsErrors: effectiveDns.errors,
+    );
+  }
   final yaml = await _encodeYaml(Map<String, dynamic>.from(rawConfig));
-  return VM2(yaml, yaml.toMd5());
+  return RealProfileResult(
+    yaml: yaml,
+    md5: yaml.toMd5(),
+    dnsWarnings: effectiveDns.warnings,
+    dnsErrors: effectiveDns.errors,
+  );
 }
 
 Future<List<String>> shakingProfileTask(

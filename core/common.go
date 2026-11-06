@@ -184,6 +184,8 @@ func readFile(path string) ([]byte, error) {
 func updateConfig(params *UpdateParams) {
 	runLock.Lock()
 	defer runLock.Unlock()
+	connectionUpdates.reset()
+	trafficClassPolicy.invalidate()
 	general := currentConfig.General
 	if params.MixedPort != nil {
 		general.MixedPort = *params.MixedPort
@@ -253,19 +255,22 @@ func applyConfig(params *SetupParams) error {
 	runtime.GC()
 	runLock.Lock()
 	defer runLock.Unlock()
-	var err error
-	constant.DefaultTestURL = params.TestURL
-	currentConfig, err = executor.ParseWithPath(filepath.Join(constant.Path.HomeDir(), "config.yaml"))
+	nextConfig, err := executor.ParseWithPath(filepath.Join(constant.Path.HomeDir(), "config.yaml"))
 	if err != nil {
-		currentConfig, _ = config.ParseRawConfig(config.DefaultRawConfig())
+		// Keep the active DNS/routing policy; defaults are not a safe fallback.
+		return err
 	}
+	constant.DefaultTestURL = params.TestURL
+	currentConfig = nextConfig
+	connectionUpdates.reset()
+	trafficClassPolicy.reset(isInit)
 	hub.ApplyConfig(currentConfig)
 	patchSelectGroup(params.SelectedMap)
 	updateListeners()
 	if updater.GeoAutoUpdate() {
 		updater.RegisterGeoUpdaterWithCancel()
 	}
-	return err
+	return nil
 }
 
 func UnmarshalJson(data []byte, v any) error {

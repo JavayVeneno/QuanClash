@@ -15,9 +15,10 @@ add_dependencies(${BINARY_NAME} setup_buildkit_build)
 
 # Project root is one level up from this plugin's CMakeLists.txt
 get_filename_component(PROJECT_ROOT "${CMAKE_SOURCE_DIR}" DIRECTORY)
+buildkit_output_root(BUILDKIT_ARTIFACT_ROOT)
 
 set(setup_bundled_libraries
-  "${PROJECT_ROOT}/libclash/windows/QuanClashCore.exe"
-  "${PROJECT_ROOT}/libclash/windows/QuanClashHelperService.exe"
+  "${BUILDKIT_ARTIFACT_ROOT}/windows/QuanClashCore.exe"
+  "${BUILDKIT_ARTIFACT_ROOT}/windows/QuanClashHelperService.exe"
   PARENT_SCOPE
 )

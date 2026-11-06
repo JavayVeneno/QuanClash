@@ -45,6 +45,8 @@ func handleInitClash(paramsString string) bool {
 	}
 	version = params.Version
 	constant.SetHomeDir(params.HomeDir)
+	connectionUpdates.reset()
+	trafficClassPolicy.reset(false)
 	isInit = true
 	return isInit
 }
@@ -53,6 +55,8 @@ func handleStartListener() bool {
 	runLock.Lock()
 	defer runLock.Unlock()
 	isRunning = true
+	connectionUpdates.reset()
+	trafficClassPolicy.invalidate()
 	updateListeners()
 	resolver.ResetConnection()
 	return true
@@ -62,6 +66,8 @@ func handleStopListener() bool {
 	runLock.Lock()
 	defer runLock.Unlock()
 	isRunning = false
+	connectionUpdates.reset()
+	trafficClassPolicy.invalidate()
 	listener.StopListener()
 	resolver.ResetConnection()
 	return true
@@ -80,10 +86,16 @@ func handleForceGC() {
 }
 
 func handleShutdown() bool {
+	runLock.Lock()
+	defer runLock.Unlock()
+	trafficClassPolicy.reset(false)
+	connectionUpdates.reset()
 	stopListeners()
 	executor.Shutdown()
 	handleForceGC()
 	isInit = false
+	trafficClassPolicy.reset(false)
+	connectionUpdates.reset()
 	return true
 }
 
@@ -516,7 +528,6 @@ func handleSetupConfig(bytes []byte) string {
 	err := UnmarshalJson(bytes, params)
 	if err != nil {
 		logError("unmarshalRawConfig error %v", err)
-		_ = applyConfig(defaultSetupParams())
 		return err.Error()
 	}
 	err = applyConfig(params)
@@ -526,20 +537,23 @@ func handleSetupConfig(bytes []byte) string {
 	return ""
 }
 
+func newDelayResult(url string, name string, delay uint16, timedOut bool) *Delay {
+	result := &Delay{
+		Url:   url,
+		Name:  name,
+		Value: -1,
+	}
+	if !timedOut && delay != 0 {
+		result.Value = int32(delay)
+	}
+	return result
+}
+
 func init() {
-	adapter.UrlTestHook = func(url string, name string, delay uint16) {
-		delayData := &Delay{
-			Url:  url,
-			Name: name,
-		}
-		if delay == 0 {
-			delayData.Value = -1
-		} else {
-			delayData.Value = int32(delay)
-		}
+	adapter.UrlTestHook = func(url string, name string, delay uint16, timedOut bool) {
 		sendMessage(Message{
 			Type: DelayMessage,
-			Data: delayData,
+			Data: newDelayResult(url, name, delay, timedOut),
 		})
 	}
 	statistic.DefaultRequestNotify = func(c statistic.Tracker) {

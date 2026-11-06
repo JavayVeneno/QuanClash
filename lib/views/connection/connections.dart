@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/views/dashboard/widgets/dashboard_style.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
 
-import 'item.dart';
+import 'tracker_list.dart';
 
 class ConnectionsView extends ConsumerStatefulWidget {
   const ConnectionsView({super.key});
@@ -21,31 +21,12 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
   final _connectionsStateNotifier = ValueNotifier<TrackerInfosState>(
     const TrackerInfosState(),
   );
-  final ScrollController _scrollController = ScrollController();
 
   Timer? timer;
-
-  List<Widget> _buildActions() {
-    return [
-      IconButton(
-        onPressed: () async {
-          coreController.closeConnections();
-          await _updateConnections();
-        },
-        icon: const Icon(QuanXIcons.trash2),
-      ),
-    ];
-  }
 
   void _onSearch(String value) {
     _connectionsStateNotifier.value = _connectionsStateNotifier.value.copyWith(
       query: value,
-    );
-  }
-
-  void _onKeywordsUpdate(List<String> keywords) {
-    _connectionsStateNotifier.value = _connectionsStateNotifier.value.copyWith(
-      keywords: keywords,
     );
   }
 
@@ -72,6 +53,11 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
     );
   }
 
+  Future<void> _handleCloseAll() async {
+    coreController.closeConnections();
+    await _updateConnections();
+  }
+
   Future<void> _handleBlockConnection(String id) async {
     await coreController.closeConnection(id);
     await _updateConnections();
@@ -81,7 +67,6 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
   void dispose() {
     timer?.cancel();
     _connectionsStateNotifier.dispose();
-    _scrollController.dispose();
     timer = null;
     super.dispose();
   }
@@ -89,51 +74,44 @@ class _ConnectionsViewState extends ConsumerState<ConnectionsView> {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
+    final surface = DashboardPalette.surface(context);
+    final quanX = context.quanX;
     return CommonScaffold(
+      hideAppBar: true,
+      hideTitle: true,
       title: appLocalizations.connections,
-      onKeywordsUpdate: _onKeywordsUpdate,
-      searchState: AppBarSearchState(onSearch: _onSearch),
-      actions: _buildActions(),
+      backgroundColor: surface,
       body: ValueListenableBuilder<TrackerInfosState>(
         valueListenable: _connectionsStateNotifier,
         builder: (context, state, _) {
-          final connections = state.list;
-          if (connections.isEmpty) {
-            return NullStatus(
-              label: appLocalizations.nullTip(appLocalizations.connections),
-              illustration: const ConnectionEmptyIllustration(),
-            );
-          }
-          final items = connections
-              .map<Widget>(
-                (trackerInfo) => TrackerInfoItem(
-                  key: Key(trackerInfo.id),
-                  trackerInfo: trackerInfo,
-                  onClickKeyword: (value) {
-                    context.commonScaffoldState?.addKeyword(value);
-                  },
-                  trailing: IconButton(
-                    padding: EdgeInsets.zero,
-                    visualDensity: VisualDensity.compact,
-                    style: IconButton.styleFrom(minimumSize: Size.zero),
-                    icon: const Icon(QuanXIcons.ban),
-                    onPressed: () {
-                      _handleBlockConnection(trackerInfo.id);
-                    },
+          return Column(
+            children: [
+              PageSearchToolbar(
+                query: state.query,
+                onQueryChanged: _onSearch,
+                actions: [
+                  IconButton(
+                    tooltip: appLocalizations.closeAllConnections,
+                    onPressed: _handleCloseAll,
+                    icon: const Icon(QuanXIcons.trash2),
                   ),
+                ],
+              ),
+              Divider(height: 1, color: quanX.separator),
+              Expanded(
+                child: TrackerInfoList(
+                  items: state.list,
                   detailTitle: appLocalizations.details(
                     appLocalizations.connection,
                   ),
+                  emptyLabel: appLocalizations.nullTip(
+                    appLocalizations.connections,
+                  ),
+                  emptyIllustration: const ConnectionEmptyIllustration(),
+                  onBlock: _handleBlockConnection,
                 ),
-              )
-              .separated(const Divider(height: 0))
-              .toList();
-          return SuperListView.builder(
-            controller: _scrollController,
-            itemBuilder: (context, index) {
-              return items[index];
-            },
-            itemCount: connections.length,
+              ),
+            ],
           );
         },
       ),

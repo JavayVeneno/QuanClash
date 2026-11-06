@@ -1,11 +1,9 @@
 import 'dart:math';
 
 import 'package:defer_pointer/defer_pointer.dart';
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/providers/providers.dart' hide NetworkDetection;
-import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,113 +41,6 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
     );
   }
 
-  Future<void> _handleConnection() async {
-    final coreStatus = ref.read(coreStatusProvider);
-    if (coreStatus == CoreStatus.connecting) {
-      return;
-    }
-    final tip = coreStatus == CoreStatus.connected
-        ? context.appLocalizations.forceRestartCoreTip
-        : context.appLocalizations.restartCoreTip;
-    final res = await globalState.showMessage(message: TextSpan(text: tip));
-    if (res != true) {
-      return;
-    }
-    globalState.container.read(coreActionProvider.notifier).restartCore();
-  }
-
-  Widget _buildCoreStatusAction() {
-    final appLocalizations = context.appLocalizations;
-    return Consumer(
-          builder: (_, ref, _) {
-            final coreStatus = ref.watch(coreStatusProvider);
-            return Tooltip(
-              message: appLocalizations.coreStatus,
-              child: FadeScaleBox(
-                alignment: Alignment.centerRight,
-                child: coreStatus == CoreStatus.connected
-                    ? IconButton.filled(
-                        visualDensity: VisualDensity.compact,
-                        iconSize: 20,
-                        padding: EdgeInsets.zero,
-                        style: IconButton.styleFrom(
-                          backgroundColor: Colors.green.harmonizeWith(
-                            context.colorScheme.primary,
-                          ),
-                          foregroundColor: switch (Theme.brightnessOf(
-                            context,
-                          )) {
-                            Brightness.light =>
-                              context.colorScheme.onSurfaceVariant,
-                            Brightness.dark =>
-                              context.colorScheme.onPrimaryFixedVariant,
-                          },
-                        ),
-                        onPressed: _handleConnection,
-                        icon: const Icon(
-                          QuanXIcons.check,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      )
-                    : FilledButton.icon(
-                        key: ValueKey(coreStatus),
-                        onPressed: _handleConnection,
-                        style: FilledButton.styleFrom(
-                          visualDensity: VisualDensity.compact,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          backgroundColor: switch (coreStatus) {
-                            CoreStatus.connecting => null,
-                            CoreStatus.connected => Colors.greenAccent,
-                            CoreStatus.disconnected =>
-                              context.colorScheme.error,
-                          },
-                          foregroundColor: switch (coreStatus) {
-                            CoreStatus.connecting => null,
-                            CoreStatus.connected => switch (Theme.brightnessOf(
-                              context,
-                            )) {
-                              Brightness.light =>
-                                context.colorScheme.onSurfaceVariant,
-                              Brightness.dark => null,
-                            },
-                            CoreStatus.disconnected =>
-                              context.colorScheme.onError,
-                          },
-                        ),
-                        icon: SizedBox(
-                          height: globalState.measure.bodyMediumHeight,
-                          width: globalState.measure.bodyMediumHeight,
-                          child: switch (coreStatus) {
-                            CoreStatus.connecting => Padding(
-                              padding: const EdgeInsets.all(2),
-                              child: CircularProgressIndicator(
-                                strokeWidth: 3,
-                                color: context.colorScheme.onPrimary,
-                                backgroundColor: Colors.transparent,
-                              ),
-                            ),
-                            CoreStatus.connected => const Icon(
-                              QuanXIcons.check,
-                              fontWeight: FontWeight.w900,
-                            ),
-                            CoreStatus.disconnected => const Icon(
-                              QuanXIcons.rotateCw,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          },
-                        ),
-                        label: Text(switch (coreStatus) {
-                          CoreStatus.connecting => appLocalizations.connecting,
-                          CoreStatus.connected => appLocalizations.connected,
-                          CoreStatus.disconnected =>
-                            appLocalizations.disconnected,
-                        }),
-                      ),
-              ),
-            );
-          },
-        );
-  }
 
   List<Widget> _buildActions(bool isEdit) {
     return [
@@ -234,86 +125,101 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
 
   Widget _buildDesktopView(BuildContext context) {
     const spacing = 10.0;
-    return CommonScaffold(
-      title: context.appLocalizations.dashboard,
-      actions: [_buildCoreStatusAction()],
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: LayoutBuilder(
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: ColoredBox(
+        color: DashboardPalette.background(context),
+        child: SafeArea(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: LayoutBuilder(
             builder: (_, constraints) {
               final isWide = constraints.maxWidth >= 720;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // 1. 运行概览
                   const ConnectionBar(),
                   const SizedBox(height: spacing),
+                  // 2. 可用节点 / 覆盖地区 / 节点更新 / 稳定运行
+                  const DashboardStats(),
+                  const SizedBox(height: spacing),
+                  // 3. 网速 7 : 流量 3
                   if (isWide)
                     const Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(child: NetworkSpeed()),
+                        Expanded(flex: 7, child: NetworkSpeed()),
                         SizedBox(width: spacing),
-                        Expanded(child: TrafficUsage()),
-                        SizedBox(width: spacing),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              SystemProxyButton(),
-                              SizedBox(height: spacing),
-                              TUNButton(),
-                            ],
-                          ),
-                        ),
+                        Expanded(flex: 3, child: TrafficUsage()),
                       ],
                     )
                   else ...[
                     const NetworkSpeed(),
                     const SizedBox(height: spacing),
                     const TrafficUsage(),
-                    const SizedBox(height: spacing),
+                  ],
+                  const SizedBox(height: spacing),
+                  // 4. 系统代理 / 虚拟网卡 / 出站模式
+                  if (isWide)
+                    const Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: SystemProxyButton()),
+                        SizedBox(width: spacing),
+                        Expanded(child: TUNButton()),
+                        SizedBox(width: spacing),
+                        Expanded(flex: 2, child: OutboundModeV2()),
+                      ],
+                    )
+                  else ...[
                     const SystemProxyButton(),
                     const SizedBox(height: spacing),
                     const TUNButton(),
+                    const SizedBox(height: spacing),
+                    const OutboundModeV2(),
                   ],
                   const SizedBox(height: spacing),
+                  // 5. 网络检测 / 风险指数 / 内存 / 内网 IP
                   if (isWide)
                     const Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(child: OutboundModeV2()),
-                        SizedBox(width: spacing),
                         Expanded(child: NetworkDetection()),
                         SizedBox(width: spacing),
-                        Expanded(child: IntranetIP()),
+                        Expanded(child: RiskIndex()),
                         SizedBox(width: spacing),
                         Expanded(child: MemoryInfo()),
+                        SizedBox(width: spacing),
+                        Expanded(child: IntranetIP()),
                       ],
                     )
-                  else
-                    const Column(
+                  else ...[
+                    const Row(
                       children: [
-                        Row(
-                          children: [
-                            Expanded(child: OutboundModeV2()),
-                            SizedBox(width: spacing),
-                            Expanded(child: NetworkDetection()),
-                          ],
-                        ),
-                        SizedBox(height: spacing),
-                        Row(
-                          children: [
-                            Expanded(child: IntranetIP()),
-                            SizedBox(width: spacing),
-                            Expanded(child: MemoryInfo()),
-                          ],
-                        ),
+                        Expanded(child: NetworkDetection()),
+                        SizedBox(width: spacing),
+                        Expanded(child: RiskIndex()),
                       ],
                     ),
+                    const SizedBox(height: spacing),
+                    const Row(
+                      children: [
+                        Expanded(child: MemoryInfo()),
+                        SizedBox(width: spacing),
+                        Expanded(child: IntranetIP()),
+                      ],
+                    ),
+                  ],
                 ],
               );
             },
           ),
         ),
+      ),
+      ),
       ),
     );
   }

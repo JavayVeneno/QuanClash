@@ -5,6 +5,8 @@ import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'dashboard_style.dart';
+
 class TUNButton extends StatelessWidget {
   const TUNButton({super.key});
 
@@ -12,8 +14,8 @@ class TUNButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     return SizedBox(
-      height: getWidgetHeight(1),
-      child: CommonCard(
+      height: getWidgetHeight(1) + 16.ap,
+      child: DashboardCard(
         onPressed: () {
           showSheet(
             context: context,
@@ -37,30 +39,15 @@ class TUNButton extends StatelessWidget {
             },
           );
         },
-        info: Info(
-          label: appLocalizations.tun,
-          iconData: QuanXIcons.chartLine,
-        ),
-        child: Container(
-          padding: baseInfoEdgeInsets.copyWith(top: 4, bottom: 8, right: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                flex: 1,
-                child: TooltipText(
-                  text: Text(
-                    appLocalizations.options,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleSmall?.adjustSize(-2).toLight,
-                  ),
-                ),
-              ),
-              Consumer(
+        padding: EdgeInsets.all(12.ap),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DashboardCardTitle(
+              icon: QuanXIcons.chartLine,
+              color: DashboardPalette.blue,
+              title: appLocalizations.tun,
+              trailing: Consumer(
                 builder: (_, ref, _) {
                   final enable = ref.watch(
                     patchClashConfigProvider.select(
@@ -68,7 +55,18 @@ class TUNButton extends StatelessWidget {
                     ),
                   );
                   return Switch(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     value: enable,
+                    thumbColor: WidgetStateProperty.resolveWith(
+                      (states) => states.contains(WidgetState.selected)
+                          ? Colors.white
+                          : null,
+                    ),
+                    trackColor: WidgetStateProperty.resolveWith(
+                      (states) => states.contains(WidgetState.selected)
+                          ? DashboardPalette.green
+                          : null,
+                    ),
                     onChanged: (value) {
                       ref
                           .read(patchClashConfigProvider.notifier)
@@ -77,8 +75,26 @@ class TUNButton extends StatelessWidget {
                   );
                 },
               ),
-            ],
-          ),
+            ),
+            const Spacer(),
+            Consumer(
+              builder: (_, ref, _) {
+                final stack = ref.watch(
+                  patchClashConfigProvider.select(
+                    (state) => state.tun.stack,
+                  ),
+                );
+                return Text(
+                  stack.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: context.quanX.textSecondary,
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -92,8 +108,8 @@ class SystemProxyButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     return SizedBox(
-      height: getWidgetHeight(1),
-      child: CommonCard(
+      height: getWidgetHeight(1) + 16.ap,
+      child: DashboardCard(
         onPressed: () {
           showSheet(
             context: context,
@@ -109,30 +125,15 @@ class SystemProxyButton extends StatelessWidget {
             },
           );
         },
-        info: Info(
-          label: appLocalizations.systemProxy,
-          iconData: QuanXIcons.shuffle,
-        ),
-        child: Container(
-          padding: baseInfoEdgeInsets.copyWith(top: 4, bottom: 8, right: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                flex: 1,
-                child: TooltipText(
-                  text: Text(
-                    appLocalizations.options,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleSmall?.adjustSize(-2).toLight,
-                  ),
-                ),
-              ),
-              Consumer(
+        padding: EdgeInsets.all(12.ap),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DashboardCardTitle(
+              icon: QuanXIcons.shuffle,
+              color: DashboardPalette.primary,
+              title: appLocalizations.systemProxy,
+              trailing: Consumer(
                 builder: (_, ref, _) {
                   final systemProxy = ref.watch(
                     networkSettingProvider.select((state) => state.systemProxy),
@@ -140,6 +141,16 @@ class SystemProxyButton extends StatelessWidget {
                   return Switch(
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     value: systemProxy,
+                    thumbColor: WidgetStateProperty.resolveWith(
+                      (states) => states.contains(WidgetState.selected)
+                          ? Colors.white
+                          : null,
+                    ),
+                    trackColor: WidgetStateProperty.resolveWith(
+                      (states) => states.contains(WidgetState.selected)
+                          ? DashboardPalette.green
+                          : null,
+                    ),
                     onChanged: (value) {
                       ref
                           .read(networkSettingProvider.notifier)
@@ -150,8 +161,26 @@ class SystemProxyButton extends StatelessWidget {
                   );
                 },
               ),
-            ],
-          ),
+            ),
+            const Spacer(),
+            Consumer(
+              builder: (_, ref, _) {
+                final port = ref.watch(
+                  patchClashConfigProvider.select(
+                    (state) => state.mixedPort,
+                  ),
+                );
+                return Text(
+                  '${appLocalizations.port} $port',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: context.quanX.textSecondary,
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

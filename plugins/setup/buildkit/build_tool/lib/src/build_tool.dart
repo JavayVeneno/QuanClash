@@ -161,19 +161,25 @@ class BuildWindowsCommand extends BuildCommand {
     _log.info('Build mode: ${debug ? 'debug' : 'release'}');
 
     if (debug) {
-      await Process.run('taskkill', [
-        '/F',
-        '/IM',
-        '${config.helperName}${targets.first.executableExtension}',
-      ]);
+      // A build must never stop a running service. A locked output is an error;
+      // use BUILDKIT_OUTPUT_DIR to build alongside the installed helper.
       final rustBuilder = RustBuilder(rootDir: _rootDir, config: config);
       await rustBuilder.build(targets.first, '', release: false);
     } else {
       final coreSha256 = await calcSha256(corePaths.first);
       final rustBuilder = RustBuilder(rootDir: _rootDir, config: config);
       await rustBuilder.build(targets.first, coreSha256);
-      await File(p.join(_rootDir, 'core_sha256.json'))
-          .writeAsString(jsonEncode({'CORE_SHA256': coreSha256}));
+      final hashData = jsonEncode({'CORE_SHA256': coreSha256});
+      await File(p.join(
+        _rootDir,
+        config.outputDir,
+        'windows',
+        'core_sha256.json',
+      )).writeAsString(hashData);
+      if (Platform.environment['BUILDKIT_OUTPUT_DIR']?.isNotEmpty != true) {
+        await File(p.join(_rootDir, 'core_sha256.json'))
+            .writeAsString(hashData);
+      }
     }
 
     _log.info('Build complete: $corePaths');

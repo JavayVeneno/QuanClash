@@ -39,6 +39,36 @@ class Preferences {
     await preferences?.setString('sharedState', json.encode(shareState));
   }
 
+  /// 节点使用记录（最近使用 / 常用节点），仅保存名称、次数和最后使用时间。
+  Future<Map<String, Object?>?> getNodeUsageMap() async {
+    try {
+      final preferences = await sharedPreferencesCompleter.future;
+      final value = preferences?.getString(nodeUsageKey);
+      if (value == null) return null;
+      final decoded = json.decode(value);
+      return decoded is Map ? Map<String, Object?>.from(decoded) : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> saveNodeUsageMap(Map<String, Object?> value) async {
+    try {
+      final preferences = await sharedPreferencesCompleter.future;
+      await preferences?.setString(nodeUsageKey, json.encode(value));
+    } catch (_) {}
+  }
+
+  Future<String?> getProxiesGroupMode() async {
+    final preferences = await sharedPreferencesCompleter.future;
+    return preferences?.getString(proxiesGroupModeKey);
+  }
+
+  Future<void> saveProxiesGroupMode(String value) async {
+    final preferences = await sharedPreferencesCompleter.future;
+    await preferences?.setString(proxiesGroupModeKey, value);
+  }
+
   Future<Map<String, Object?>?> getConfigMap() async {
     try {
       final preferences = await sharedPreferencesCompleter.future;

@@ -24,6 +24,7 @@ export 'loading.dart';
 export 'notification.dart';
 export 'null_status.dart';
 export 'open_container.dart';
+export 'page_toolbar.dart';
 export 'palette.dart';
 export 'pop_scope.dart';
 export 'popup.dart';

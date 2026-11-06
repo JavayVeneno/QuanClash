@@ -1,4 +1,10 @@
 export 'controller.dart';
+export 'connection_updates.dart';
+export 'connection_inspection_session.dart';
+export 'dns_diagnostic.dart';
+export 'node_quality.dart';
+export 'traffic_class.dart';
+export 'traffic_class_session.dart';
 export 'core.dart';
 export 'event.dart';
 export 'lib.dart';

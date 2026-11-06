@@ -42,6 +42,20 @@ class _WindowContainerState extends ConsumerState<WindowManager>
     }
     windowExtManager.addListener(this);
     windowManager.addListener(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncMaximized();
+    });
+  }
+
+  Future<void> _syncMaximized() async {
+    if (!mounted) {
+      return;
+    }
+    final isMaximized = await windowManager.isMaximized();
+    if (!mounted) {
+      return;
+    }
+    ref.read(isMaximizedProvider.notifier).value = isMaximized;
   }
 
   @override
@@ -95,6 +109,7 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   @override
   Future<void> onWindowResized() async {
     super.onWindowResized();
+    _syncMaximized();
     if (window?.isPanelMode ?? false) {
       return;
     }
@@ -118,7 +133,24 @@ class _WindowContainerState extends ConsumerState<WindowManager>
   void onWindowRestore() {
     commonPrint.log('restore');
     render?.resume();
+    _syncMaximized();
     super.onWindowRestore();
+  }
+
+  @override
+  void onWindowMaximize() {
+    super.onWindowMaximize();
+    if (mounted) {
+      ref.read(isMaximizedProvider.notifier).value = true;
+    }
+  }
+
+  @override
+  void onWindowUnmaximize() {
+    super.onWindowUnmaximize();
+    if (mounted) {
+      ref.read(isMaximizedProvider.notifier).value = false;
+    }
   }
 
   @override
@@ -212,6 +244,7 @@ class _WindowHeaderState extends State<WindowHeader> {
       }
     }
     final res = await windowManager.isMaximized();
+    globalState.container.read(isMaximizedProvider.notifier).value = res;
     if (mounted) {
       isMaximizedNotifier.value = res;
     }

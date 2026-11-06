@@ -1,9 +1,10 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/providers/app.dart';
-import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'dashboard_style.dart';
 
 class IntranetIP extends StatelessWidget {
   const IntranetIP({super.key});
@@ -12,47 +13,48 @@ class IntranetIP extends StatelessWidget {
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     return SizedBox(
-      height: getWidgetHeight(1),
-      child: CommonCard(
-        info: Info(label: appLocalizations.intranetIP, iconData: QuanXIcons.monitorSmartphone),
+      height: 96.ap,
+      child: DashboardCard(
         onPressed: () {},
-        child: Container(
-          padding: baseInfoEdgeInsets.copyWith(top: 0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              SizedBox(
-                height: globalState.measure.bodyMediumHeight + 2,
-                child: Consumer(
-                  builder: (_, ref, _) {
-                    final localIp = ref.watch(localIpProvider);
-                    return FadeThroughBox(
-                      child: localIp != null
-                          ? TooltipText(
-                              text: Text(
-                                localIp.isNotEmpty
-                                    ? localIp
-                                    : appLocalizations.noNetwork,
-                                style: context.textTheme.bodyMedium?.toLight
-                                    .adjustSize(1),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            )
-                          : Container(
-                              padding: const EdgeInsets.all(2),
-                              child: const AspectRatio(
-                                aspectRatio: 1,
-                                child: CommonCircleLoading(),
-                              ),
+        padding: EdgeInsets.all(12.ap),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DashboardCardTitle(
+              icon: QuanXIcons.monitorSmartphone,
+              color: DashboardPalette.primary,
+              title: appLocalizations.intranetIP,
+            ),
+            const Spacer(),
+            Consumer(
+              builder: (_, ref, _) {
+                final localIp = ref.watch(localIpProvider);
+                return FadeThroughBox(
+                  child: localIp != null
+                      ? TooltipText(
+                          text: Text(
+                            localIp.isNotEmpty
+                                ? localIp
+                                : appLocalizations.noNetwork,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.textTheme.titleMedium?.copyWith(
+                              fontFamily: 'JetBrainsMono',
+                              fontWeight: FontWeight.w600,
                             ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
+                          ),
+                        )
+                      : Container(
+                          padding: const EdgeInsets.all(2),
+                          child: const AspectRatio(
+                            aspectRatio: 1,
+                            child: CommonCircleLoading(),
+                          ),
+                        ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
