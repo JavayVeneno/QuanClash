@@ -20,7 +20,7 @@ _AppSettingProps _$AppSettingPropsFromJson(Map<String, dynamic> json) =>
       closeConnections: json['closeConnections'] as bool? ?? true,
       testUrl: json['testUrl'] as String? ?? defaultTestUrl,
       isAnimateToPage: json['isAnimateToPage'] as bool? ?? true,
-      autoCheckUpdate: json['autoCheckUpdate'] as bool? ?? true,
+      autoCheckUpdate: json['autoCheckUpdate'] as bool? ?? false,
       showLabel: json['showLabel'] as bool? ?? false,
       disclaimerAccepted: json['disclaimerAccepted'] as bool? ?? false,
       crashlyticsTip: json['crashlyticsTip'] as bool? ?? false,
@@ -178,6 +178,10 @@ _NetworkProps _$NetworkPropsFromJson(Map<String, dynamic> json) =>
           RouteMode.config,
       autoSetSystemDns: json['autoSetSystemDns'] as bool? ?? true,
       appendSystemDns: json['appendSystemDns'] as bool? ?? false,
+      dnsSafetyMode:
+          $enumDecodeNullable(_$DnsSafetyModeEnumMap, json['dnsSafetyMode']) ??
+          DnsSafetyMode.compatible,
+      dnsProxyTarget: json['dnsProxyTarget'] as String? ?? '',
     );
 
 Map<String, dynamic> _$NetworkPropsToJson(_NetworkProps instance) =>
@@ -187,11 +191,19 @@ Map<String, dynamic> _$NetworkPropsToJson(_NetworkProps instance) =>
       'routeMode': _$RouteModeEnumMap[instance.routeMode]!,
       'autoSetSystemDns': instance.autoSetSystemDns,
       'appendSystemDns': instance.appendSystemDns,
+      'dnsSafetyMode': _$DnsSafetyModeEnumMap[instance.dnsSafetyMode]!,
+      'dnsProxyTarget': instance.dnsProxyTarget,
     };
 
 const _$RouteModeEnumMap = {
   RouteMode.bypassPrivate: 'bypassPrivate',
   RouteMode.config: 'config',
+};
+
+const _$DnsSafetyModeEnumMap = {
+  DnsSafetyMode.compatible: 'compatible',
+  DnsSafetyMode.proxyOnly: 'proxyOnly',
+  DnsSafetyMode.custom: 'custom',
 };
 
 _ProxiesStyleProps _$ProxiesStylePropsFromJson(Map<String, dynamic> json) =>

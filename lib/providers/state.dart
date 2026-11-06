@@ -1,10 +1,8 @@
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/database/database.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -534,15 +532,9 @@ ColorScheme genColorScheme(
     ),
   );
   if (color == null && (ignoreConfig == true || vm2.a == null)) {
-    // if (globalState.corePalette != null) {
-    //   return globalState.corePalette!.toColorScheme(brightness: brightness);
-    // }
+    // 全局默认使用设计稿的靛蓝主色，不再跟随动态取色。
     return ColorScheme.fromSeed(
-      seedColor:
-          globalState.corePalette
-              ?.toColorScheme(brightness: brightness)
-              .primary ??
-          globalState.accentColor,
+      seedColor: const Color(0xFF6C5CE7),
       brightness: brightness,
       dynamicSchemeVariant: vm2.b,
     );

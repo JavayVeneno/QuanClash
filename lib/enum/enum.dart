@@ -157,6 +157,12 @@ enum ProxiesLayout { loose, standard, tight }
 
 enum ProxyCardType { expand, shrink, min }
 
+/// 代理页节点的分组方式。
+///
+/// - [all]：保持订阅原始顺序平铺。
+/// - [region]：按地区分组，并把最近使用 / 常用节点 / 供应商信息单独归类。
+enum ProxiesGroupMode { all, region }
+
 enum DnsMode {
   normal,
   @JsonValue('fake-ip')
@@ -219,6 +225,20 @@ enum FontFamily {
 
 enum RouteMode { bypassPrivate, config }
 
+/// How the effective DNS configuration is validated before it reaches the
+/// core. `proxyOnly` is a strict policy, not a promise about traffic that the
+/// subscription itself routes outside the tunnel.
+enum DnsSafetyMode {
+  /// Keep subscription/patch DNS as authored, only warn about risky paths.
+  compatible,
+
+  /// Pin every ordinary resolver to one proxy/group and reject host resolvers.
+  proxyOnly,
+
+  /// Leave the configuration untouched; the user owns every DNS path.
+  custom,
+}
+
 enum ActionMethod {
   message,
   initClash,
@@ -234,7 +254,11 @@ enum ActionMethod {
   getTotalTraffic,
   resetTraffic,
   asyncTestDelay,
+  testNodeQuality,
   getConnections,
+  getConnectionUpdates,
+  getTrafficClassState,
+  setTrafficClasses,
   closeConnections,
   resetConnections,
   closeConnection,
@@ -249,6 +273,7 @@ enum ActionMethod {
   stopListener,
   getCountryCode,
   getMemory,
+  getDnsDiagnostic,
   crash,
   setupConfig,
   deleteFile,
@@ -370,6 +395,7 @@ enum PageLabel {
   proxies,
   profiles,
   tools,
+  settings,
   logs,
   requests,
   resources,

@@ -1,6 +1,7 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/providers/config.dart';
+import 'package:fl_clash/views/dashboard/widgets/dashboard_style.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -280,6 +281,83 @@ class ProxiesSetting extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// 代理页设置：居中卡片弹窗，替代原来的右侧抽屉。
+class ProxiesSettingDialog extends StatelessWidget {
+  const ProxiesSettingDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.appLocalizations;
+    final quanX = context.quanX;
+    final isDark = Theme.brightnessOf(context) == Brightness.dark;
+    final surface = DashboardPalette.surface(context);
+    final maxHeight = MediaQuery.sizeOf(context).height - 96;
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: 560,
+          maxHeight: maxHeight > 320 ? maxHeight : 320,
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.06),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.12),
+                blurRadius: 32,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 18, 12, 16),
+                child: Row(
+                  children: [
+                    const DashboardIconTile(
+                      icon: QuanXIcons.slidersHorizontal,
+                      color: DashboardPalette.primary,
+                      size: 38,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        l10n.settings,
+                        style: context.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(QuanXIcons.x),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(height: 1, color: quanX.separator),
+              const Flexible(child: ProxiesSetting()),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -9,8 +9,9 @@ add_dependencies(${BINARY_NAME} setup_buildkit_build)
 
 # Project root is one level up from this plugin's CMakeLists.txt
 get_filename_component(PROJECT_ROOT "${CMAKE_SOURCE_DIR}" DIRECTORY)
+buildkit_output_root(BUILDKIT_ARTIFACT_ROOT)
 
-install(PROGRAMS "${PROJECT_ROOT}/libclash/linux/QuanClashCore"
+install(PROGRAMS "${BUILDKIT_ARTIFACT_ROOT}/linux/QuanClashCore"
   DESTINATION "${CMAKE_BINARY_DIR}/bundle"
   COMPONENT Runtime
 )

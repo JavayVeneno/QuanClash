@@ -1,6 +1,7 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/providers/config.dart';
+import 'package:fl_clash/views/config/dns_diagnostic.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,6 +44,76 @@ class StatusItem extends ConsumerWidget {
           ref
               .read(patchClashConfigProvider.notifier)
               .update((state) => state.copyWith.dns(enable: value));
+        },
+      ),
+    );
+  }
+}
+
+class DnsSafetyModeItem extends ConsumerWidget {
+  const DnsSafetyModeItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final mode = ref.watch(
+      networkSettingProvider.select((state) => state.dnsSafetyMode),
+    );
+    return ListItem<DnsSafetyMode>.options(
+      title: Text(appLocalizations.dnsSafetyMode),
+      subtitle: Text(appLocalizations.dnsSafetyModeDesc),
+      delegate: OptionsDelegate(
+        title: appLocalizations.dnsSafetyMode,
+        options: DnsSafetyMode.values,
+        onChanged: (value) {
+          if (value == null) {
+            return;
+          }
+          ref
+              .read(networkSettingProvider.notifier)
+              .update((state) => state.copyWith(dnsSafetyMode: value));
+        },
+        textBuilder: (mode) => switch (mode) {
+          DnsSafetyMode.compatible => appLocalizations.dnsSafetyModeCompatible,
+          DnsSafetyMode.proxyOnly => appLocalizations.dnsSafetyModeProxyOnly,
+          DnsSafetyMode.custom => appLocalizations.dnsSafetyModeCustom,
+        },
+        value: mode,
+      ),
+    );
+  }
+}
+
+class DnsProxyTargetItem extends ConsumerWidget {
+  const DnsProxyTargetItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final appLocalizations = context.appLocalizations;
+    final networkProps = ref.watch(networkSettingProvider);
+    final target = networkProps.dnsProxyTarget;
+    return ListItem.input(
+      title: Text(appLocalizations.dnsProxyTarget),
+      subtitle: Text(
+        target.isEmpty ? appLocalizations.dnsProxyTargetDesc : target,
+      ),
+      delegate: InputDelegate(
+        title: appLocalizations.dnsProxyTarget,
+        value: target,
+        maxLength: TextInputLimits.dnsServer,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return appLocalizations.emptyTip(appLocalizations.dnsProxyTarget);
+          }
+          return null;
+        },
+        onChanged: (String? value) {
+          if (value == null) {
+            return;
+          }
+          ref
+              .read(networkSettingProvider.notifier)
+              .update((state) => state.copyWith(dnsProxyTarget: value.trim()));
         },
       ),
     );
@@ -627,17 +698,24 @@ class DomainItem extends ConsumerWidget {
   }
 }
 
-class DnsOptions extends StatelessWidget {
+class DnsOptions extends ConsumerWidget {
   const DnsOptions({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
+    final proxyOnly =
+        ref.watch(
+          networkSettingProvider.select((state) => state.dnsSafetyMode),
+        ) ==
+        DnsSafetyMode.proxyOnly;
     return Column(
       children: generateSection(
         title: appLocalizations.options,
         items: [
           const StatusItem(),
+          const DnsSafetyModeItem(),
+          if (proxyOnly) const DnsProxyTargetItem(),
           const ListenItem(),
           const UseHostsItem(),
           const UseSystemHostsItem(),
@@ -680,6 +758,7 @@ class FallbackFilterOptions extends StatelessWidget {
 }
 
 const dnsItems = <Widget>[
+  DnsDiagnosticItem(),
   OverrideItem(),
   DnsOptions(),
   FallbackFilterOptions(),

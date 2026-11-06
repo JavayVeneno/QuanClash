@@ -5,6 +5,8 @@ import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'dashboard_style.dart';
+
 class NetworkSpeed extends StatefulWidget {
   const NetworkSpeed({super.key});
 
@@ -39,51 +41,42 @@ class _NetworkSpeedState extends State<NetworkSpeed> {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
-    final color = context.colorScheme.onSurfaceVariant.opacity80;
+    final quanX = context.quanX;
     return SizedBox(
       height: getWidgetHeight(2),
       child: RepaintBoundary(
-        child: CommonCard(
+        child: DashboardCard(
           onPressed: () {},
+          padding: EdgeInsets.all(14.ap),
           child: Consumer(
             builder: (_, ref, _) {
               final traffics = ref.watch(trafficsProvider).list;
               return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Padding(
-                    padding: baseInfoEdgeInsets.copyWith(bottom: 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          child: InfoHeader(
-                            padding: EdgeInsets.zero,
-                            info: Info(
-                              label: appLocalizations.networkSpeed,
-                              iconData: QuanXIcons.gauge,
-                            ),
-                          ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DashboardCardTitle(
+                          icon: QuanXIcons.gauge,
+                          color: DashboardPalette.primary,
+                          title: appLocalizations.networkSpeed,
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _getLastTraffic(traffics).speedText,
-                          style: context.textTheme.bodySmall?.copyWith(
-                            color: color,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.all(
-                        16,
-                      ).copyWith(bottom: 0, left: 0, right: 0),
-                      child: LineChart(
-                        gradient: true,
-                        color: Theme.of(context).colorScheme.primary,
-                        points: _getPoints(traffics),
                       ),
+                      Text(
+                        _getLastTraffic(traffics).speedText,
+                        style: context.textTheme.bodySmall?.copyWith(
+                          color: quanX.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: LineChart(
+                      gradient: true,
+                      color: DashboardPalette.primary,
+                      points: _getPoints(traffics),
                     ),
                   ),
                 ],

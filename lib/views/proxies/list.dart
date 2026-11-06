@@ -5,6 +5,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/state.dart';
+import 'package:fl_clash/views/dashboard/widgets/dashboard_style.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -347,7 +348,7 @@ class _ProxiesListViewState extends State<ProxiesListView> {
                             top: -headerState.offset,
                             child: Container(
                                   width: container.maxWidth,
-                                  color: context.glass.tintStrong,
+                                  color: DashboardPalette.background(context),
                                   padding: const EdgeInsets.only(
                                     top: 16,
                                     left: 16,

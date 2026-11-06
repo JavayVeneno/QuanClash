@@ -117,6 +117,7 @@ abstract class NetworkDetectionState with _$NetworkDetectionState {
   const factory NetworkDetectionState({
     required bool isLoading,
     required IpInfo? ipInfo,
+    int? delay,
   }) = _NetworkDetectionState;
 }
 
@@ -341,6 +342,8 @@ abstract class MakeRealProfileState with _$MakeRealProfileState {
     required PatchClashConfig realPatchConfig,
     required bool overrideDns,
     required bool appendSystemDns,
+      @Default(DnsSafetyMode.compatible) DnsSafetyMode dnsSafetyMode,
+      @Default('') String dnsProxyTarget,
     required List<ProxyGroup> proxyGroups,
     required List<Rule> rules,
     required List<Rule> addedRules,
@@ -413,3 +416,34 @@ abstract class SetupState with _$SetupState {
 //     return false;
 //   }
 // }
+
+/// 单个节点的本地使用记录，用于「最近使用」「常用节点」。
+///
+/// 只记录次数和最后使用时间，不上传、不参与代理选择。
+class NodeUsageEntry {
+  const NodeUsageEntry({required this.count, required this.lastUsed});
+
+  final int count;
+  final DateTime lastUsed;
+
+  Map<String, Object?> toJson() => {
+    'c': count,
+    't': lastUsed.toUtc().millisecondsSinceEpoch,
+  };
+
+  static NodeUsageEntry? fromJson(Object? value) {
+    if (value is! Map) {
+      return null;
+    }
+    final count = value['c'];
+    final time = value['t'];
+    if (count is! int || count < 0 || time is! int) {
+      return null;
+    }
+    final lastUsed = DateTime.fromMillisecondsSinceEpoch(
+      time,
+      isUtc: true,
+    ).toLocal();
+    return NodeUsageEntry(count: count, lastUsed: lastUsed);
+  }
+}

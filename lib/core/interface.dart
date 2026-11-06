@@ -5,6 +5,8 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 
+import 'traffic_class.dart';
+
 mixin CoreInterface {
   Future<bool> init(InitParams params);
 
@@ -55,6 +57,13 @@ mixin CoreInterface {
 
   FutureOr<String> getMemory();
 
+  Future<Map<String, dynamic>> getDnsDiagnostic();
+
+  Future<Map<String, dynamic>> testNodeQuality(
+    String proxyName, {
+    required bool includeIpPure,
+  });
+
   FutureOr<void> resetTraffic();
 
   FutureOr<void> startLog();
@@ -64,6 +73,15 @@ mixin CoreInterface {
   Future<bool> crash();
 
   FutureOr<String> getConnections();
+
+  FutureOr<Map<String, dynamic>?> getConnectionUpdates(String cursor);
+
+  Future<Map<String, dynamic>> getTrafficClassState();
+
+  Future<Map<String, dynamic>> setTrafficClasses(
+    TrafficClassConfig config,
+    String expectedRevision,
+  );
 
   FutureOr<bool> closeConnection(String id);
 
@@ -95,7 +113,10 @@ abstract class CoreHandlerInterface with CoreInterface {
     }
     return await utils.handleWatch(
       onStart: () {
-        commonPrint.log('Invoke ${method.name} ${DateTime.now()} $data');
+        final loggedData = method == ActionMethod.setTrafficClasses
+            ? '<redacted>'
+            : data;
+        commonPrint.log('Invoke ${method.name} ${DateTime.now()} $loggedData');
       },
       function: () async {
         return invoke<T>(method: method, data: data, timeout: timeout);
@@ -171,12 +192,44 @@ abstract class CoreHandlerInterface with CoreInterface {
           method: ActionMethod.setupConfig,
           data: json.encode(setupParams),
         ) ??
-        '';
+        'Core setup did not acknowledge configuration (disconnected or timed out)';
+  }
+
+  @override
+  Future<Map<String, dynamic>> getDnsDiagnostic() async {
+    final result = await _invoke<Map<String, dynamic>>(
+      method: ActionMethod.getDnsDiagnostic,
+    );
+    if (result == null) {
+      throw StateError(
+        'DNS diagnostic unavailable (disconnected or timed out)',
+      );
+    }
+    return result;
   }
 
   @override
   Future<bool> crash() async {
     return await _invoke<bool>(method: ActionMethod.crash) ?? false;
+  }
+
+  @override
+  Future<Map<String, dynamic>> testNodeQuality(
+    String proxyName, {
+    required bool includeIpPure,
+  }) async {
+    final result = await _invoke<Map<String, dynamic>>(
+      method: ActionMethod.testNodeQuality,
+      data: json.encode({
+        'proxy-name': proxyName,
+        'providers': ['cloudflare', if (includeIpPure) 'ippure'],
+      }),
+      timeout: const Duration(seconds: 15),
+    );
+    if (result == null) {
+      throw StateError('Node quality unavailable (disconnected or timed out)');
+    }
+    return result;
   }
 
   @override
@@ -246,6 +299,44 @@ abstract class CoreHandlerInterface with CoreInterface {
   @override
   Future<String> getConnections() async {
     return await _invoke<String>(method: ActionMethod.getConnections) ?? '';
+  }
+
+  @override
+  Future<Map<String, dynamic>?> getConnectionUpdates(String cursor) async {
+    if (cursor.isNotEmpty && !RegExp(r'^[0-9a-fA-F]{32}$').hasMatch(cursor)) {
+      throw const FormatException('Invalid connection update cursor');
+    }
+    return _invoke<Map<String, dynamic>>(
+      method: ActionMethod.getConnectionUpdates,
+      data: jsonEncode({'schemaVersion': 1, 'cursor': cursor}),
+      timeout: const Duration(seconds: 5),
+    );
+  }
+
+  @override
+  Future<Map<String, dynamic>> getTrafficClassState() async {
+    final result = await _invoke<Map<String, dynamic>>(
+      method: ActionMethod.getTrafficClassState,
+      timeout: const Duration(seconds: 5),
+    );
+    if (result == null) throw StateError('Traffic class state unavailable');
+    return result;
+  }
+
+  @override
+  Future<Map<String, dynamic>> setTrafficClasses(
+    TrafficClassConfig config,
+    String expectedRevision,
+  ) async {
+    final result = await _invoke<Map<String, dynamic>>(
+      method: ActionMethod.setTrafficClasses,
+      data: config.encodeRequest(expectedRevision),
+      timeout: const Duration(seconds: 5),
+    );
+    if (result == null) {
+      throw StateError('Traffic class write completion unknown');
+    }
+    return result;
   }
 
   @override

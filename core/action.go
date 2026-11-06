@@ -77,6 +77,9 @@ func handleAction(action *Action, result ActionResult) {
 	case getProxiesMethod:
 		result.success(handleGetProxies())
 		return
+	case getDNSDiagnosticMethod:
+		result.success(handleGetDNSDiagnostic())
+		return
 	case changeProxyMethod:
 		data := action.Data.(string)
 		handleChangeProxy(data, func(value string) {
@@ -103,6 +106,46 @@ func handleAction(action *Action, result ActionResult) {
 		return
 	case getConnectionsMethod:
 		result.success(handleGetConnections())
+		return
+	case testNodeQualityMethod:
+		quality, err := handleTestNodeQuality(action.Data)
+		if err != nil {
+			result.error("node quality unavailable or invalid request")
+			return
+		}
+		result.success(quality)
+		return
+	case getConnectionUpdatesMethod:
+		updates, err := handleGetConnectionUpdates(action.Data)
+		if err != nil {
+			result.error("connection updates unavailable or invalid request")
+			return
+		}
+		result.success(updates)
+		return
+	case getTrafficClassStateMethod:
+		state, err := handleGetTrafficClassState()
+		if err != nil {
+			result.error("traffic class state unavailable")
+			return
+		}
+		result.success(state)
+		return
+	case setTrafficClassesMethod:
+		state, err := handleSetTrafficClasses(action.Data)
+		if err != nil {
+			// Never send selectors or raw decoding errors to clients/logs.
+			switch err {
+			case errTrafficClassConflict:
+				result.error("traffic class revision conflict")
+			case errTrafficClassInactive:
+				result.error("traffic class config inactive")
+			default:
+				result.error("traffic class request invalid or unavailable")
+			}
+			return
+		}
+		result.success(state)
 		return
 	case closeConnectionsMethod:
 		result.success(handleCloseConnections())

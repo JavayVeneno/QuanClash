@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 
@@ -33,8 +35,10 @@ class RustBuilder {
         workingDirectory: _helperPath, environment: env);
 
     final srcPath = p.join(
-      _helperPath,
-      'target',
+      Platform.environment['CARGO_TARGET_DIR']?.isNotEmpty == true
+          ? p.absolute(
+              p.join(_helperPath, Platform.environment['CARGO_TARGET_DIR']!))
+          : p.join(_helperPath, 'target'),
       release ? 'release' : 'debug',
       'helper${target.executableExtension}',
     );

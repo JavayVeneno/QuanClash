@@ -21,6 +21,8 @@ class IPCCoreTransport {
   StreamSubscription<Uint8List>? _subscription;
   Completer<void> _completer = Completer<void>();
   Completer<void> _readyCompleter = Completer<void>();
+  Future<void>? _closeFuture;
+  bool _closing = false;
 
   void Function()? onDisconnect;
 
@@ -35,7 +37,7 @@ class IPCCoreTransport {
       final stream = restartIpcServer(name: address);
       _subscription = stream.listen(
         (data) {
-          if (data.isEmpty) return;
+          if (_closing || data.isEmpty) return;
           final type = data[0];
           final payload = data.length > 1 ? data.sublist(1) : Uint8List(0);
           switch (type) {
@@ -95,12 +97,20 @@ class IPCCoreTransport {
     _completer = Completer<void>();
   }
 
-  Future<void> close() async {
-    await _subscription?.cancel();
-    _subscription = null;
-    await stopIpcServer();
-    _readyCompleter = Completer<void>();
-    _completer = Completer<void>();
-    await _dataController.close();
+  Future<void> close() => _closeFuture ??= _close();
+
+  Future<void> _close() async {
+    _closing = true;
+    try {
+      // FRB's async stream cancellation can wait for its native producer to
+      // finish. Stop the producer first, otherwise neither side can finish.
+      await stopIpcServer();
+    } finally {
+      await _subscription?.cancel();
+      _subscription = null;
+      _readyCompleter = Completer<void>();
+      _completer = Completer<void>();
+      await _dataController.close();
+    }
   }
 }

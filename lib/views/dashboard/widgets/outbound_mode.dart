@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'dashboard_style.dart';
+
 class OutboundMode extends StatelessWidget {
   const OutboundMode({super.key});
 
@@ -104,30 +106,21 @@ class OutboundModeV2 extends StatelessWidget {
     globalState.container.read(setupActionProvider.notifier).changeMode(mode);
   }
 
-  Color _getTextColor(BuildContext context, Mode mode) {
-    return switch (mode) {
-      Mode.rule => context.colorScheme.onSecondaryContainer,
-      Mode.global => context.colorScheme.onPrimaryContainer,
-      Mode.direct => context.colorScheme.onTertiaryContainer,
-    };
-  }
+  Color _getTextColor() => DashboardPalette.primary;
 
   @override
   Widget build(BuildContext context) {
-    final height = getWidgetHeight(1);
+    final height = getWidgetHeight(1) + 16.ap;
     return SizedBox(
       height: height,
-      child: CommonCard(
+      child: DashboardCard(
+        padding: EdgeInsets.zero,
         child: Consumer(
           builder: (_, ref, _) {
             final mode = ref.watch(
               patchClashConfigProvider.select((state) => state.mode),
             );
-            final thumbColor = switch (mode) {
-              Mode.rule => context.colorScheme.secondaryContainer,
-              Mode.global => globalState.theme.darken3PrimaryContainer,
-              Mode.direct => context.colorScheme.tertiaryContainer,
-            };
+            final thumbColor = DashboardPalette.surface(context);
             return LayoutBuilder(
               builder: (_, constraints) {
                 return Column(
@@ -146,7 +139,7 @@ class OutboundModeV2 extends StatelessWidget {
                                   clipBehavior: Clip.antiAlias,
                                   alignment: Alignment.center,
                                   decoration: const BoxDecoration(),
-                                  height: height - 8.ap - 24,
+                                  height: height - 8.ap - 26,
                                   padding: const EdgeInsets.all(4),
                                   child: Text(
                                     Intl.message(item.name),
@@ -156,7 +149,7 @@ class OutboundModeV2 extends StatelessWidget {
                                         ?.adjustSize(1)
                                         .copyWith(
                                           color: item == mode
-                                              ? _getTextColor(context, item)
+                                              ? _getTextColor()
                                               : null,
                                         ),
                                   ),
@@ -173,11 +166,15 @@ class OutboundModeV2 extends StatelessWidget {
                             _handleChangeMode(value);
                           },
                           thumbColor: thumbColor,
+                          backgroundColor:
+                              Theme.brightnessOf(context) == Brightness.dark
+                              ? const Color(0xFF2A2A30)
+                              : const Color(0xFFF2F2F7),
                         ),
                       ),
                     ),
                     Container(
-                      color: thumbColor.opacity50,
+                      color: DashboardPalette.primary.withValues(alpha: 0.15),
                       height: 8.ap,
                       width: constraints.maxWidth,
                       padding: const EdgeInsets.symmetric(horizontal: 16),

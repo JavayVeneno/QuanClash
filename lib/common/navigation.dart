@@ -68,10 +68,17 @@ class Navigation {
             : [],
       ),
       NavigationItem(
+        icon: const Icon(QuanXIcons.settings),
+        label: PageLabel.settings,
+        builder: (_) =>
+            const SettingsView(key: GlobalObjectKey(PageLabel.settings)),
+        modes: [NavigationItemMode.desktop, NavigationItemMode.mobile],
+      ),
+      NavigationItem(
         icon: const Icon(QuanXIcons.wrench),
         label: PageLabel.tools,
         builder: (_) => const ToolsView(key: GlobalObjectKey(PageLabel.tools)),
-        modes: [NavigationItemMode.desktop, NavigationItemMode.mobile],
+        modes: [NavigationItemMode.mobile],
       ),
     ];
   }

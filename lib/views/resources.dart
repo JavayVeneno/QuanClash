@@ -20,6 +20,7 @@ class ResourcesView extends StatelessWidget {
     const geoResources = GeoResource.values;
     final appLocalizations = context.appLocalizations;
     return CommonScaffold(
+      hideTitle: true,
       title: context.appLocalizations.resources,
       body: Consumer(
         builder: (_, ref, _) {

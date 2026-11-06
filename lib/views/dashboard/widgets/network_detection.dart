@@ -6,6 +6,8 @@ import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'dashboard_style.dart';
+
 class NetworkDetection extends ConsumerStatefulWidget {
   const NetworkDetection({super.key});
 
@@ -27,105 +29,98 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
+    final quanX = context.quanX;
+    final colorScheme = context.colorScheme;
     final networkDetection = ref.watch(networkDetectionProvider);
     final ipInfo = networkDetection.ipInfo;
     final isLoading = networkDetection.isLoading;
-    final emojiTextStyle = context.textTheme.titleMedium?.toLight.copyWith(
+    final delay = networkDetection.delay;
+    final emojiTextStyle = context.textTheme.bodySmall?.copyWith(
       fontFamily: FontFamily.twEmoji.value,
     );
-    final titleTextStyle = context.colorScheme.onSurfaceVariant;
-    final descTextStyle = context.textTheme.titleSmall?.copyWith(
-      color: context.colorScheme.onSurfaceVariant,
-    );
     return SizedBox(
-      height: getWidgetHeight(1),
-      child: CommonCard(
+      height: 96.ap,
+      child: DashboardCard(
         onPressed: () {},
+        padding: EdgeInsets.all(12.ap),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: globalState.measure.titleMediumHeight + 16,
-              padding: baseInfoEdgeInsets.copyWith(bottom: 0),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  ipInfo != null
-                      ? Text(
-                          _countryCodeToEmoji(ipInfo.countryCode),
-                          style: emojiTextStyle,
-                        )
-                      : Icon(QuanXIcons.gauge, color: titleTextStyle),
-                  const SizedBox(width: 8),
-                  Flexible(
-                    flex: 1,
-                    child: TooltipText(
-                      text: Text(
-                        appLocalizations.networkDetection,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: descTextStyle,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 2),
-                  AspectRatio(
-                    aspectRatio: 1,
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        globalState.showMessage(
-                          title: appLocalizations.tip,
-                          message: TextSpan(
-                            text: appLocalizations.detectionTip,
-                          ),
-                          cancelable: false,
-                        );
-                      },
-                      icon: Icon(
-                        size: 16.ap,
-                        QuanXIcons.info,
-                        color: context.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: baseInfoEdgeInsets.copyWith(top: 0),
-              child: SizedBox(
-                height: globalState.measure.bodyMediumHeight + 2,
-                child: FadeThroughBox(
-                  child: ipInfo != null
-                      ? TooltipText(
-                          text: Text(
-                            ipInfo.ip,
-                            style: context.textTheme.bodyMedium?.toLight
-                                .adjustSize(1),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        )
-                      : isLoading == false && ipInfo == null
-                      ? Text(
-                          'Timeout',
-                          style: context.textTheme.bodyMedium
-                              ?.copyWith(color: Colors.red)
-                              .adjustSize(1),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        )
-                      : Container(
-                          padding: const EdgeInsets.all(2),
-                          child: const AspectRatio(
-                            aspectRatio: 1,
-                            child: CommonCircleLoading(),
-                          ),
-                        ),
+            DashboardCardTitle(
+              icon: QuanXIcons.gauge,
+              color: DashboardPalette.blue,
+              title: appLocalizations.networkDetection,
+              trailing: IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                visualDensity: VisualDensity.compact,
+                onPressed: () {
+                  globalState.showMessage(
+                    title: appLocalizations.tip,
+                    message: TextSpan(text: appLocalizations.detectionTip),
+                    cancelable: false,
+                  );
+                },
+                icon: Icon(
+                  QuanXIcons.info,
+                  size: 15,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
+            const Spacer(),
+            SizedBox(
+              height: globalState.measure.titleSmallHeight + 2,
+              child: FadeThroughBox(
+                child: delay != null
+                    ? TooltipText(
+                        text: Text(
+                          '$delay ms',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.textTheme.titleMedium?.copyWith(
+                            fontFamily: 'JetBrainsMono',
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
+                    : isLoading
+                    ? Container(
+                        padding: const EdgeInsets.all(2),
+                        child: const AspectRatio(
+                          aspectRatio: 1,
+                          child: CommonCircleLoading(),
+                        ),
+                      )
+                    : Text(
+                        'Timeout',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textTheme.titleMedium?.copyWith(
+                          color: colorScheme.error,
+                        ),
+                      ),
+              ),
+            ),
+            if (ipInfo != null) ...[
+              const SizedBox(height: 2),
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '${_countryCodeToEmoji(ipInfo.countryCode)} ',
+                      style: emojiTextStyle,
+                    ),
+                    TextSpan(text: ipInfo.ip),
+                  ],
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: quanX.textTertiary,
+                ),
+              ),
+            ],
           ],
         ),
       ),

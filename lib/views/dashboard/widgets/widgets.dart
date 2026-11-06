@@ -1,8 +1,11 @@
 export 'connection_bar.dart';
+export 'dashboard_style.dart';
+export 'dashboard_stats.dart';
 export 'intranet_ip.dart';
 export 'network_detection.dart';
 export 'network_speed.dart';
 export 'outbound_mode.dart';
 export 'quick_options.dart';
+export 'risk_index.dart';
 export 'traffic_usage.dart';
 export 'memory_info.dart';

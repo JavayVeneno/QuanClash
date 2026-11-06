@@ -3789,7 +3789,7 @@ as int,
 /// @nodoc
 mixin _$NetworkDetectionState {
 
- bool get isLoading; IpInfo? get ipInfo;
+ bool get isLoading; IpInfo? get ipInfo; int? get delay;
 /// Create a copy of NetworkDetectionState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3800,16 +3800,16 @@ $NetworkDetectionStateCopyWith<NetworkDetectionState> get copyWith => _$NetworkD
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is NetworkDetectionState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.ipInfo, ipInfo) || other.ipInfo == ipInfo));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NetworkDetectionState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.ipInfo, ipInfo) || other.ipInfo == ipInfo)&&(identical(other.delay, delay) || other.delay == delay));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,ipInfo);
+int get hashCode => Object.hash(runtimeType,isLoading,ipInfo,delay);
 
 @override
 String toString() {
-  return 'NetworkDetectionState(isLoading: $isLoading, ipInfo: $ipInfo)';
+  return 'NetworkDetectionState(isLoading: $isLoading, ipInfo: $ipInfo, delay: $delay)';
 }
 
 
@@ -3820,7 +3820,7 @@ abstract mixin class $NetworkDetectionStateCopyWith<$Res>  {
   factory $NetworkDetectionStateCopyWith(NetworkDetectionState value, $Res Function(NetworkDetectionState) _then) = _$NetworkDetectionStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, IpInfo? ipInfo
+ bool isLoading, IpInfo? ipInfo, int? delay
 });
 
 
@@ -3837,11 +3837,12 @@ class _$NetworkDetectionStateCopyWithImpl<$Res>
 
 /// Create a copy of NetworkDetectionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? ipInfo = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? ipInfo = freezed,Object? delay = freezed,}) {
   return _then(_self.copyWith(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,ipInfo: freezed == ipInfo ? _self.ipInfo : ipInfo // ignore: cast_nullable_to_non_nullable
-as IpInfo?,
+as IpInfo?,delay: freezed == delay ? _self.delay : delay // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 /// Create a copy of NetworkDetectionState
@@ -3938,10 +3939,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  IpInfo? ipInfo)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  IpInfo? ipInfo,  int? delay)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _NetworkDetectionState() when $default != null:
-return $default(_that.isLoading,_that.ipInfo);case _:
+return $default(_that.isLoading,_that.ipInfo,_that.delay);case _:
   return orElse();
 
 }
@@ -3959,10 +3960,10 @@ return $default(_that.isLoading,_that.ipInfo);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  IpInfo? ipInfo)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  IpInfo? ipInfo,  int? delay)  $default,) {final _that = this;
 switch (_that) {
 case _NetworkDetectionState():
-return $default(_that.isLoading,_that.ipInfo);case _:
+return $default(_that.isLoading,_that.ipInfo,_that.delay);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -3979,10 +3980,10 @@ return $default(_that.isLoading,_that.ipInfo);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  IpInfo? ipInfo)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  IpInfo? ipInfo,  int? delay)?  $default,) {final _that = this;
 switch (_that) {
 case _NetworkDetectionState() when $default != null:
-return $default(_that.isLoading,_that.ipInfo);case _:
+return $default(_that.isLoading,_that.ipInfo,_that.delay);case _:
   return null;
 
 }
@@ -3994,11 +3995,12 @@ return $default(_that.isLoading,_that.ipInfo);case _:
 
 
 class _NetworkDetectionState implements NetworkDetectionState {
-  const _NetworkDetectionState({required this.isLoading, required this.ipInfo});
+  const _NetworkDetectionState({required this.isLoading, required this.ipInfo, this.delay});
   
 
 @override final  bool isLoading;
 @override final  IpInfo? ipInfo;
+@override final  int? delay;
 
 /// Create a copy of NetworkDetectionState
 /// with the given fields replaced by the non-null parameter values.
@@ -4010,16 +4012,16 @@ _$NetworkDetectionStateCopyWith<_NetworkDetectionState> get copyWith => __$Netwo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NetworkDetectionState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.ipInfo, ipInfo) || other.ipInfo == ipInfo));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NetworkDetectionState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.ipInfo, ipInfo) || other.ipInfo == ipInfo)&&(identical(other.delay, delay) || other.delay == delay));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,ipInfo);
+int get hashCode => Object.hash(runtimeType,isLoading,ipInfo,delay);
 
 @override
 String toString() {
-  return 'NetworkDetectionState(isLoading: $isLoading, ipInfo: $ipInfo)';
+  return 'NetworkDetectionState(isLoading: $isLoading, ipInfo: $ipInfo, delay: $delay)';
 }
 
 
@@ -4030,7 +4032,7 @@ abstract mixin class _$NetworkDetectionStateCopyWith<$Res> implements $NetworkDe
   factory _$NetworkDetectionStateCopyWith(_NetworkDetectionState value, $Res Function(_NetworkDetectionState) _then) = __$NetworkDetectionStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, IpInfo? ipInfo
+ bool isLoading, IpInfo? ipInfo, int? delay
 });
 
 
@@ -4047,11 +4049,12 @@ class __$NetworkDetectionStateCopyWithImpl<$Res>
 
 /// Create a copy of NetworkDetectionState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? ipInfo = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? ipInfo = freezed,Object? delay = freezed,}) {
   return _then(_NetworkDetectionState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,ipInfo: freezed == ipInfo ? _self.ipInfo : ipInfo // ignore: cast_nullable_to_non_nullable
-as IpInfo?,
+as IpInfo?,delay: freezed == delay ? _self.delay : delay // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -9062,7 +9065,7 @@ $ProxiesDataCopyWith<$Res> get proxiesData {
 /// @nodoc
 mixin _$MakeRealProfileState {
 
- String get profilesPath; int get profileId; Map<String, dynamic> get rawConfig; PatchClashConfig get realPatchConfig; bool get overrideDns; bool get appendSystemDns; List<ProxyGroup> get proxyGroups; List<Rule> get rules; List<Rule> get addedRules; String get defaultUA;
+ String get profilesPath; int get profileId; Map<String, dynamic> get rawConfig; PatchClashConfig get realPatchConfig; bool get overrideDns; bool get appendSystemDns; DnsSafetyMode get dnsSafetyMode; String get dnsProxyTarget; List<ProxyGroup> get proxyGroups; List<Rule> get rules; List<Rule> get addedRules; String get defaultUA;
 /// Create a copy of MakeRealProfileState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -9073,16 +9076,16 @@ $MakeRealProfileStateCopyWith<MakeRealProfileState> get copyWith => _$MakeRealPr
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MakeRealProfileState&&(identical(other.profilesPath, profilesPath) || other.profilesPath == profilesPath)&&(identical(other.profileId, profileId) || other.profileId == profileId)&&const DeepCollectionEquality().equals(other.rawConfig, rawConfig)&&(identical(other.realPatchConfig, realPatchConfig) || other.realPatchConfig == realPatchConfig)&&(identical(other.overrideDns, overrideDns) || other.overrideDns == overrideDns)&&(identical(other.appendSystemDns, appendSystemDns) || other.appendSystemDns == appendSystemDns)&&const DeepCollectionEquality().equals(other.proxyGroups, proxyGroups)&&const DeepCollectionEquality().equals(other.rules, rules)&&const DeepCollectionEquality().equals(other.addedRules, addedRules)&&(identical(other.defaultUA, defaultUA) || other.defaultUA == defaultUA));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MakeRealProfileState&&(identical(other.profilesPath, profilesPath) || other.profilesPath == profilesPath)&&(identical(other.profileId, profileId) || other.profileId == profileId)&&const DeepCollectionEquality().equals(other.rawConfig, rawConfig)&&(identical(other.realPatchConfig, realPatchConfig) || other.realPatchConfig == realPatchConfig)&&(identical(other.overrideDns, overrideDns) || other.overrideDns == overrideDns)&&(identical(other.appendSystemDns, appendSystemDns) || other.appendSystemDns == appendSystemDns)&&(identical(other.dnsSafetyMode, dnsSafetyMode) || other.dnsSafetyMode == dnsSafetyMode)&&(identical(other.dnsProxyTarget, dnsProxyTarget) || other.dnsProxyTarget == dnsProxyTarget)&&const DeepCollectionEquality().equals(other.proxyGroups, proxyGroups)&&const DeepCollectionEquality().equals(other.rules, rules)&&const DeepCollectionEquality().equals(other.addedRules, addedRules)&&(identical(other.defaultUA, defaultUA) || other.defaultUA == defaultUA));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,profilesPath,profileId,const DeepCollectionEquality().hash(rawConfig),realPatchConfig,overrideDns,appendSystemDns,const DeepCollectionEquality().hash(proxyGroups),const DeepCollectionEquality().hash(rules),const DeepCollectionEquality().hash(addedRules),defaultUA);
+int get hashCode => Object.hash(runtimeType,profilesPath,profileId,const DeepCollectionEquality().hash(rawConfig),realPatchConfig,overrideDns,appendSystemDns,dnsSafetyMode,dnsProxyTarget,const DeepCollectionEquality().hash(proxyGroups),const DeepCollectionEquality().hash(rules),const DeepCollectionEquality().hash(addedRules),defaultUA);
 
 @override
 String toString() {
-  return 'MakeRealProfileState(profilesPath: $profilesPath, profileId: $profileId, rawConfig: $rawConfig, realPatchConfig: $realPatchConfig, overrideDns: $overrideDns, appendSystemDns: $appendSystemDns, proxyGroups: $proxyGroups, rules: $rules, addedRules: $addedRules, defaultUA: $defaultUA)';
+  return 'MakeRealProfileState(profilesPath: $profilesPath, profileId: $profileId, rawConfig: $rawConfig, realPatchConfig: $realPatchConfig, overrideDns: $overrideDns, appendSystemDns: $appendSystemDns, dnsSafetyMode: $dnsSafetyMode, dnsProxyTarget: $dnsProxyTarget, proxyGroups: $proxyGroups, rules: $rules, addedRules: $addedRules, defaultUA: $defaultUA)';
 }
 
 
@@ -9093,7 +9096,7 @@ abstract mixin class $MakeRealProfileStateCopyWith<$Res>  {
   factory $MakeRealProfileStateCopyWith(MakeRealProfileState value, $Res Function(MakeRealProfileState) _then) = _$MakeRealProfileStateCopyWithImpl;
 @useResult
 $Res call({
- String profilesPath, int profileId, Map<String, dynamic> rawConfig, PatchClashConfig realPatchConfig, bool overrideDns, bool appendSystemDns, List<ProxyGroup> proxyGroups, List<Rule> rules, List<Rule> addedRules, String defaultUA
+ String profilesPath, int profileId, Map<String, dynamic> rawConfig, PatchClashConfig realPatchConfig, bool overrideDns, bool appendSystemDns, DnsSafetyMode dnsSafetyMode, String dnsProxyTarget, List<ProxyGroup> proxyGroups, List<Rule> rules, List<Rule> addedRules, String defaultUA
 });
 
 
@@ -9110,7 +9113,7 @@ class _$MakeRealProfileStateCopyWithImpl<$Res>
 
 /// Create a copy of MakeRealProfileState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? profilesPath = null,Object? profileId = null,Object? rawConfig = null,Object? realPatchConfig = null,Object? overrideDns = null,Object? appendSystemDns = null,Object? proxyGroups = null,Object? rules = null,Object? addedRules = null,Object? defaultUA = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? profilesPath = null,Object? profileId = null,Object? rawConfig = null,Object? realPatchConfig = null,Object? overrideDns = null,Object? appendSystemDns = null,Object? dnsSafetyMode = null,Object? dnsProxyTarget = null,Object? proxyGroups = null,Object? rules = null,Object? addedRules = null,Object? defaultUA = null,}) {
   return _then(_self.copyWith(
 profilesPath: null == profilesPath ? _self.profilesPath : profilesPath // ignore: cast_nullable_to_non_nullable
 as String,profileId: null == profileId ? _self.profileId : profileId // ignore: cast_nullable_to_non_nullable
@@ -9118,7 +9121,9 @@ as int,rawConfig: null == rawConfig ? _self.rawConfig : rawConfig // ignore: cas
 as Map<String, dynamic>,realPatchConfig: null == realPatchConfig ? _self.realPatchConfig : realPatchConfig // ignore: cast_nullable_to_non_nullable
 as PatchClashConfig,overrideDns: null == overrideDns ? _self.overrideDns : overrideDns // ignore: cast_nullable_to_non_nullable
 as bool,appendSystemDns: null == appendSystemDns ? _self.appendSystemDns : appendSystemDns // ignore: cast_nullable_to_non_nullable
-as bool,proxyGroups: null == proxyGroups ? _self.proxyGroups : proxyGroups // ignore: cast_nullable_to_non_nullable
+as bool,dnsSafetyMode: null == dnsSafetyMode ? _self.dnsSafetyMode : dnsSafetyMode // ignore: cast_nullable_to_non_nullable
+as DnsSafetyMode,dnsProxyTarget: null == dnsProxyTarget ? _self.dnsProxyTarget : dnsProxyTarget // ignore: cast_nullable_to_non_nullable
+as String,proxyGroups: null == proxyGroups ? _self.proxyGroups : proxyGroups // ignore: cast_nullable_to_non_nullable
 as List<ProxyGroup>,rules: null == rules ? _self.rules : rules // ignore: cast_nullable_to_non_nullable
 as List<Rule>,addedRules: null == addedRules ? _self.addedRules : addedRules // ignore: cast_nullable_to_non_nullable
 as List<Rule>,defaultUA: null == defaultUA ? _self.defaultUA : defaultUA // ignore: cast_nullable_to_non_nullable
@@ -9216,10 +9221,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String profilesPath,  int profileId,  Map<String, dynamic> rawConfig,  PatchClashConfig realPatchConfig,  bool overrideDns,  bool appendSystemDns,  List<ProxyGroup> proxyGroups,  List<Rule> rules,  List<Rule> addedRules,  String defaultUA)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String profilesPath,  int profileId,  Map<String, dynamic> rawConfig,  PatchClashConfig realPatchConfig,  bool overrideDns,  bool appendSystemDns,  DnsSafetyMode dnsSafetyMode,  String dnsProxyTarget,  List<ProxyGroup> proxyGroups,  List<Rule> rules,  List<Rule> addedRules,  String defaultUA)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MakeRealProfileState() when $default != null:
-return $default(_that.profilesPath,_that.profileId,_that.rawConfig,_that.realPatchConfig,_that.overrideDns,_that.appendSystemDns,_that.proxyGroups,_that.rules,_that.addedRules,_that.defaultUA);case _:
+return $default(_that.profilesPath,_that.profileId,_that.rawConfig,_that.realPatchConfig,_that.overrideDns,_that.appendSystemDns,_that.dnsSafetyMode,_that.dnsProxyTarget,_that.proxyGroups,_that.rules,_that.addedRules,_that.defaultUA);case _:
   return orElse();
 
 }
@@ -9237,10 +9242,10 @@ return $default(_that.profilesPath,_that.profileId,_that.rawConfig,_that.realPat
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String profilesPath,  int profileId,  Map<String, dynamic> rawConfig,  PatchClashConfig realPatchConfig,  bool overrideDns,  bool appendSystemDns,  List<ProxyGroup> proxyGroups,  List<Rule> rules,  List<Rule> addedRules,  String defaultUA)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String profilesPath,  int profileId,  Map<String, dynamic> rawConfig,  PatchClashConfig realPatchConfig,  bool overrideDns,  bool appendSystemDns,  DnsSafetyMode dnsSafetyMode,  String dnsProxyTarget,  List<ProxyGroup> proxyGroups,  List<Rule> rules,  List<Rule> addedRules,  String defaultUA)  $default,) {final _that = this;
 switch (_that) {
 case _MakeRealProfileState():
-return $default(_that.profilesPath,_that.profileId,_that.rawConfig,_that.realPatchConfig,_that.overrideDns,_that.appendSystemDns,_that.proxyGroups,_that.rules,_that.addedRules,_that.defaultUA);case _:
+return $default(_that.profilesPath,_that.profileId,_that.rawConfig,_that.realPatchConfig,_that.overrideDns,_that.appendSystemDns,_that.dnsSafetyMode,_that.dnsProxyTarget,_that.proxyGroups,_that.rules,_that.addedRules,_that.defaultUA);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -9257,10 +9262,10 @@ return $default(_that.profilesPath,_that.profileId,_that.rawConfig,_that.realPat
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String profilesPath,  int profileId,  Map<String, dynamic> rawConfig,  PatchClashConfig realPatchConfig,  bool overrideDns,  bool appendSystemDns,  List<ProxyGroup> proxyGroups,  List<Rule> rules,  List<Rule> addedRules,  String defaultUA)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String profilesPath,  int profileId,  Map<String, dynamic> rawConfig,  PatchClashConfig realPatchConfig,  bool overrideDns,  bool appendSystemDns,  DnsSafetyMode dnsSafetyMode,  String dnsProxyTarget,  List<ProxyGroup> proxyGroups,  List<Rule> rules,  List<Rule> addedRules,  String defaultUA)?  $default,) {final _that = this;
 switch (_that) {
 case _MakeRealProfileState() when $default != null:
-return $default(_that.profilesPath,_that.profileId,_that.rawConfig,_that.realPatchConfig,_that.overrideDns,_that.appendSystemDns,_that.proxyGroups,_that.rules,_that.addedRules,_that.defaultUA);case _:
+return $default(_that.profilesPath,_that.profileId,_that.rawConfig,_that.realPatchConfig,_that.overrideDns,_that.appendSystemDns,_that.dnsSafetyMode,_that.dnsProxyTarget,_that.proxyGroups,_that.rules,_that.addedRules,_that.defaultUA);case _:
   return null;
 
 }
@@ -9272,7 +9277,7 @@ return $default(_that.profilesPath,_that.profileId,_that.rawConfig,_that.realPat
 
 
 class _MakeRealProfileState implements MakeRealProfileState {
-  const _MakeRealProfileState({required this.profilesPath, required this.profileId, required final  Map<String, dynamic> rawConfig, required this.realPatchConfig, required this.overrideDns, required this.appendSystemDns, required final  List<ProxyGroup> proxyGroups, required final  List<Rule> rules, required final  List<Rule> addedRules, required this.defaultUA}): _rawConfig = rawConfig,_proxyGroups = proxyGroups,_rules = rules,_addedRules = addedRules;
+  const _MakeRealProfileState({required this.profilesPath, required this.profileId, required final  Map<String, dynamic> rawConfig, required this.realPatchConfig, required this.overrideDns, required this.appendSystemDns, this.dnsSafetyMode = DnsSafetyMode.compatible, this.dnsProxyTarget = '', required final  List<ProxyGroup> proxyGroups, required final  List<Rule> rules, required final  List<Rule> addedRules, required this.defaultUA}): _rawConfig = rawConfig,_proxyGroups = proxyGroups,_rules = rules,_addedRules = addedRules;
   
 
 @override final  String profilesPath;
@@ -9287,6 +9292,8 @@ class _MakeRealProfileState implements MakeRealProfileState {
 @override final  PatchClashConfig realPatchConfig;
 @override final  bool overrideDns;
 @override final  bool appendSystemDns;
+@override@JsonKey() final  DnsSafetyMode dnsSafetyMode;
+@override@JsonKey() final  String dnsProxyTarget;
  final  List<ProxyGroup> _proxyGroups;
 @override List<ProxyGroup> get proxyGroups {
   if (_proxyGroups is EqualUnmodifiableListView) return _proxyGroups;
@@ -9320,16 +9327,16 @@ _$MakeRealProfileStateCopyWith<_MakeRealProfileState> get copyWith => __$MakeRea
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MakeRealProfileState&&(identical(other.profilesPath, profilesPath) || other.profilesPath == profilesPath)&&(identical(other.profileId, profileId) || other.profileId == profileId)&&const DeepCollectionEquality().equals(other._rawConfig, _rawConfig)&&(identical(other.realPatchConfig, realPatchConfig) || other.realPatchConfig == realPatchConfig)&&(identical(other.overrideDns, overrideDns) || other.overrideDns == overrideDns)&&(identical(other.appendSystemDns, appendSystemDns) || other.appendSystemDns == appendSystemDns)&&const DeepCollectionEquality().equals(other._proxyGroups, _proxyGroups)&&const DeepCollectionEquality().equals(other._rules, _rules)&&const DeepCollectionEquality().equals(other._addedRules, _addedRules)&&(identical(other.defaultUA, defaultUA) || other.defaultUA == defaultUA));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MakeRealProfileState&&(identical(other.profilesPath, profilesPath) || other.profilesPath == profilesPath)&&(identical(other.profileId, profileId) || other.profileId == profileId)&&const DeepCollectionEquality().equals(other._rawConfig, _rawConfig)&&(identical(other.realPatchConfig, realPatchConfig) || other.realPatchConfig == realPatchConfig)&&(identical(other.overrideDns, overrideDns) || other.overrideDns == overrideDns)&&(identical(other.appendSystemDns, appendSystemDns) || other.appendSystemDns == appendSystemDns)&&(identical(other.dnsSafetyMode, dnsSafetyMode) || other.dnsSafetyMode == dnsSafetyMode)&&(identical(other.dnsProxyTarget, dnsProxyTarget) || other.dnsProxyTarget == dnsProxyTarget)&&const DeepCollectionEquality().equals(other._proxyGroups, _proxyGroups)&&const DeepCollectionEquality().equals(other._rules, _rules)&&const DeepCollectionEquality().equals(other._addedRules, _addedRules)&&(identical(other.defaultUA, defaultUA) || other.defaultUA == defaultUA));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,profilesPath,profileId,const DeepCollectionEquality().hash(_rawConfig),realPatchConfig,overrideDns,appendSystemDns,const DeepCollectionEquality().hash(_proxyGroups),const DeepCollectionEquality().hash(_rules),const DeepCollectionEquality().hash(_addedRules),defaultUA);
+int get hashCode => Object.hash(runtimeType,profilesPath,profileId,const DeepCollectionEquality().hash(_rawConfig),realPatchConfig,overrideDns,appendSystemDns,dnsSafetyMode,dnsProxyTarget,const DeepCollectionEquality().hash(_proxyGroups),const DeepCollectionEquality().hash(_rules),const DeepCollectionEquality().hash(_addedRules),defaultUA);
 
 @override
 String toString() {
-  return 'MakeRealProfileState(profilesPath: $profilesPath, profileId: $profileId, rawConfig: $rawConfig, realPatchConfig: $realPatchConfig, overrideDns: $overrideDns, appendSystemDns: $appendSystemDns, proxyGroups: $proxyGroups, rules: $rules, addedRules: $addedRules, defaultUA: $defaultUA)';
+  return 'MakeRealProfileState(profilesPath: $profilesPath, profileId: $profileId, rawConfig: $rawConfig, realPatchConfig: $realPatchConfig, overrideDns: $overrideDns, appendSystemDns: $appendSystemDns, dnsSafetyMode: $dnsSafetyMode, dnsProxyTarget: $dnsProxyTarget, proxyGroups: $proxyGroups, rules: $rules, addedRules: $addedRules, defaultUA: $defaultUA)';
 }
 
 
@@ -9340,7 +9347,7 @@ abstract mixin class _$MakeRealProfileStateCopyWith<$Res> implements $MakeRealPr
   factory _$MakeRealProfileStateCopyWith(_MakeRealProfileState value, $Res Function(_MakeRealProfileState) _then) = __$MakeRealProfileStateCopyWithImpl;
 @override @useResult
 $Res call({
- String profilesPath, int profileId, Map<String, dynamic> rawConfig, PatchClashConfig realPatchConfig, bool overrideDns, bool appendSystemDns, List<ProxyGroup> proxyGroups, List<Rule> rules, List<Rule> addedRules, String defaultUA
+ String profilesPath, int profileId, Map<String, dynamic> rawConfig, PatchClashConfig realPatchConfig, bool overrideDns, bool appendSystemDns, DnsSafetyMode dnsSafetyMode, String dnsProxyTarget, List<ProxyGroup> proxyGroups, List<Rule> rules, List<Rule> addedRules, String defaultUA
 });
 
 
@@ -9357,7 +9364,7 @@ class __$MakeRealProfileStateCopyWithImpl<$Res>
 
 /// Create a copy of MakeRealProfileState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? profilesPath = null,Object? profileId = null,Object? rawConfig = null,Object? realPatchConfig = null,Object? overrideDns = null,Object? appendSystemDns = null,Object? proxyGroups = null,Object? rules = null,Object? addedRules = null,Object? defaultUA = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? profilesPath = null,Object? profileId = null,Object? rawConfig = null,Object? realPatchConfig = null,Object? overrideDns = null,Object? appendSystemDns = null,Object? dnsSafetyMode = null,Object? dnsProxyTarget = null,Object? proxyGroups = null,Object? rules = null,Object? addedRules = null,Object? defaultUA = null,}) {
   return _then(_MakeRealProfileState(
 profilesPath: null == profilesPath ? _self.profilesPath : profilesPath // ignore: cast_nullable_to_non_nullable
 as String,profileId: null == profileId ? _self.profileId : profileId // ignore: cast_nullable_to_non_nullable
@@ -9365,7 +9372,9 @@ as int,rawConfig: null == rawConfig ? _self._rawConfig : rawConfig // ignore: ca
 as Map<String, dynamic>,realPatchConfig: null == realPatchConfig ? _self.realPatchConfig : realPatchConfig // ignore: cast_nullable_to_non_nullable
 as PatchClashConfig,overrideDns: null == overrideDns ? _self.overrideDns : overrideDns // ignore: cast_nullable_to_non_nullable
 as bool,appendSystemDns: null == appendSystemDns ? _self.appendSystemDns : appendSystemDns // ignore: cast_nullable_to_non_nullable
-as bool,proxyGroups: null == proxyGroups ? _self._proxyGroups : proxyGroups // ignore: cast_nullable_to_non_nullable
+as bool,dnsSafetyMode: null == dnsSafetyMode ? _self.dnsSafetyMode : dnsSafetyMode // ignore: cast_nullable_to_non_nullable
+as DnsSafetyMode,dnsProxyTarget: null == dnsProxyTarget ? _self.dnsProxyTarget : dnsProxyTarget // ignore: cast_nullable_to_non_nullable
+as String,proxyGroups: null == proxyGroups ? _self._proxyGroups : proxyGroups // ignore: cast_nullable_to_non_nullable
 as List<ProxyGroup>,rules: null == rules ? _self._rules : rules // ignore: cast_nullable_to_non_nullable
 as List<Rule>,addedRules: null == addedRules ? _self._addedRules : addedRules // ignore: cast_nullable_to_non_nullable
 as List<Rule>,defaultUA: null == defaultUA ? _self.defaultUA : defaultUA // ignore: cast_nullable_to_non_nullable

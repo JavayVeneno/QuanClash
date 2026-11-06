@@ -11,4 +11,5 @@ export 'logs.dart';
 export 'profiles/profiles.dart';
 export 'proxies/proxies.dart';
 export 'resources.dart';
+export 'settings/settings_view.dart';
 export 'tools.dart';

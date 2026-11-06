@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+
+import 'dashboard_style.dart';
 
 final _memoryStateNotifier = ValueNotifier<num>(0);
 
@@ -48,52 +48,50 @@ class _MemoryInfoState extends State<MemoryInfo> {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
+    final quanX = context.quanX;
     return SizedBox(
-      height: getWidgetHeight(1),
-      child: RepaintBoundary(
-        child: CommonCard(
-          info: Info(
-            iconData: QuanXIcons.memoryStick,
-            label: appLocalizations.memoryInfo,
-          ),
-          onPressed: () {
-            coreController.requestGc();
-          },
-          child: Container(
-            padding: baseInfoEdgeInsets.copyWith(top: 0),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: globalState.measure.bodyMediumHeight + 2,
-                  child: ValueListenableBuilder(
-                    valueListenable: _memoryStateNotifier,
-                    builder: (_, memory, _) {
-                      final traffic = memory.traffic;
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            traffic.value,
-                            style: context.textTheme.bodyMedium?.toLight
-                                .adjustSize(1),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            traffic.unit,
-                            style: context.textTheme.bodyMedium?.toLight
-                                .adjustSize(1),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              ],
+      height: 96.ap,
+      child: DashboardCard(
+        onPressed: () {
+          coreController.requestGc();
+        },
+        padding: EdgeInsets.all(12.ap),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DashboardCardTitle(
+              icon: QuanXIcons.memoryStick,
+              color: DashboardPalette.orange,
+              title: appLocalizations.memoryInfo,
             ),
-          ),
+            const Spacer(),
+            ValueListenableBuilder(
+              valueListenable: _memoryStateNotifier,
+              builder: (_, memory, _) {
+                final traffic = memory.traffic;
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      traffic.value,
+                      style: context.textTheme.titleMedium?.copyWith(
+                        fontFamily: 'JetBrainsMono',
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      traffic.unit,
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: quanX.textSecondary,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

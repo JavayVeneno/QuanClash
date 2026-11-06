@@ -90,6 +90,114 @@ void main() {
   });
 
   group('config methods', () {
+    const setupParams = SetupParams(selectedMap: {}, testUrl: 'http://x.com');
+    const setupState = SetupState(
+      profileId: null,
+      profileLastUpdateDate: null,
+      overwriteType: OverwriteType.standard,
+      rules: [],
+      proxyGroups: [],
+      addedRules: [],
+      script: null,
+      overrideDns: false,
+      dns: Dns(),
+    );
+
+    test('setup waits for acknowledgment before starting listeners', () async {
+      final acknowledgment = Completer<String>();
+      var started = false;
+      when(
+        () => mock.setupConfig(setupParams),
+      ).thenAnswer((_) => acknowledgment.future);
+
+      final result = controller.setupConfig(
+        params: setupParams,
+        setupState: setupState,
+        preloadInvoke: () => started = true,
+      );
+      expect(started, false);
+      acknowledgment.complete('');
+      expect(await result, '');
+      expect(started, true);
+      verify(() => mock.setupConfig(setupParams)).called(1);
+    });
+
+    test('setup awaits the asynchronous listener startup callback', () async {
+      final startup = Completer<void>();
+      final invoked = Completer<void>();
+      var completed = false;
+      when(() => mock.setupConfig(setupParams)).thenAnswer((_) async => '');
+
+      final result = controller
+          .setupConfig(
+            params: setupParams,
+            setupState: setupState,
+            preloadInvoke: () async {
+              invoked.complete();
+              await startup.future;
+            },
+          )
+          .then((value) {
+            completed = true;
+            return value;
+          });
+      await invoked.future;
+      expect(completed, false);
+      startup.complete();
+      expect(await result, '');
+      expect(completed, true);
+    });
+
+    for (final error in [
+      'invalid DNS',
+      'configuration file is empty',
+      'core unavailable',
+    ]) {
+      test('setup error does not invoke listener startup: $error', () async {
+        var started = false;
+        when(
+          () => mock.setupConfig(setupParams),
+        ).thenAnswer((_) async => error);
+        expect(
+          await controller.setupConfig(
+            params: setupParams,
+            setupState: setupState,
+            preloadInvoke: () => started = true,
+          ),
+          error,
+        );
+        expect(started, false);
+      });
+    }
+
+    test('setup exception does not invoke listener startup', () async {
+      var started = false;
+      when(
+        () => mock.setupConfig(setupParams),
+      ).thenThrow(StateError('disconnected'));
+      await expectLater(
+        controller.setupConfig(
+          params: setupParams,
+          setupState: setupState,
+          preloadInvoke: () => started = true,
+        ),
+        throwsStateError,
+      );
+      expect(started, false);
+    });
+
+    test('setup propagates asynchronous listener startup failures', () async {
+      when(() => mock.setupConfig(setupParams)).thenAnswer((_) async => '');
+      await expectLater(
+        controller.setupConfig(
+          params: setupParams,
+          setupState: setupState,
+          preloadInvoke: () async => throw StateError('listener failed'),
+        ),
+        throwsStateError,
+      );
+    });
+
     test('validateConfig delegates to interface', () async {
       when(() => mock.validateConfig('/path')).thenAnswer((_) async => 'ok');
       final result = await controller.validateConfig('/path');

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/controller.dart';
+import 'package:fl_clash/core/node_quality.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/providers.dart';
@@ -18,6 +19,119 @@ class RealTunEnable extends _$RealTunEnable with AutoDisposeNotifierMixin {
   @override
   bool build() {
     return false;
+  }
+}
+
+/// 桌面窗口是否处于最大化状态，用于切换顶部 / 左侧导航。
+@Riverpod(keepAlive: true)
+class IsMaximized extends _$IsMaximized with AutoDisposeNotifierMixin {
+  @override
+  bool build() {
+    return false;
+  }
+}
+
+/// 各节点最近一次节点质量探测结果（仅内存，不持久化）。
+///
+/// 供仪表盘「风险指数」卡片与代理卡片的风险徽标展示；发起探测仍需用户在
+/// 对话框中显式选择 IPPure，这里只保留成功结果及其采样时间。
+@Riverpod(keepAlive: true)
+class NodeQualityResults extends _$NodeQualityResults
+    with AutoDisposeNotifierMixin<Map<String, NodeQualityResult>> {
+  @override
+  Map<String, NodeQualityResult> build() {
+    return const {};
+  }
+
+  void put(NodeQualityResult result) {
+    state = {...state, result.proxyName: result};
+  }
+
+  NodeQualityResult? forName(String proxyName) {
+    return state[proxyName];
+  }
+}
+
+/// 节点使用记录（本地持久化），供代理页「最近使用 / 常用节点」。
+///
+/// 只记录节点名、使用次数与最后使用时间，不上传，也不参与代理选择逻辑。
+@Riverpod(keepAlive: true)
+class NodeUsage extends _$NodeUsage
+    with AutoDisposeNotifierMixin<Map<String, NodeUsageEntry>> {
+  @override
+  Map<String, NodeUsageEntry> build() {
+    _load();
+    return const {};
+  }
+
+  Future<void> _load() async {
+    final raw = await preferences.getNodeUsageMap();
+    if (raw == null || !ref.mounted) {
+      return;
+    }
+    final parsed = <String, NodeUsageEntry>{};
+    for (final entry in raw.entries) {
+      final usage = NodeUsageEntry.fromJson(entry.value);
+      if (usage != null) {
+        parsed[entry.key] = usage;
+      }
+    }
+    // 加载前可能已经记录过一次选择，保留次数更高的那条。
+    for (final entry in state.entries) {
+      final stored = parsed[entry.key];
+      if (stored == null || entry.value.count >= stored.count) {
+        parsed[entry.key] = entry.value;
+      }
+    }
+    state = parsed;
+  }
+
+  void record(String proxyName) {
+    if (proxyName.isEmpty || !ref.mounted) {
+      return;
+    }
+    final previous = state[proxyName];
+    state = {
+      ...state,
+      proxyName: NodeUsageEntry(
+        count: (previous?.count ?? 0) + 1,
+        lastUsed: DateTime.now(),
+      ),
+    };
+    preferences.saveNodeUsageMap(
+      state.map((key, value) => MapEntry(key, value.toJson())),
+    );
+  }
+}
+
+/// 代理页节点分组方式（本地持久化，默认按地区）。
+@Riverpod(keepAlive: true)
+class ProxiesViewMode extends _$ProxiesViewMode
+    with AutoDisposeNotifierMixin<ProxiesGroupMode> {
+  @override
+  ProxiesGroupMode build() {
+    _load();
+    return ProxiesGroupMode.region;
+  }
+
+  Future<void> _load() async {
+    final value = await preferences.getProxiesGroupMode();
+    if (!ref.mounted) {
+      return;
+    }
+    final mode = ProxiesGroupMode.values.firstWhere(
+      (item) => item.name == value,
+      orElse: () => ProxiesGroupMode.region,
+    );
+    state = mode;
+  }
+
+  void updateMode(ProxiesGroupMode mode) {
+    if (state == mode) {
+      return;
+    }
+    state = mode;
+    preferences.saveProxiesGroupMode(mode.name);
   }
 }
 
@@ -390,9 +504,11 @@ class NetworkDetection extends _$NetworkDetection
     final cancelToken = CancelToken();
     final version = _resetCheckSession(cancelToken);
     commonPrint.log('checkIp start');
-    state = state.copyWith(isLoading: true, ipInfo: null);
+    state = state.copyWith(isLoading: true, ipInfo: null, delay: null);
     _preIsStart = isStart;
+    final stopwatch = Stopwatch()..start();
     final res = await request.checkIp(cancelToken: cancelToken);
+    stopwatch.stop();
     commonPrint.log('checkIp res: $res');
 
     if (!ref.mounted ||
@@ -405,7 +521,11 @@ class NetworkDetection extends _$NetworkDetection
       _delayTimeoutDisplay(version);
       return;
     }
-    state = state.copyWith(isLoading: false, ipInfo: ipInfo);
+    state = state.copyWith(
+      isLoading: false,
+      ipInfo: ipInfo,
+      delay: stopwatch.elapsedMilliseconds,
+    );
   }
 
   int _resetCheckSession(CancelToken? cancelToken) {
@@ -424,7 +544,7 @@ class NetworkDetection extends _$NetworkDetection
       if (!ref.mounted || version != _checkVersion || state.ipInfo != null) {
         return;
       }
-      state = state.copyWith(isLoading: false, ipInfo: null);
+      state = state.copyWith(isLoading: false, ipInfo: null, delay: null);
     });
   }
 

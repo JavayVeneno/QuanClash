@@ -41,25 +41,32 @@ class BuildConfig {
     distDir: 'dist',
   );
 
-  static BuildConfig load({required String rootDir}) {
+  static BuildConfig load({
+    required String rootDir,
+    Map<String, String>? environment,
+  }) {
+    final env = environment ?? Platform.environment;
+    final outputOverride = env['BUILDKIT_OUTPUT_DIR'];
     final configPath = p.join(rootDir, 'build_config.yaml');
     final file = File(configPath);
+    YamlMap? yaml;
     if (!file.existsSync()) {
       _log.fine('No build_config.yaml found, using defaults');
-      return _defaults;
+    } else {
+      yaml = loadYaml(file.readAsStringSync()) as YamlMap?;
     }
-    final yaml = loadYaml(file.readAsStringSync()) as YamlMap?;
-    if (yaml == null) return _defaults;
     return BuildConfig(
-      tags: yaml['tags'] as String? ?? _defaults.tags,
-      goLdflags: yaml['go_ldflags'] as String? ?? _defaults.goLdflags,
-      coreDir: yaml['core_dir'] as String? ?? _defaults.coreDir,
-      coreName: yaml['core_name'] as String? ?? _defaults.coreName,
-      libName: yaml['lib_name'] as String? ?? _defaults.libName,
-      outputDir: yaml['output_dir'] as String? ?? _defaults.outputDir,
-      helperDir: yaml['helper_dir'] as String? ?? _defaults.helperDir,
-      helperName: yaml['helper_name'] as String? ?? _defaults.helperName,
-      distDir: yaml['dist_dir'] as String? ?? _defaults.distDir,
+      tags: yaml?['tags'] as String? ?? _defaults.tags,
+      goLdflags: yaml?['go_ldflags'] as String? ?? _defaults.goLdflags,
+      coreDir: yaml?['core_dir'] as String? ?? _defaults.coreDir,
+      coreName: yaml?['core_name'] as String? ?? _defaults.coreName,
+      libName: yaml?['lib_name'] as String? ?? _defaults.libName,
+      outputDir: outputOverride?.isNotEmpty == true
+          ? p.normalize(p.absolute(p.join(rootDir, outputOverride!)))
+          : yaml?['output_dir'] as String? ?? _defaults.outputDir,
+      helperDir: yaml?['helper_dir'] as String? ?? _defaults.helperDir,
+      helperName: yaml?['helper_name'] as String? ?? _defaults.helperName,
+      distDir: yaml?['dist_dir'] as String? ?? _defaults.distDir,
     );
   }
 }

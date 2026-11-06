@@ -7,7 +7,7 @@ class Migration {
 
   Migration._internal();
 
-  final currentVersion = 1;
+  final currentVersion = 2;
 
   factory Migration() {
     _instance ??= Migration._internal();
@@ -40,9 +40,24 @@ class Migration {
       }
       data = await _oldToNow(configMap);
     }
+    if (_oldVersion <= 1 && configMap != null) {
+      data = _v1ToV2(data);
+    }
     final res = await sync(data);
     await preferences.setVersion(currentVersion);
     return res;
+  }
+
+  /// v2：旧版本默认主色（玫瑰粉）统一到设计稿靛蓝。
+  ///
+  /// 只迁移「仍是旧默认值」的配置；用户主动选过的其他颜色保持不变。
+  MigrationData _v1ToV2(MigrationData data) {
+    final themeProps = data.configMap?['themeProps'];
+    if (themeProps is Map &&
+        themeProps['primaryColor'] == legacyDefaultPrimaryColor) {
+      themeProps['primaryColor'] = defaultPrimaryColor;
+    }
+    return data;
   }
 
   Future<MigrationData> _oldToNow(Map<String, Object?> configMap) async {

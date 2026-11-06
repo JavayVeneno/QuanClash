@@ -100,14 +100,32 @@ class CoreController {
     return _interface.updateConfig(updateParams);
   }
 
+  Future<DnsDiagnostic> getDnsDiagnostic() async {
+    return DnsDiagnostic.fromJson(await _interface.getDnsDiagnostic());
+  }
+
+  Future<NodeQualityResult> testNodeQuality(
+    String proxyName, {
+    required bool includeIpPure,
+  }) async {
+    final result = NodeQualityResult.fromJson(
+      await _interface.testNodeQuality(proxyName, includeIpPure: includeIpPure),
+    );
+    if (!result.matchesRequest(proxyName, includeIpPure: includeIpPure)) {
+      throw const FormatException('Unexpected node quality response');
+    }
+    return result;
+  }
+
   Future<String> setupConfig({
     required SetupParams params,
     required SetupState setupState,
-    VoidCallback? preloadInvoke,
+    FutureOr<void> Function()? preloadInvoke,
   }) async {
-    final res = _interface.setupConfig(params);
-    if (preloadInvoke != null) {
-      preloadInvoke();
+    final res = await _interface.setupConfig(params);
+    // Never start listeners before the core acknowledges the DNS/routing policy.
+    if (res.isEmpty && preloadInvoke != null) {
+      await preloadInvoke();
     }
     return res;
   }
@@ -140,6 +158,58 @@ class CoreController {
     final connectionsRaw = connectionsData['connections'] as List? ?? [];
     return connectionsRaw.map((e) => TrackerInfo.fromJson(e)).toList();
   }
+
+  Future<ConnectionUpdatePacket> getConnectionUpdates(String cursor) async {
+    final response = await _interface.getConnectionUpdates(cursor);
+    if (response == null) {
+      throw StateError('Connection updates unavailable');
+    }
+    return ConnectionUpdatePacket.fromJson(response);
+  }
+
+  Future<TrafficClassSnapshot> getTrafficClassState() async =>
+      TrafficClassSnapshot.fromJson(await _interface.getTrafficClassState());
+
+  Future<TrafficClassSnapshot> setTrafficClasses(
+    TrafficClassConfig config,
+    String expectedRevision,
+  ) async {
+    // Validate even with an injected handler, before allowing any write.
+    config.encodeRequest(expectedRevision);
+    final snapshot = TrafficClassSnapshot.fromJson(
+      await _interface.setTrafficClasses(config, expectedRevision),
+    );
+    snapshot.validateAcknowledgment(config, expectedRevision);
+    return snapshot;
+  }
+
+  /// The owner must invalidate before core/profile changes. This opt-in session
+  /// prepares volatile config only; it does not activate traffic enforcement.
+  TrafficClassSession createTrafficClassSession({
+    Duration requestTimeout = const Duration(seconds: 5),
+  }) => TrafficClassSession(
+    read: getTrafficClassState,
+    write: setTrafficClasses,
+    requestTimeout: requestTimeout,
+  );
+
+  Future<LegacyConnectionSnapshot> getLegacyConnectionSnapshot() async {
+    final response = jsonDecode(await _interface.getConnections());
+    if (response is! Map<String, dynamic>) {
+      throw const FormatException('Invalid legacy connection snapshot');
+    }
+    return LegacyConnectionSnapshot.fromJson(response);
+  }
+
+  /// No automatic polling or lifecycle subscriptions. The owner must invalidate
+  /// this session before core/config changes and dispose it with its view.
+  ConnectionInspectionSession createConnectionInspectionSession({
+    Duration requestTimeout = const Duration(seconds: 5),
+  }) => ConnectionInspectionSession(
+    readUpdates: getConnectionUpdates,
+    readLegacy: getLegacyConnectionSnapshot,
+    requestTimeout: requestTimeout,
+  );
 
   Future<void> closeConnection(String id) async {
     await _interface.closeConnection(id);

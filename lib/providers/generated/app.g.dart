@@ -61,6 +61,275 @@ abstract class _$RealTunEnable extends $Notifier<bool> {
   }
 }
 
+/// 桌面窗口是否处于最大化状态，用于切换顶部 / 左侧导航。
+
+@ProviderFor(IsMaximized)
+final isMaximizedProvider = IsMaximizedProvider._();
+
+/// 桌面窗口是否处于最大化状态，用于切换顶部 / 左侧导航。
+final class IsMaximizedProvider extends $NotifierProvider<IsMaximized, bool> {
+  /// 桌面窗口是否处于最大化状态，用于切换顶部 / 左侧导航。
+  IsMaximizedProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'isMaximizedProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$isMaximizedHash();
+
+  @$internal
+  @override
+  IsMaximized create() => IsMaximized();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$isMaximizedHash() => r'06b832e1df61c709f09927b64e5d2229e1964bc8';
+
+/// 桌面窗口是否处于最大化状态，用于切换顶部 / 左侧导航。
+
+abstract class _$IsMaximized extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// 各节点最近一次节点质量探测结果（仅内存，不持久化）。
+///
+/// 供仪表盘「风险指数」卡片与代理卡片的风险徽标展示；发起探测仍需用户在
+/// 对话框中显式选择 IPPure，这里只保留成功结果及其采样时间。
+
+@ProviderFor(NodeQualityResults)
+final nodeQualityResultsProvider = NodeQualityResultsProvider._();
+
+/// 各节点最近一次节点质量探测结果（仅内存，不持久化）。
+///
+/// 供仪表盘「风险指数」卡片与代理卡片的风险徽标展示；发起探测仍需用户在
+/// 对话框中显式选择 IPPure，这里只保留成功结果及其采样时间。
+final class NodeQualityResultsProvider
+    extends
+        $NotifierProvider<NodeQualityResults, Map<String, NodeQualityResult>> {
+  /// 各节点最近一次节点质量探测结果（仅内存，不持久化）。
+  ///
+  /// 供仪表盘「风险指数」卡片与代理卡片的风险徽标展示；发起探测仍需用户在
+  /// 对话框中显式选择 IPPure，这里只保留成功结果及其采样时间。
+  NodeQualityResultsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'nodeQualityResultsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$nodeQualityResultsHash();
+
+  @$internal
+  @override
+  NodeQualityResults create() => NodeQualityResults();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<String, NodeQualityResult> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<String, NodeQualityResult>>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$nodeQualityResultsHash() =>
+    r'613d460f37d8237210e430c3af6da1534debe3b5';
+
+/// 各节点最近一次节点质量探测结果（仅内存，不持久化）。
+///
+/// 供仪表盘「风险指数」卡片与代理卡片的风险徽标展示；发起探测仍需用户在
+/// 对话框中显式选择 IPPure，这里只保留成功结果及其采样时间。
+
+abstract class _$NodeQualityResults
+    extends $Notifier<Map<String, NodeQualityResult>> {
+  Map<String, NodeQualityResult> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              Map<String, NodeQualityResult>,
+              Map<String, NodeQualityResult>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                Map<String, NodeQualityResult>,
+                Map<String, NodeQualityResult>
+              >,
+              Map<String, NodeQualityResult>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// 节点使用记录（本地持久化），供代理页「最近使用 / 常用节点」。
+///
+/// 只记录节点名、使用次数与最后使用时间，不上传，也不参与代理选择逻辑。
+
+@ProviderFor(NodeUsage)
+final nodeUsageProvider = NodeUsageProvider._();
+
+/// 节点使用记录（本地持久化），供代理页「最近使用 / 常用节点」。
+///
+/// 只记录节点名、使用次数与最后使用时间，不上传，也不参与代理选择逻辑。
+final class NodeUsageProvider
+    extends $NotifierProvider<NodeUsage, Map<String, NodeUsageEntry>> {
+  /// 节点使用记录（本地持久化），供代理页「最近使用 / 常用节点」。
+  ///
+  /// 只记录节点名、使用次数与最后使用时间，不上传，也不参与代理选择逻辑。
+  NodeUsageProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'nodeUsageProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$nodeUsageHash();
+
+  @$internal
+  @override
+  NodeUsage create() => NodeUsage();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<String, NodeUsageEntry> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<String, NodeUsageEntry>>(value),
+    );
+  }
+}
+
+String _$nodeUsageHash() => r'39249b900752ba9dbffd8113217c3a8a083a865d';
+
+/// 节点使用记录（本地持久化），供代理页「最近使用 / 常用节点」。
+///
+/// 只记录节点名、使用次数与最后使用时间，不上传，也不参与代理选择逻辑。
+
+abstract class _$NodeUsage extends $Notifier<Map<String, NodeUsageEntry>> {
+  Map<String, NodeUsageEntry> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<Map<String, NodeUsageEntry>, Map<String, NodeUsageEntry>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                Map<String, NodeUsageEntry>,
+                Map<String, NodeUsageEntry>
+              >,
+              Map<String, NodeUsageEntry>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// 代理页节点分组方式（本地持久化，默认按地区）。
+
+@ProviderFor(ProxiesViewMode)
+final proxiesViewModeProvider = ProxiesViewModeProvider._();
+
+/// 代理页节点分组方式（本地持久化，默认按地区）。
+final class ProxiesViewModeProvider
+    extends $NotifierProvider<ProxiesViewMode, ProxiesGroupMode> {
+  /// 代理页节点分组方式（本地持久化，默认按地区）。
+  ProxiesViewModeProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'proxiesViewModeProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$proxiesViewModeHash();
+
+  @$internal
+  @override
+  ProxiesViewMode create() => ProxiesViewMode();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ProxiesGroupMode value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ProxiesGroupMode>(value),
+    );
+  }
+}
+
+String _$proxiesViewModeHash() => r'5050a72a0ee4205e19659c2b301f211b4d4a8d3f';
+
+/// 代理页节点分组方式（本地持久化，默认按地区）。
+
+abstract class _$ProxiesViewMode extends $Notifier<ProxiesGroupMode> {
+  ProxiesGroupMode build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<ProxiesGroupMode, ProxiesGroupMode>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<ProxiesGroupMode, ProxiesGroupMode>,
+              ProxiesGroupMode,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 @ProviderFor(Logs)
 final logsProvider = LogsProvider._();
 
@@ -1791,7 +2060,7 @@ final class NetworkDetectionProvider
   }
 }
 
-String _$networkDetectionHash() => r'1cab20d67ec54321b4dbba9d971cd80e98542e23';
+String _$networkDetectionHash() => r'c741637d01b1c6b8edcf1b7a53cac50ebced7af1';
 
 abstract class _$NetworkDetection extends $Notifier<NetworkDetectionState> {
   NetworkDetectionState build();
