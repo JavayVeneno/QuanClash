@@ -1,5 +1,5 @@
-name: fl_clash
-description: A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.
+name: quanclash
+description: QuanClash - a desktop-focused multi-platform proxy client built on mihomo.
 publish_to: 'none'
 version: 0.8.94+2026071102
 environment:

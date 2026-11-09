@@ -1,10 +1,10 @@
 import 'package:animations/animations.dart';
 import 'package:collection/collection.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/providers/app.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/inherited.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/providers/app.dart';
+import 'package:quanclash/state.dart';
+import 'package:quanclash/widgets/inherited.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:fl_clash/common/common.dart';
+import 'package:quanclash/common/common.dart';
 import 'package:flutter/material.dart';
 
 /// 设置页设计令牌：品牌紫、浅紫底座与浅灰紫背景。

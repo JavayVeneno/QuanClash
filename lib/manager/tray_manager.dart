@@ -1,6 +1,6 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/providers/action.dart';
-import 'package:fl_clash/providers/state.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/providers/action.dart';
+import 'package:quanclash/providers/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tray_manager/tray_manager.dart';

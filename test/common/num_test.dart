@@ -1,4 +1,4 @@
-import 'package:fl_clash/common/num.dart';
+import 'package:quanclash/common/num.dart';
 import 'package:test/test.dart';
 
 void main() {

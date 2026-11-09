@@ -1,5 +1,5 @@
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/models/models.dart';
 
 /// 代理页的一个分区（地区、最近使用、常用节点、供应商信息等）。
 class ProxySection {

@@ -1,5 +1,5 @@
-import 'package:fl_clash/common/glass.dart';
-import 'package:fl_clash/common/quanx.dart';
+import 'package:quanclash/common/glass.dart';
+import 'package:quanclash/common/quanx.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

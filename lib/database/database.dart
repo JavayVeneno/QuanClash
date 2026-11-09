@@ -5,9 +5,9 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/models/models.dart';
 
 part 'converter.dart';
 part 'generated/database.g.dart';

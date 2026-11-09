@@ -1,6 +1,6 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/state.dart';
+import 'package:quanclash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 class InfoMessageButton extends StatelessWidget {

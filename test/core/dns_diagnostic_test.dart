@@ -1,8 +1,8 @@
-import 'package:fl_clash/core/controller.dart';
-import 'package:fl_clash/core/dns_diagnostic.dart';
-import 'package:fl_clash/core/interface.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/core.dart';
+import 'package:quanclash/core/controller.dart';
+import 'package:quanclash/core/dns_diagnostic.dart';
+import 'package:quanclash/core/interface.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/models/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

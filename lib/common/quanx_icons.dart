@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 
 /// Lucide 线性图标(Lucide 图标集,ISC 许可)。
 ///
-/// 子集化后嵌入 `assets/fonts/Lucide.ttf`,与 FlClash 原生的
+/// 子集化后嵌入 `assets/fonts/Lucide.ttf`,与上游原生的
 /// Material 图标拉开风格差异:统一 1.5px 圆头细线,接近 iOS 观感。
 /// 常量名对应 lucide 图标名(如 `layout-dashboard` -> `layoutDashboard`)。
 class QuanXIcons {

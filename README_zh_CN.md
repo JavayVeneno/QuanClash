@@ -1,141 +1,87 @@
-<div>
+<div align="center">
 
-[**English**](README.md)
+# QuanClash
+
+基于 mihomo 的桌面优先、多平台代理客户端。
+
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/JavayVeneno/quanclash)](https://github.com/JavayVeneno/quanclash/releases)
+
+[English](README.md)
 
 </div>
 
-## QuanClash
+## 项目简介
 
-> QuanClash 是基于 [FlClash](https://github.com/chen08209/FlClash) 的桌面定制分支：毛玻璃视觉体系、顶部图标导航与托盘小面板。
+QuanClash 是一个基于 Flutter 的代理客户端，支持 Windows、macOS、Linux 和
+Android。数据面使用 [mihomo](https://github.com/MetaCubeX/mihomo)
+（Clash.Meta），交互以桌面端为主：应用内毛玻璃视觉体系、顶部图标导航、固定
+仪表盘布局，以及可直接启停和切换节点的托盘面板。
 
-[![Downloads](https://img.shields.io/github/downloads/chen08209/FlClash/total?style=flat-square&logo=github)](https://github.com/chen08209/FlClash/releases/)[![Last Version](https://img.shields.io/github/release/chen08209/FlClash/all.svg?style=flat-square)](https://github.com/chen08209/FlClash/releases/)[![License](https://img.shields.io/github/license/chen08209/FlClash?style=flat-square)](LICENSE)
+本项目是 [FlClash](https://github.com/chen08209/FlClash) 的修改版本，继续采用
+GPL-3.0 许可证，上游署名与修改说明见 [NOTICE](NOTICE)。
 
-[![Channel](https://img.shields.io/badge/Telegram-Channel-blue?style=flat-square&logo=telegram)](https://t.me/FlClash)
+## 功能
 
-基于ClashMeta的多平台代理客户端，简单易用，开源无广告。
+- 一套 Flutter 代码覆盖 Windows、macOS、Linux 和 Android。
+- 毛玻璃界面，支持浅色/深色主题与纯黑模式。
+- 顶部图标导航、桌面固定仪表盘、magpie 式托盘面板。
+- 订阅配置、规则/脚本覆写、WebDAV 同步与系统代理。
+- TUN、TCP/UDP DNS，以及显式的 DNS 安全模式
+  （`compatible`、`proxyOnly`、`custom`）和只读 DNS 路径诊断。
+- 手动节点质量检测（Cloudflare 与可选 IPPure），与默认延迟排序分离。
+- 增量连接检查与 TrafficClass 分类正在现有连接/统计管线之上逐步接入。
 
-on Desktop:
-<p style="text-align: center;">
-    <img alt="desktop" src="snapshots/desktop.gif">
-</p>
+## 下载
 
-on Mobile:
-<p style="text-align: center;">
-    <img alt="mobile" src="snapshots/mobile.gif">
-</p>
+构建产物发布在 [Releases](https://github.com/JavayVeneno/quanclash/releases)
+页面，每个版本包含对应平台的 Android APK、Windows 安装包/便携包、macOS DMG
+和 Linux 安装包。
 
-## Features
+## 构建
 
-✈️ 多平台: Android, Windows, macOS and Linux
+1. 更新子模块：
 
-💻 自适应多个屏幕尺寸,多种颜色主题可供选择
-
-💡 基本 Material You 设计, 类[Surfboard](https://github.com/getsurfboard/surfboard)用户界面
-
-☁️ 支持通过WebDAV同步数据
-
-✨ 支持一键导入订阅, 深色模式
-
-## Use
-
-### Linux
-
-⚠️ 使用前请确保安装以下依赖
-
-   ```bash
-    sudo apt-get install libayatana-appindicator3-dev
-    sudo apt-get install libkeybinder-3.0-dev
-   ```
-
-### Android
-
-支持下列操作
-
-   ```bash
-    com.quanclash.app.action.START
-    
-    com.quanclash.app.action.STOP
-    
-    com.quanclash.app.action.TOGGLE
-   ```
-
-## Download
-
-<a href="https://chen08209.github.io/FlClash-fdroid-repo/repo?fingerprint=789D6D32668712EF7672F9E58DEEB15FBD6DCEEC5AE7A4371EA72F2AAE8A12FD"><img alt="Get it on F-Droid" src="snapshots/get-it-on-fdroid.svg" width="200px"/></a> <a href="https://github.com/chen08209/FlClash/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
-
-### Homebrew
-
-```bash
-brew tap chen08209/tap
-brew install --cask flclash
-```
-
-## Build
-
-1. 更新 submodules
    ```bash
    git submodule update --init --recursive
    ```
 
-2. 安装 `Flutter` 以及 `Golang` 环境
+2. 安装 Flutter 与 Go。CI 使用 Flutter 3.44.4，Go 版本以 `core/go.mod` 为准。
 
-3. 构建应用
+3. 构建当前平台（或 Android）：
 
-    - android
+   ```bash
+   dart setup.dart android
+   dart setup.dart windows
+   dart setup.dart linux
+   dart setup.dart macos
+   ```
 
-        1. 安装  `Android SDK` ,  `Android NDK`
+   - **Linux**：先安装 GTK 与 keybinder 依赖：
+     `sudo apt-get install libayatana-appindicator3-dev libkeybinder-3.0-dev`
+   - **Windows**：安装 GCC 与 Inno Setup。
+   - **Android**：安装 Android SDK/NDK，并设置 `ANDROID_NDK`。
+   - **macOS**：安装 `appdmg`（`npm install -g appdmg`）。
 
-        2. 设置 `ANDROID_NDK` 环境变量
+仅调试核心时，参考 [.agents/commands.md](.agents/commands.md)。
 
-        3. 运行构建脚本
+## 目录结构
 
-           ```bash
-           dart setup.dart android
-           ```
+- `lib/`：Flutter 应用（界面、管理器、Provider、核心通信）。
+- `core/`：mihomo 内核的 Go 封装，以及 QuanClash 自有动作。
+- `core/Clash.Meta/`：mihomo 子模块（GPL-3.0）。
+- `plugins/`：本地 Flutter 插件（Rust API、构建工具、平台辅助）。
+- `.agents/`：工程说明、架构文档与核心路线图。
 
-    - windows
+## 许可证与署名
 
-        1. 你需要一个windows客户端
+QuanClash 以 **GNU General Public License v3.0** 发布，详见
+[LICENSE](LICENSE) 与 [NOTICE](NOTICE)。
 
-        2. 安装 `GCC`，`Inno Setup`
+- 上游项目：[FlClash](https://github.com/chen08209/FlClash)，
+  Copyright (C) chen08209 及贡献者，GPL-3.0。
+- 数据面：[mihomo / Clash.Meta](https://github.com/MetaCubeX/mihomo)，GPL-3.0。
 
-        3. 运行构建脚本
-
-           ```bash
-           dart setup.dart windows
-           ```
-
-    - linux
-
-        1. 你需要一个linux客户端
-
-        2. 依赖会由 setup 脚本自动安装，也可以手动安装：
-           ```bash
-           sudo apt-get install -y libayatana-appindicator3-dev libkeybinder-3.0-dev
-           ```
-
-        3. 运行构建脚本
-
-           ```bash
-           dart setup.dart linux
-           ```
-
-    - macOS
-
-        1. 你需要一个macOS客户端
-
-        2. 运行构建脚本
-
-           ```bash
-           dart setup.dart macos
-           ```
-
-## Star
-
-支持开发者的最简单方式是点击页面顶部的星标（⭐）。
-
-<p style="text-align: center;">
-    <a href="https://api.star-history.com/svg?repos=chen08209/FlClash&Date">
-        <img alt="start" width=50% src="https://api.star-history.com/svg?repos=chen08209/FlClash&Date"/>
-    </a>
-</p>
+本分支的修改包括品牌替换、桌面界面重做、DNS 安全配置与诊断、节点质量检测、
+增量连接检查以及 TrafficClass 基础工作；具体变更记录在 git 历史与 `.agents/`
+目录中。

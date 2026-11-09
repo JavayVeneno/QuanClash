@@ -5,11 +5,11 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:ffi/ffi.dart';
-import 'package:fl_clash/core/connection_inspection_session.dart';
-import 'package:fl_clash/core/controller.dart';
-import 'package:fl_clash/core/transport.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:quanclash/core/connection_inspection_session.dart';
+import 'package:quanclash/core/controller.dart';
+import 'package:quanclash/core/transport.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/models/models.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;

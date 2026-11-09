@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:fl_clash/core/connection_updates.dart';
+import 'package:quanclash/core/connection_updates.dart';
 
 String inspectionId(int n) =>
     '00000000-0000-4000-8000-${n.toRadixString(16).padLeft(12, '0')}';

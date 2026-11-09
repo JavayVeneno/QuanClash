@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/core/controller.dart';
-import 'package:fl_clash/core/node_quality.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/providers/providers.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/core/controller.dart';
+import 'package:quanclash/core/node_quality.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/models/models.dart';
+import 'package:quanclash/providers/providers.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:wifi_ssid/wifi_ssid.dart';

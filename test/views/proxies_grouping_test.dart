@@ -1,6 +1,6 @@
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/views/proxies/grouping.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/models/models.dart';
+import 'package:quanclash/views/proxies/grouping.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Proxy _proxy(String name) => Proxy(name: name, type: 'Vmess');

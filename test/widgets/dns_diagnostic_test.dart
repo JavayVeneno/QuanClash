@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:fl_clash/common/theme.dart';
-import 'package:fl_clash/core/dns_diagnostic.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/l10n/l10n.dart';
-import 'package:fl_clash/providers/app.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/views/config/dns_diagnostic.dart';
+import 'package:quanclash/common/theme.dart';
+import 'package:quanclash/core/dns_diagnostic.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/l10n/l10n.dart';
+import 'package:quanclash/providers/app.dart';
+import 'package:quanclash/state.dart';
+import 'package:quanclash/views/config/dns_diagnostic.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

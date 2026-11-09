@@ -2,10 +2,10 @@
 
 import 'dart:io';
 
-import 'package:fl_clash/common/context.dart';
-import 'package:fl_clash/common/system.dart';
-import 'package:fl_clash/views/dashboard/widgets/widgets.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:quanclash/common/context.dart';
+import 'package:quanclash/common/system.dart';
+import 'package:quanclash/views/dashboard/widgets/widgets.dart';
+import 'package:quanclash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

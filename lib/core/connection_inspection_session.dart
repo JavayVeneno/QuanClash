@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:fl_clash/models/models.dart';
+import 'package:quanclash/models/models.dart';
 
 import 'connection_updates.dart';
 

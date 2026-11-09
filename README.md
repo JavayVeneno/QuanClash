@@ -1,141 +1,96 @@
-<div>
+<div align="center">
 
-[**简体中文**](README_zh_CN.md)
+# QuanClash
+
+A desktop-focused, multi-platform proxy client built on mihomo.
+
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/JavayVeneno/quanclash)](https://github.com/JavayVeneno/quanclash/releases)
+
+[简体中文](README_zh_CN.md)
 
 </div>
 
-## QuanClash
+## What is QuanClash?
 
-> QuanClash 是基于 [FlClash](https://github.com/chen08209/FlClash) 的桌面定制分支:毛玻璃视觉体系、顶部图标导航与托盘小面板。
+QuanClash is a Flutter-based proxy client for Windows, macOS, Linux and Android.
+It uses [mihomo](https://github.com/MetaCubeX/mihomo) (Clash.Meta) as its data
+plane and focuses on a desktop-first experience: an in-app frosted-glass visual
+system, top icon navigation, a fixed dashboard layout and a tray panel that can
+start, stop and switch nodes without opening the main window.
 
-[![Downloads](https://img.shields.io/github/downloads/chen08209/FlClash/total?style=flat-square&logo=github)](https://github.com/chen08209/FlClash/releases/)[![Last Version](https://img.shields.io/github/release/chen08209/FlClash/all.svg?style=flat-square)](https://github.com/chen08209/FlClash/releases/)[![License](https://img.shields.io/github/license/chen08209/FlClash?style=flat-square)](LICENSE)
-
-[![Channel](https://img.shields.io/badge/Telegram-Channel-blue?style=flat-square&logo=telegram)](https://t.me/FlClash)
-
-A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.
-
-on Desktop:
-<p style="text-align: center;">
-    <img alt="desktop" src="snapshots/desktop.gif">
-</p>
-
-on Mobile:
-<p style="text-align: center;">
-    <img alt="mobile" src="snapshots/mobile.gif">
-</p>
+The project is a modified version of [FlClash](https://github.com/chen08209/FlClash).
+It keeps the GPL-3.0 license and documents the upstream attribution in
+[NOTICE](NOTICE).
 
 ## Features
 
-✈️ Multi-platform: Android, Windows, macOS and Linux
-
-💻 Adaptive multiple screen sizes, Multiple color themes available
-
-💡 Based on Material You Design, [Surfboard](https://github.com/getsurfboard/surfboard)-like UI
-
-☁️ Supports data sync via WebDAV
-
-✨ Support subscription link, Dark mode
-
-## Use
-
-### Linux
-
-⚠️ Make sure to install the following dependencies before using them
-
-   ```bash
-    sudo apt-get install libayatana-appindicator3-dev
-    sudo apt-get install libkeybinder-3.0-dev
-   ```
-
-### Android
-
-Support the following actions
-
-   ```bash
-    com.quanclash.app.action.START
-    
-    com.quanclash.app.action.STOP
-    
-    com.quanclash.app.action.TOGGLE
-   ```
+- Windows, macOS, Linux and Android from one Flutter codebase.
+- Frosted-glass UI with light and dark themes, plus a pure-black mode.
+- Top icon navigation, fixed desktop dashboard and a magpie-style tray panel.
+- Subscription profiles, rule/script overrides, WebDAV sync and system proxy.
+- TUN mode, TCP/UDP DNS and an explicit DNS safety model
+  (`compatible`, `proxyOnly`, `custom`) with a read-only DNS path diagnostic.
+- Manual node-quality checks (Cloudflare and opt-in IPPure) kept separate from
+  the default latency ranking.
+- Incremental connection inspection and TrafficClass classification are being
+  built on top of the existing connection and statistics pipeline.
 
 ## Download
 
-<a href="https://chen08209.github.io/FlClash-fdroid-repo/repo?fingerprint=789D6D32668712EF7672F9E58DEEB15FBD6DCEEC5AE7A4371EA72F2AAE8A12FD"><img alt="Get it on F-Droid" src="snapshots/get-it-on-fdroid.svg" width="200px"/></a> <a href="https://github.com/chen08209/FlClash/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
-
-### Homebrew
-
-```bash
-brew tap chen08209/tap
-brew install --cask flclash
-```
+Builds are published on the
+[Releases](https://github.com/JavayVeneno/quanclash/releases) page. Each release
+contains the Android APKs, Windows installer/portable zip, macOS DMGs and Linux
+packages that were built for that tag.
 
 ## Build
 
-1. Update submodules
+1. Update submodules:
+
    ```bash
    git submodule update --init --recursive
    ```
 
-2. Install `Flutter` and `Golang` environment
+2. Install Flutter and Go. CI uses Flutter 3.44.4 and the Go version declared
+   in `core/go.mod`.
 
-3. Build Application
+3. Build the app for the current platform (or Android):
 
-    - android
+   ```bash
+   dart setup.dart android
+   dart setup.dart windows
+   dart setup.dart linux
+   dart setup.dart macos
+   ```
 
-        1. Install `Android SDK`, `Android NDK`
+   - **Linux:** install the GTK and keybinder dependencies first:
+     `sudo apt-get install libayatana-appindicator3-dev libkeybinder-3.0-dev`
+   - **Windows:** install GCC and Inno Setup.
+   - **Android:** install the Android SDK and NDK, and set `ANDROID_NDK`.
+   - **macOS:** install `appdmg` (`npm install -g appdmg`).
 
-        2. Set `ANDROID_NDK` environment variable
+For core-only work, see the commands in [.agents/commands.md](.agents/commands.md).
 
-        3. Run build script
+## Project layout
 
-           ```bash
-           dart setup.dart android
-           ```
+- `lib/` — Flutter application (UI, managers, providers, core transport).
+- `core/` — Go wrapper around the mihomo core plus QuanClash-specific actions.
+- `core/Clash.Meta/` — mihomo submodule (GPL-3.0).
+- `plugins/` — local Flutter plugins (Rust API, setup/build tooling, platform
+  helpers).
+- `.agents/` — engineering notes, architecture and the core roadmap.
 
-    - windows
+## License and attribution
 
-        1. Requires a Windows client
+QuanClash is free software under the **GNU General Public License v3.0**. See
+[LICENSE](LICENSE) and [NOTICE](NOTICE).
 
-        2. Install `GCC`, `Inno Setup`
+- Upstream project: [FlClash](https://github.com/chen08209/FlClash),
+  Copyright (C) chen08209 and contributors, GPL-3.0.
+- Data plane: [mihomo / Clash.Meta](https://github.com/MetaCubeX/mihomo),
+  GPL-3.0.
 
-        3. Run build script
-
-           ```bash
-           dart setup.dart windows
-           ```
-
-    - linux
-
-        1. Requires a Linux client
-
-        2. Dependencies are auto-installed by setup script, or manually:
-           ```bash
-           sudo apt-get install -y libayatana-appindicator3-dev libkeybinder-3.0-dev
-           ```
-
-        3. Run build script
-
-           ```bash
-           dart setup.dart linux
-           ```
-
-    - macOS
-
-        1. Requires a macOS client
-
-        2. Run build script
-
-           ```bash
-           dart setup.dart macos
-           ```
-
-## Star
-
-The easiest way to support developers is to click on the star (⭐) at the top of the page.
-
-<p style="text-align: center;">
-    <a href="https://api.star-history.com/svg?repos=chen08209/FlClash&Date">
-        <img alt="start" width=50% src="https://api.star-history.com/svg?repos=chen08209/FlClash&Date"/>
-    </a>
-</p>
+Changes made in this fork include rebranding, the desktop UI redesign, DNS
+safety configuration and diagnostics, node-quality checks, incremental
+connection inspection and TrafficClass groundwork. The git history and
+`.agents/` record the details.

@@ -1,12 +1,12 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/core/controller.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/common.dart';
-import 'package:fl_clash/providers/action.dart';
-import 'package:fl_clash/providers/app.dart';
-import 'package:fl_clash/providers/config.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/core/controller.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/models/common.dart';
+import 'package:quanclash/providers/action.dart';
+import 'package:quanclash/providers/app.dart';
+import 'package:quanclash/providers/config.dart';
+import 'package:quanclash/state.dart';
+import 'package:quanclash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

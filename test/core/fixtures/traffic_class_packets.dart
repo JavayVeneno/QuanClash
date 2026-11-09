@@ -1,4 +1,4 @@
-import 'package:fl_clash/core/traffic_class.dart';
+import 'package:quanclash/core/traffic_class.dart';
 
 String classRevision(int n) => n.toRadixString(16).padLeft(32, '0');
 

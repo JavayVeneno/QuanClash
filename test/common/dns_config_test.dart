@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:fl_clash/common/dns_config.dart';
-import 'package:fl_clash/common/task.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:quanclash/common/dns_config.dart';
+import 'package:quanclash/common/task.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/models/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yaml/yaml.dart';
 

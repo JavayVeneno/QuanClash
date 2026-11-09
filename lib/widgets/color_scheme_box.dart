@@ -1,10 +1,10 @@
-import 'package:fl_clash/providers/providers.dart';
+import 'package:quanclash/providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'card.dart';
 import 'grid.dart';
-import 'package:fl_clash/common/quanx_icons.dart';
+import 'package:quanclash/common/quanx_icons.dart';
 
 class ColorSchemeBox extends StatelessWidget {
   final Color? primaryColor;
