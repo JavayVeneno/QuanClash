@@ -4,9 +4,9 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/models/models.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 
@@ -60,7 +60,7 @@ const configKey = 'config';
 const nodeUsageKey = 'node_usage';
 const proxiesGroupModeKey = 'proxies_group_mode';
 const double dialogCommonWidth = 300;
-const repository = 'chen08209/FlClash';
+const repository = 'JavayVeneno/quanclash';
 const defaultExternalController = '127.0.0.1:9090';
 const maxMobileWidth = 600;
 const maxLaptopWidth = 840;

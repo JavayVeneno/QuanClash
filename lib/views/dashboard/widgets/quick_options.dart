@@ -1,7 +1,7 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/providers/config.dart';
-import 'package:fl_clash/views/config/network.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/providers/config.dart';
+import 'package:quanclash/views/config/network.dart';
+import 'package:quanclash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

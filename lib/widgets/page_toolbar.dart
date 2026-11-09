@@ -1,5 +1,5 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/views/dashboard/widgets/dashboard_style.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/views/dashboard/widgets/dashboard_style.dart';
 import 'package:flutter/material.dart';
 
 /// 页面顶部工具栏：搜索框 + 操作按钮，紧贴页面顶端。

@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:fl_clash/core/interface.dart';
-import 'package:fl_clash/core/transport.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:quanclash/core/interface.dart';
+import 'package:quanclash/core/transport.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/models/models.dart';
 import 'package:flutter/foundation.dart';
 
 // An explicit native test of the production Rust transport and shared facade,

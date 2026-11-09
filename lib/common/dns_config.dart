@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:fl_clash/common/dns_proxy_target.dart';
-import 'package:fl_clash/common/string.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/clash_config.dart';
+import 'package:quanclash/common/dns_proxy_target.dart';
+import 'package:quanclash/common/string.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/models/clash_config.dart';
 
 const systemDnsNameserver = 'system://';
 

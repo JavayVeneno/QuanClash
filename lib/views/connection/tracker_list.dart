@@ -1,9 +1,9 @@
 import 'dart:ui' as ui;
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/views/dashboard/widgets/dashboard_style.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/models/models.dart';
+import 'package:quanclash/views/dashboard/widgets/dashboard_style.dart';
+import 'package:quanclash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

@@ -1,4 +1,4 @@
-import 'package:fl_clash/common/dns_proxy_target.dart';
+import 'package:quanclash/common/dns_proxy_target.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _node = {'name': 'node', 'type': 'socks5'};

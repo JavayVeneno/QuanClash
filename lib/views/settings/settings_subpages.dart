@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/common/dav_client.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/views/backup_and_restore.dart';
-import 'package:fl_clash/views/hotkey.dart';
-import 'package:fl_clash/views/settings/settings_style.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/common/dav_client.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/models/models.dart';
+import 'package:quanclash/providers/providers.dart';
+import 'package:quanclash/state.dart';
+import 'package:quanclash/views/backup_and_restore.dart';
+import 'package:quanclash/views/hotkey.dart';
+import 'package:quanclash/views/settings/settings_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

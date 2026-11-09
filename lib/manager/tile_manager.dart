@@ -1,8 +1,8 @@
-import 'package:fl_clash/common/app_localizations.dart';
-import 'package:fl_clash/core/controller.dart';
-import 'package:fl_clash/plugins/app.dart';
-import 'package:fl_clash/plugins/tile.dart';
-import 'package:fl_clash/providers/providers.dart';
+import 'package:quanclash/common/app_localizations.dart';
+import 'package:quanclash/core/controller.dart';
+import 'package:quanclash/plugins/app.dart';
+import 'package:quanclash/plugins/tile.dart';
+import 'package:quanclash/providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

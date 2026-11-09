@@ -1,4 +1,4 @@
-import 'package:fl_clash/models/models.dart';
+import 'package:quanclash/models/models.dart';
 
 enum ConnectionUpdateStatus { ready, inactive, fallbackRequired }
 

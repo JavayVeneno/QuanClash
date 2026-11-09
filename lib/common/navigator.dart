@@ -1,6 +1,6 @@
 import 'package:animations/animations.dart';
-import 'package:fl_clash/providers/app.dart';
-import 'package:fl_clash/state.dart';
+import 'package:quanclash/providers/app.dart';
+import 'package:quanclash/state.dart';
 import 'package:flutter/material.dart';
 
 class BaseNavigator {

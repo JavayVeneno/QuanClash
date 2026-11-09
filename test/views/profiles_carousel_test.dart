@@ -1,10 +1,10 @@
-import 'package:fl_clash/common/measure.dart';
-import 'package:fl_clash/common/theme.dart';
-import 'package:fl_clash/l10n/l10n.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/views/profiles/profiles.dart';
+import 'package:quanclash/common/measure.dart';
+import 'package:quanclash/common/theme.dart';
+import 'package:quanclash/l10n/l10n.dart';
+import 'package:quanclash/models/models.dart';
+import 'package:quanclash/providers/providers.dart';
+import 'package:quanclash/state.dart';
+import 'package:quanclash/views/profiles/profiles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

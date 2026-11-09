@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:fl_clash/core/traffic_class.dart';
-import 'package:fl_clash/core/traffic_class_session.dart';
+import 'package:quanclash/core/traffic_class.dart';
+import 'package:quanclash/core/traffic_class_session.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'fixtures/traffic_class_packets.dart';

@@ -1,6 +1,6 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/state.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/state.dart';
 import 'package:flutter/material.dart';
 
 import 'fade_box.dart';
@@ -85,7 +85,7 @@ class InfoHeader extends StatelessWidget {
 
 /// 玻璃卡片。
 ///
-/// 与 FlClash 原版「平面填充 + 硬描边 + hover 变色」不同,这里改为
+/// 与上游原版「平面填充 + 硬描边 + hover 变色」不同,这里改为
 /// 半透明玻璃 + 背景模糊 + 高光描边 + 柔和阴影;交互反馈由 ink 微光承担。
 class CommonCard extends StatelessWidget {
   const CommonCard({

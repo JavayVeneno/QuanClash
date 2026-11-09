@@ -1,6 +1,6 @@
-import 'package:fl_clash/common/context.dart';
-import 'package:fl_clash/views/config/general.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:quanclash/common/context.dart';
+import 'package:quanclash/views/config/general.dart';
+import 'package:quanclash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 class ConfigView extends StatelessWidget {

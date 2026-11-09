@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:fl_clash/common/color.dart';
-import 'package:fl_clash/common/glass.dart';
+import 'package:quanclash/common/color.dart';
+import 'package:quanclash/common/glass.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 

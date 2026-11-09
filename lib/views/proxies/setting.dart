@@ -1,8 +1,8 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/providers/config.dart';
-import 'package:fl_clash/views/dashboard/widgets/dashboard_style.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/providers/config.dart';
+import 'package:quanclash/views/dashboard/widgets/dashboard_style.dart';
+import 'package:quanclash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';

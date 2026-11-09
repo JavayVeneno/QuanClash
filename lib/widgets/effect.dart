@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:fl_clash/widgets/inherited.dart';
+import 'package:quanclash/widgets/inherited.dart';
 import 'package:flutter/material.dart';
-import 'package:fl_clash/common/quanx_icons.dart';
+import 'package:quanclash/common/quanx_icons.dart';
 
 class EffectGestureDetector extends StatefulWidget {
   final Widget child;

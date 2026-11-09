@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:fl_clash/core/connection_inspection_session.dart';
-import 'package:fl_clash/core/connection_updates.dart';
-import 'package:fl_clash/core/controller.dart';
-import 'package:fl_clash/core/interface.dart';
+import 'package:quanclash/core/connection_inspection_session.dart';
+import 'package:quanclash/core/connection_updates.dart';
+import 'package:quanclash/core/controller.dart';
+import 'package:quanclash/core/interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

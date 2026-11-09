@@ -1,7 +1,7 @@
-import 'package:fl_clash/common/color.dart';
+import 'package:quanclash/common/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fl_clash/common/quanx_icons.dart';
+import 'package:quanclash/common/quanx_icons.dart';
 
 class InitErrorScreen extends StatelessWidget {
   final Object error;

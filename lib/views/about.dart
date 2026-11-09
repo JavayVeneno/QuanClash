@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/l10n/l10n.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/list.dart';
-import 'package:fl_clash/widgets/scaffold.dart';
+import 'package:quanclash/common/common.dart';
+import 'package:quanclash/l10n/l10n.dart';
+import 'package:quanclash/providers/providers.dart';
+import 'package:quanclash/state.dart';
+import 'package:quanclash/widgets/list.dart';
+import 'package:quanclash/widgets/scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -48,13 +48,6 @@ class AboutView extends StatelessWidget {
           },
         ),
         ListItem(
-          title: const Text('Telegram'),
-          onTap: () {
-            globalState.openUrl('https://t.me/FlClash');
-          },
-          trailing: const Icon(QuanXIcons.externalLink),
-        ),
-        ListItem(
           title: Text(appLocalizations.project),
           onTap: () {
             globalState.openUrl('https://github.com/$repository');
@@ -64,9 +57,7 @@ class AboutView extends StatelessWidget {
         ListItem(
           title: Text(appLocalizations.core),
           onTap: () {
-            globalState.openUrl(
-              'https://github.com/chen08209/Clash.Meta/tree/FlClash',
-            );
+            globalState.openUrl('https://github.com/MetaCubeX/mihomo');
           },
           trailing: const Icon(QuanXIcons.externalLink),
         ),

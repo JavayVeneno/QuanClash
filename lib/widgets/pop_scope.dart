@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:fl_clash/providers/app.dart';
-import 'package:fl_clash/state.dart';
+import 'package:quanclash/providers/app.dart';
+import 'package:quanclash/state.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
