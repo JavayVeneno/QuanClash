@@ -207,6 +207,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoSetSystemDns": MessageLookupByLibrary.simpleMessage(
       "Auto set system DNS",
     ),
+    "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
+      "Pin DNS queries to the current proxy to keep them off your local ISP. Falls back to compatible mode when the node cannot be statically verified.",
+    ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("Auto update"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage(
       "Auto update interval (minutes)",
@@ -373,6 +376,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "disconnected": MessageLookupByLibrary.simpleMessage("Disconnected"),
     "discoverNewVersion": MessageLookupByLibrary.simpleMessage(
       "Discover the new version",
+    ),
+    "dnsAutoLeakProtectionActive": MessageLookupByLibrary.simpleMessage(
+      "Auto leak protection is on: DNS queries are pinned to the current node.",
     ),
     "dnsDesc": MessageLookupByLibrary.simpleMessage(
       "Update DNS related settings",
@@ -1128,6 +1134,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "riskIndexMedium": MessageLookupByLibrary.simpleMessage("Medium risk"),
     "riskIndexNoScore": MessageLookupByLibrary.simpleMessage("No score"),
     "riskIndexNotChecked": MessageLookupByLibrary.simpleMessage("Not checked"),
+    "riskIndexTapToCheck": MessageLookupByLibrary.simpleMessage(
+      "Tap to check the risk index",
+    ),
     "routeAddress": MessageLookupByLibrary.simpleMessage("Route address"),
     "routeAddressDesc": MessageLookupByLibrary.simpleMessage(
       "Config listen route address",

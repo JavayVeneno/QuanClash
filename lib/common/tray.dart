@@ -79,7 +79,16 @@ class Tray {
     final showMenuItem = MenuItem(
       label: appLocalizations.show,
       onClick: (_) {
-        window?.show();
+        final currentWindow = window;
+        if (currentWindow == null) {
+          return;
+        }
+        // 面板模式下「显示」回到主窗口,而不是把 360x430 的面板重新弹出来。
+        if (currentWindow.isPanelMode) {
+          currentWindow.showMain();
+        } else {
+          currentWindow.show();
+        }
       },
     );
     menuItems.add(showMenuItem);

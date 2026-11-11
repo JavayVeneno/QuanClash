@@ -55,6 +55,8 @@ Future<ProviderContainer> _mount(
   Locale locale = const Locale('en'),
   Size size = const Size(1000, 1600),
   NodeQualityCooldown? cooldown,
+  bool includeIpPureByDefault = false,
+  bool autoRun = false,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -75,6 +77,8 @@ Future<ProviderContainer> _mount(
           loadQuality: loader,
           cooldown: cooldown ?? NodeQualityCooldown(interval: Duration.zero),
           autoCloseOnSuccess: false,
+          includeIpPureByDefault: includeIpPureByDefault,
+          autoRun: autoRun,
         ),
       ),
     ),
@@ -125,6 +129,23 @@ void main() {
     await tester.pump(const Duration(seconds: 30));
     expect(reads, 1);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('risk card entry preselects IPPure and auto-runs', (tester) async {
+    var reads = 0;
+    await _mount(tester, (name, {required includeIpPure}) async {
+      reads++;
+      expect(name, 'node');
+      expect(includeIpPure, isTrue);
+      return _report(includeIpPure: true);
+    }, includeIpPureByDefault: true, autoRun: true);
+    await tester.pumpAndSettle();
+    expect(reads, 1);
+    expect(
+      tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value,
+      isTrue,
+    );
+    expect(find.text('75'), findsOneWidget);
   });
 
   testWidgets(

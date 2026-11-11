@@ -211,7 +211,7 @@ class _AppTopNavContainerState extends ConsumerState<AppTopNavContainer> {
 
 const _sideNavWidth = 208.0;
 
-/// 导航选中态使用设计稿的靛蓝，避免跟随动态取色偏离 mockup。
+/// 导航选中态使用设计稿的靛蓝，避免跟随动态取色偏离设计令牌。
 const _navAccent = Color(0xFF6C5CE7);
 
 class _SideNavBar extends StatelessWidget {

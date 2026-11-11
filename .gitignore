@@ -47,6 +47,10 @@ app.*.map.json
 # Documentation (generated/planning artifacts)
 docs/
 
+# Temporary design explorations (mockups and concept art, never shipped)
+/mockup_*
+/doc/quanx-ui/
+
 
 # Android Studio will place build artifacts here
 /android/app/debug

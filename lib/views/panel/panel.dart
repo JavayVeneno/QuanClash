@@ -1,27 +1,21 @@
 import 'package:quanclash/common/common.dart';
 import 'package:quanclash/enum/enum.dart';
-import 'package:quanclash/manager/window_manager.dart';
 import 'package:quanclash/models/models.dart';
+import 'package:quanclash/panel/panel_state.dart';
 import 'package:quanclash/providers/providers.dart';
 import 'package:quanclash/state.dart';
+import 'package:quanclash/views/panel/panel_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
-/// 托盘小面板(magpie 式):点托盘图标弹出,「打开 QuanClash」进入主窗口
+/// 主窗口内的托盘面板(非 Windows 平台的回退实现)。
+///
+/// Windows 上面板是独立窗口,由 [PanelWindowManager] 驱动;这里负责把
+/// Riverpod 状态映射成 [PanelState],并复用同一份 [PanelBody]。
 class PanelView extends ConsumerWidget {
   const PanelView({super.key});
 
-  void _handleSwitchStart(WidgetRef ref) {
-    final isStart = ref.read(isStartProvider);
-    debouncer.call(FunctionTag.updateStatus, () {
-      globalState.container
-          .read(setupActionProvider.notifier)
-          .updateStatus(!isStart, isInit: !ref.read(initProvider));
-    }, duration: commonDuration);
-  }
-
-  void _handleOpen([PageLabel? pageLabel]) {
+  void _handleOpen(WidgetRef ref, [PageLabel? pageLabel]) {
     window?.showMain();
     if (pageLabel != null) {
       globalState.container
@@ -30,20 +24,8 @@ class PanelView extends ConsumerWidget {
     }
   }
 
-  Group? _getCurrentGroup(List<Group> groups) {
-    for (final group in groups) {
-      if (group.type == GroupType.Selector && (group.now?.isNotEmpty ?? false)) {
-        return group;
-      }
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final appLocalizations = context.appLocalizations;
-    final quanX = context.quanX;
-    final colorScheme = context.colorScheme;
     final isStart = ref.watch(isStartProvider);
     final coreStatus = ref.watch(coreStatusProvider);
     final runTime = ref.watch(runTimeProvider);
@@ -57,325 +39,84 @@ class PanelView extends ConsumerWidget {
     final tunEnable = ref.watch(
       patchClashConfigProvider.select((state) => state.tun.enable),
     );
-    final group = ref.watch(
-      groupsProvider.select((groups) => _getCurrentGroup(groups)),
+    final port = ref.watch(trayStateProvider.select((state) => state.port));
+    final groups = ref.watch(groupsProvider);
+    final selectedMap = ref.watch(selectedMapProvider);
+    final group = computeCurrentGroup(
+      groups,
+      preferredName: ref.watch(
+        currentProfileProvider.select((state) => state?.currentGroupName),
+      ),
+      selectedMap: selectedMap,
     );
+    final proxyName = group == null
+        ? null
+        : computeRealSelectedProxyState(
+            group.now ?? '',
+            groups: groups,
+            selectedMap: selectedMap,
+          ).proxyName;
     final lastTraffic = traffics.isNotEmpty ? traffics.last : const Traffic();
-    final (statusText, statusColor) = switch (coreStatus) {
-      CoreStatus.connecting => (appLocalizations.connecting, quanX.warning),
-      CoreStatus.connected => (appLocalizations.connected, quanX.success),
-      _ => (appLocalizations.disconnected, quanX.textTertiary),
-    };
-    return GlassPanel(
-      radius: 0,
-      blurSigma: 24,
-      shadow: false,
-      child: Column(
-        children: [
-          _buildHeader(context),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: statusColor,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      statusText,
-                      style: context.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      isStart ? utils.getTimeText(runTime) : '',
-                      style: context.textTheme.bodySmall?.copyWith(
-                        color: quanX.textSecondary,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      Intl.message(mode.name),
-                      style: context.textTheme.bodySmall?.copyWith(
-                        color: quanX.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 9),
-                Row(
-                  children: [
-                    Icon(QuanXIcons.arrowUp, size: 13, color: quanX.accent),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${lastTraffic.up.traffic.show}/s',
-                      style: context.textTheme.bodySmall?.copyWith(
-                        color: quanX.accent,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Icon(QuanXIcons.arrowDown, size: 13, color: quanX.info),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${lastTraffic.down.traffic.show}/s',
-                      style: context.textTheme.bodySmall?.copyWith(
-                        color: quanX.info,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 11),
-                SizedBox(
-                  width: double.infinity,
-                  height: 32,
-                  child: FilledButton.icon(
-                    onPressed: () {
-                      _handleSwitchStart(ref);
-                    },
-                    style: FilledButton.styleFrom(
-                      backgroundColor: isStart
-                          ? quanX.accent
-                          : colorScheme.surfaceContainerHigh,
-                      foregroundColor: isStart
-                          ? quanX.onAccent
-                          : colorScheme.onSurfaceVariant,
-                    ),
-                    icon: Icon(
-                      isStart ? QuanXIcons.pause : QuanXIcons.play,
-                      size: 17,
-                    ),
-                    label: Text(
-                      isStart ? appLocalizations.stop : appLocalizations.start,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: quanX.separator),
-                  bottom: BorderSide(color: quanX.separator),
-                ),
-              ),
-              child: Column(
-                children: [
-                  _buildRow(
-                    context,
-                    label: appLocalizations.proxyGroup,
-                    value: group?.now ?? '—',
-                    onTap: () => _handleOpen(PageLabel.proxies),
-                  ),
-                  const Divider(),
-                  _buildRow(
-                    context,
-                    label: appLocalizations.outboundMode,
-                    value: Intl.message(mode.name),
-                    onTap: () => _handleOpen(PageLabel.dashboard),
-                  ),
-                  const Divider(),
-                  _buildSwitchRow(
-                    context,
-                    label: appLocalizations.systemProxy,
-                    value: systemProxy,
-                    onChanged: (value) {
-                      ref
-                          .read(networkSettingProvider.notifier)
-                          .update(
-                            (state) => state.copyWith(systemProxy: value),
-                          );
-                    },
-                  ),
-                  const Divider(),
-                  _buildSwitchRow(
-                    context,
-                    label: appLocalizations.tun,
-                    value: tunEnable,
-                    onChanged: (value) {
-                      ref
-                          .read(patchClashConfigProvider.notifier)
-                          .update((state) => state.copyWith.tun(enable: value));
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 40,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Row(
-                children: [
-                  const Spacer(),
-                  FilledButton.icon(
-                    onPressed: () {
-                      _handleOpen();
-                    },
-                    style: FilledButton.styleFrom(
-                      backgroundColor: quanX.accent,
-                      foregroundColor: quanX.onAccent,
-                      minimumSize: const Size(0, 30),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                    ),
-                    icon: const Icon(QuanXIcons.externalLink, size: 15),
-                    label: Text('打开 $appName'),
-                  ),
-                  const SizedBox(width: 4),
-                  TextButton(
-                    onPressed: () {
-                      globalState.container
-                          .read(systemActionProvider.notifier)
-                          .handleExit();
-                    },
-                    child: Text(appLocalizations.exit),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+    final delayMap = ref.watch(delayDataSourceProvider);
+    final testUrl = group?.testUrl.takeFirstValid([
+      ref.watch(appSettingProvider.select((state) => state.testUrl)),
+    ]);
+    final delay = proxyName == null || proxyName.isEmpty
+        ? null
+        : delayMap[testUrl]?[proxyName];
+    final themeProps = ref.watch(themeSettingProvider);
+    final locale = ref.watch(
+      appSettingProvider.select((state) => state.locale),
     );
-  }
 
-  Widget _buildHeader(BuildContext context) {
-    final quanX = context.quanX;
-    return Container(
-      height: 32,
-      padding: const EdgeInsets.only(left: 12, right: 4),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: quanX.separator)),
-      ),
-      child: Row(
-        children: [
-          const AppIcon(),
-          const SizedBox(width: 7),
-          Text(
-            appName,
-            style: context.textTheme.bodySmall?.copyWith(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const Spacer(),
-          _buildIconButton(
-            context,
-            QuanXIcons.externalLink,
-            () {
-              _handleOpen();
-            },
-          ),
-          _buildIconButton(
-            context,
-            QuanXIcons.settings,
-            () {
-              _handleOpen(PageLabel.tools);
-            },
-          ),
-          _buildIconButton(
-            context,
-            QuanXIcons.x,
-            () {
-              window?.hide();
-            },
-          ),
-        ],
-      ),
+    final state = PanelState(
+      isStart: isStart,
+      coreStatus: coreStatus.name,
+      runTime: runTime,
+      mode: mode.index,
+      port: port,
+      up: lastTraffic.up,
+      down: lastTraffic.down,
+      groupName: group?.name,
+      proxyName: proxyName,
+      delay: delay,
+      systemProxy: systemProxy,
+      tun: tunEnable,
+      locale: locale,
+      themeMode: themeProps.themeMode.name,
+      primaryColor: themeProps.primaryColor,
+      schemeVariant: themeProps.schemeVariant.name,
+      pureBlack: themeProps.pureBlack,
     );
-  }
 
-  Widget _buildIconButton(
-    BuildContext context,
-    IconData icon,
-    VoidCallback onPressed,
-  ) {
-    return IconButton(
-      onPressed: onPressed,
-      icon: Icon(icon, size: 15),
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-      visualDensity: VisualDensity.compact,
+    final actions = PanelActions(
+      onToggleStart: () {
+        debouncer.call(FunctionTag.updateStatus, () {
+          globalState.container
+              .read(setupActionProvider.notifier)
+              .updateStatus(!isStart, isInit: !ref.read(initProvider));
+        }, duration: commonDuration);
+      },
+      onModeChanged: (value) {
+        ref.read(setupActionProvider.notifier).changeMode(value);
+      },
+      onSystemProxyChanged: (value) {
+        ref
+            .read(networkSettingProvider.notifier)
+            .update((state) => state.copyWith(systemProxy: value));
+      },
+      onTunChanged: (value) {
+        ref
+            .read(patchClashConfigProvider.notifier)
+            .update((state) => state.copyWith.tun(enable: value));
+      },
+      onOpenMain: (pageLabel) => _handleOpen(ref, pageLabel),
+      onHide: () => window?.hide(),
+      onExit: () {
+        globalState.container.read(systemActionProvider.notifier).handleExit();
+      },
     );
-  }
 
-  Widget _buildRow(
-    BuildContext context, {
-    required String label,
-    required String value,
-    VoidCallback? onTap,
-  }) {
-    final quanX = context.quanX;
-    return InkWell(
-      onTap: onTap,
-      child: SizedBox(
-        height: 32,
-        child: Row(
-          children: [
-            Text(
-              label,
-              style: context.textTheme.bodySmall?.copyWith(
-                color: quanX.textSecondary,
-              ),
-            ),
-            const Spacer(),
-            Flexible(
-              child: Text(
-                value,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            if (onTap != null) ...[
-              const SizedBox(width: 4),
-              Icon(QuanXIcons.chevronRight, size: 15, color: quanX.textTertiary),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSwitchRow(
-    BuildContext context, {
-    required String label,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-  }) {
-    return SizedBox(
-      height: 32,
-      child: Row(
-        children: [
-          Text(
-            label,
-            style: context.textTheme.bodySmall?.copyWith(
-              color: context.quanX.textSecondary,
-            ),
-          ),
-          const Spacer(),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-        ],
-      ),
-    );
+    return PanelBody(state: state, actions: actions);
   }
 }

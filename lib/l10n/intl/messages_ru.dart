@@ -207,6 +207,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoSetSystemDns": MessageLookupByLibrary.simpleMessage(
       "Автоматическая настройка системного DNS",
     ),
+    "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
+      "Привязывает DNS-запросы к текущему прокси, чтобы они не уходили к местному провайдеру. Если узел нельзя проверить статически, используется совместимый режим.",
+    ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("Автообновление"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage(
       "Интервал автообновления (минуты)",
@@ -383,6 +386,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "disconnected": MessageLookupByLibrary.simpleMessage("Отключено"),
     "discoverNewVersion": MessageLookupByLibrary.simpleMessage(
       "Обнаружена новая версия",
+    ),
+    "dnsAutoLeakProtectionActive": MessageLookupByLibrary.simpleMessage(
+      "Автозащита от утечек включена: DNS-запросы привязаны к текущему узлу.",
     ),
     "dnsDesc": MessageLookupByLibrary.simpleMessage(
       "Обновление настроек, связанных с DNS",
@@ -1192,6 +1198,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "riskIndexMedium": MessageLookupByLibrary.simpleMessage("Средний риск"),
     "riskIndexNoScore": MessageLookupByLibrary.simpleMessage("Нет оценки"),
     "riskIndexNotChecked": MessageLookupByLibrary.simpleMessage("Не проверено"),
+    "riskIndexTapToCheck": MessageLookupByLibrary.simpleMessage(
+      "Нажмите, чтобы проверить индекс риска",
+    ),
     "routeAddress": MessageLookupByLibrary.simpleMessage("Адрес маршрутизации"),
     "routeAddressDesc": MessageLookupByLibrary.simpleMessage(
       "Настройка адреса прослушивания маршрутизации",

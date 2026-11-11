@@ -1,7 +1,7 @@
 name: quanclash
 description: QuanClash - a desktop-focused multi-platform proxy client built on mihomo.
 publish_to: 'none'
-version: 0.8.94+2026071102
+version: 0.0.1+1
 environment:
   sdk: '>=3.8.0 <4.0.0'
 
@@ -24,6 +24,8 @@ dependencies:
     path: plugins/proxy
   window_ext:
     path: plugins/window_ext
+  desktop_multi_window:
+    path: plugins/desktop_multi_window
   launch_at_startup:
     git:
       url: https://github.com/chen08209/launch_at_startup.git

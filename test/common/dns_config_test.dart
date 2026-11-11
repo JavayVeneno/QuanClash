@@ -734,6 +734,48 @@ void main() {
       }
     }
   });
+
+  group('DNS bootstrap repair', () {
+    test('drops system and non-literal resolvers', () {
+      final dns = repairDnsBootstrap({
+        'enable': true,
+        'default-nameserver': ['system', '223.5.5.5', 'doh.pub', '2400:3200::1'],
+        'nameserver': ['https://doh.pub/dns-query'],
+      });
+      expect(dns['default-nameserver'], ['223.5.5.5', '2400:3200::1']);
+      expect(dns['proxy-server-nameserver'], ['223.5.5.5']);
+    });
+
+    test('returns the same map when nothing needs repair', () {
+      final dns = <String, dynamic>{
+        'enable': true,
+        'default-nameserver': ['223.5.5.5'],
+        'proxy-server-nameserver': ['1.1.1.1'],
+      };
+      expect(identical(repairDnsBootstrap(dns), dns), isTrue);
+    });
+
+    test('a repaired subscription config can be pinned strictly', () {
+      final profileDns = repairDnsBootstrap({
+        'enable': true,
+        'default-nameserver': ['system', '223.5.5.5'],
+        'nameserver': ['https://doh.pub/dns-query#skip-cert-verify=true'],
+      });
+      final result = buildEffectiveDnsConfig(
+        profileDns: profileDns,
+        patchDns: _patchDns,
+        overrideDns: false,
+        appendSystemDns: false,
+        safetyMode: DnsSafetyMode.proxyOnly,
+        proxyTarget: 'node',
+        proxyConfig: _proxyConfig,
+      );
+      expect(result.errors, isEmpty);
+      expect(result.config['nameserver'], [
+        'https://doh.pub/dns-query#node&skip-cert-verify=true',
+      ]);
+    });
+  });
 }
 
 const _proxyConfig = {

@@ -61,10 +61,10 @@ class _ProfilesViewState extends State<ProfilesView> {
   }
 }
 
-/// 配置页的堆叠轮播。
+/// 配置页的卡片堆叠。
 ///
-/// 当前卡片居中并展开摘要，左右各露出前一张 / 后一张；支持点击两侧卡片、
-/// 左右按钮和鼠标拖动切换，3 个以上配置时首尾循环。
+/// 当前配置完整展开在最前方，其余配置在它身后向上错落叠放，只露出顶部彩色
+/// 高光边；点击露出的边缘即可把该卡片抽到最前。下方提供翻页器和拖动切换。
 class ProfilesCarousel extends ConsumerStatefulWidget {
   final List<Profile> profiles;
   final int? currentProfileId;
@@ -80,11 +80,18 @@ class ProfilesCarousel extends ConsumerStatefulWidget {
 }
 
 class ProfilesCarouselState extends ConsumerState<ProfilesCarousel> {
+  static const _accents = [
+    DashboardPalette.primary,
+    DashboardPalette.blue,
+    DashboardPalette.green,
+    DashboardPalette.orange,
+    DashboardPalette.purple,
+  ];
+
   int _currentIndex = 0;
   int? _focusedProfileId;
-  bool _expanded = false;
+  bool _expanded = true;
   bool _editing = false;
-  Set<int> _snapIds = const {};
   Profile? _draft;
 
   List<Profile> get _displayProfiles =>
@@ -166,7 +173,7 @@ class ProfilesCarouselState extends ConsumerState<ProfilesCarousel> {
     setState(() {
       _draft = null;
       _editing = false;
-      _expanded = false;
+      _expanded = true;
       final activeIndex = widget.profiles.indexWhere(
         (profile) => profile.id == widget.currentProfileId,
       );
@@ -200,7 +207,7 @@ class ProfilesCarouselState extends ConsumerState<ProfilesCarousel> {
     setState(() {
       _draft = null;
       _editing = false;
-      _expanded = false;
+      _expanded = true;
       _focusedProfileId = created.id;
       _currentIndex = index == -1 ? 0 : index;
     });
@@ -220,27 +227,16 @@ class ProfilesCarouselState extends ConsumerState<ProfilesCarousel> {
     setState(() {
       _draft = null;
       _editing = false;
-      _expanded = false;
+      _expanded = true;
       _focusedProfileId = last.id;
       _currentIndex = profiles.length - 1;
     });
   }
 
-  int _circular(int distance, int count) {
-    if (count < 3) {
-      return distance;
-    }
-    var value = distance;
-    while (value > count / 2) {
-      value -= count;
-    }
-    while (value < -count / 2) {
-      value += count;
-    }
-    return value;
-  }
-
   void _goTo(int index) {
+    if (_draft != null || _editing) {
+      return;
+    }
     final display = _displayProfiles;
     final count = display.length;
     if (count == 0) {
@@ -252,27 +248,11 @@ class ProfilesCarouselState extends ConsumerState<ProfilesCarousel> {
     if (target == _currentIndex) {
       return;
     }
-    final snaps = <int>{};
-    if (count >= 3) {
-      for (var i = 0; i < count; i++) {
-        final oldDistance = _circular(i - _currentIndex, count);
-        final newDistance = _circular(i - target, count);
-        if ((newDistance - oldDistance).abs() > count / 2) {
-          snaps.add(display[i].id);
-        }
-      }
-    }
     setState(() {
       _currentIndex = target;
       _focusedProfileId = display[target].id;
-      _expanded = false;
+      _expanded = true;
       _editing = false;
-      _snapIds = snaps;
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() => _snapIds = const {});
-      }
     });
   }
 
@@ -303,7 +283,7 @@ class ProfilesCarouselState extends ConsumerState<ProfilesCarousel> {
   }
 
   void _handleDragEnd(DragEndDetails details) {
-    if (_expanded || _draft != null) {
+    if (_editing || _draft != null) {
       return;
     }
     final velocity = details.primaryVelocity ?? 0;
@@ -328,20 +308,22 @@ class ProfilesCarouselState extends ConsumerState<ProfilesCarousel> {
     }
     return LayoutBuilder(
       builder: (context, constraints) {
-        final metrics = _CarouselMetrics.of(constraints.maxWidth);
+        final metrics = _CarouselMetrics.of(
+          constraints.maxWidth,
+          constraints.hasBoundedHeight ? constraints.maxHeight : 800,
+        );
         final entries = <_CardEntry>[];
         for (var i = 0; i < display.length; i++) {
           entries.add(
             _CardEntry(
               index: i,
-              distance: _circular(i - _currentIndex, display.length),
+              depth: (i - _currentIndex + display.length) % display.length,
               profile: display[i],
             ),
           );
         }
-        entries.sort(
-          (a, b) => b.distance.abs().compareTo(a.distance.abs()),
-        );
+        // 越靠后的卡片先画，当前卡片最后画，保证它压在最上层。
+        entries.sort((a, b) => b.depth.compareTo(a.depth));
         final minHeight = constraints.hasBoundedHeight
             ? max(0.0, constraints.maxHeight)
             : 0.0;
@@ -360,6 +342,12 @@ class ProfilesCarouselState extends ConsumerState<ProfilesCarousel> {
                     children: [
                       for (final entry in entries)
                         _buildPositionedCard(entry, metrics),
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: _buildPager(display.length),
+                      ),
                     ],
                   ),
                 ),
@@ -373,38 +361,48 @@ class ProfilesCarouselState extends ConsumerState<ProfilesCarousel> {
 
   Widget _buildPositionedCard(_CardEntry entry, _CarouselMetrics metrics) {
     final profile = entry.profile;
-    final distance = entry.distance;
-    final abs = distance.abs();
-    final isMain = distance == 0;
+    final depth = entry.depth;
+    final isMain = depth == 0;
     final isDraft = _draft != null && profile.id == _draft!.id;
     final isExpanded = isMain && (isDraft || _expanded);
     final isEditing = isMain && (isDraft || _editing);
-    final isSide = abs == 1;
-    final visible = abs <= 2;
-    final dimmed = _expanded && !isMain;
-    final x = isMain
+    final visible = depth <= 4;
+    final scale = isMain ? 1.0 : max(0.84, 0.96 - (depth - 1) * 0.04);
+    final opacity = isMain ? 1.0 : max(0.32, 0.92 - (depth - 1) * 0.16);
+    final offsetY = isMain
         ? 0.0
-        : distance.sign *
-              (isSide ? metrics.sideOffset : metrics.farOffset) *
-              (dimmed ? 1.45 : 1.0);
-    final scale = isMain ? 1.0 : (isSide ? 0.84 : 0.74);
-    final opacity = isMain
-        ? 1.0
-        : (isSide ? 0.55 : 0.12) * (dimmed ? 0.22 : 1.0);
-    final blur = isMain ? 0.0 : (isSide ? 1.1 : 2.4) + (dimmed ? 0.6 : 0.0);
-    final width = isMain && isExpanded
-        ? metrics.expandedWidth
-        : metrics.cardWidth;
-    final height = isMain && isExpanded
-        ? metrics.expandedHeight
-        : metrics.cardHeight;
-    final left = metrics.viewportWidth / 2 + x - width / 2;
+        : (depth == 1
+                  ? -30.0
+                  : depth == 2
+                  ? -52.0
+                  : -52.0 - (depth - 2) * 16.0) *
+              (metrics.topBase / 104);
+    final offsetX = isMain
+        ? 0.0
+        : depth == 1
+        ? 16.0
+        : depth == 2
+        ? -20.0
+        : depth == 3
+        ? 26.0
+        : -30.0;
+    final turns = isMain
+        ? 0.0
+        : depth == 1
+        ? -0.0033
+        : depth == 2
+        ? 0.0044
+        : depth == 3
+        ? -0.0061
+        : 0.0072;
+    final blur = isMain ? 0.0 : (depth >= 3 ? 0.8 : 0.0);
+    final width = metrics.cardWidth;
+    final height = isExpanded ? metrics.expandedHeight : metrics.cardHeight;
+    final left = metrics.viewportWidth / 2 + offsetX - width / 2;
     final top = isMain
-        ? (isExpanded ? metrics.topExpanded : metrics.topCollapsed)
-        : metrics.topCollapsed;
-    final duration = _snapIds.contains(profile.id)
-        ? Duration.zero
-        : const Duration(milliseconds: 420);
+        ? metrics.topBase
+        : max(8.0, metrics.topBase + offsetY);
+    const duration = Duration(milliseconds: 420);
     return AnimatedPositioned(
       key: ValueKey('profile-card-${profile.id}'),
       duration: duration,
@@ -414,36 +412,90 @@ class ProfilesCarouselState extends ConsumerState<ProfilesCarousel> {
       width: width,
       height: height,
       child: IgnorePointer(
-        ignoring: !visible || abs > 1,
+        ignoring: !visible,
         child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 350),
+          duration: const Duration(milliseconds: 320),
           opacity: visible ? opacity : 0,
           child: AnimatedScale(
             duration: duration,
             curve: Curves.easeOutCubic,
             scale: scale,
-            child: _AnimatedBlur(
-              sigma: blur,
-              child: _ProfileCard(
-                profile: profile,
-                isMain: isMain,
-                isDraft: isDraft,
-                expanded: isExpanded,
-                editing: isEditing,
-                right: distance > 0,
-                collapsedHeight: metrics.cardHeight,
-                coverExpanded: metrics.coverExpanded,
-                onTap: isMain
-                    ? (isDraft ? () {} : _toggleExpand)
-                    : () => _goTo(entry.index),
-                onStartEdit: isMain && !isDraft ? _startEdit : null,
-                onEndEdit: _endEdit,
-                onCreateDraft: _saveDraft,
-                onCancelDraft: _cancelDraft,
-                onImportFile: _importFile,
+            child: AnimatedRotation(
+              duration: duration,
+              curve: Curves.easeOutCubic,
+              turns: turns,
+              child: _AnimatedBlur(
+                sigma: blur,
+                child: _ProfileCard(
+                  profile: profile,
+                  accent: _accents[entry.index % _accents.length],
+                  isMain: isMain,
+                  isDraft: isDraft,
+                  expanded: isExpanded,
+                  editing: isEditing,
+                  right: false,
+                  collapsedHeight: metrics.cardHeight,
+                  coverExpanded: metrics.coverExpanded,
+                  onTap: isMain
+                      ? (isDraft ? () {} : _toggleExpand)
+                      : () => _goTo(entry.index),
+                  onStartEdit: isMain && !isDraft ? _startEdit : null,
+                  onEndEdit: _endEdit,
+                  onCreateDraft: _saveDraft,
+                  onCancelDraft: _cancelDraft,
+                  onImportFile: _importFile,
+                ),
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPager(int count) {
+    final enabled = count > 1 && _draft == null && !_editing;
+    final quanX = context.quanX;
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+        decoration: BoxDecoration(
+          color: DashboardPalette.surface(context),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: quanX.textTertiary.withValues(alpha: 0.10),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _PagerButton(
+              icon: QuanXIcons.chevronLeft,
+              onPressed: enabled ? () => _goTo(_currentIndex - 1) : null,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: Text(
+                '${_currentIndex + 1} / $count',
+                style: context.textTheme.labelMedium?.copyWith(
+                  color: quanX.textSecondary,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.4,
+                ),
+              ),
+            ),
+            _PagerButton(
+              icon: QuanXIcons.chevronRight,
+              onPressed: enabled ? () => _goTo(_currentIndex + 1) : null,
+            ),
+          ],
         ),
       ),
     );
@@ -454,68 +506,87 @@ class ProfilesCarouselState extends ConsumerState<ProfilesCarousel> {
 
 class _CardEntry {
   final int index;
-  final int distance;
+  final int depth;
   final Profile profile;
 
   const _CardEntry({
     required this.index,
-    required this.distance,
+    required this.depth,
     required this.profile,
   });
+}
+
+class _PagerButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onPressed;
+
+  const _PagerButton({required this.icon, this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 32,
+      height: 32,
+      child: IconButton(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 18),
+        padding: EdgeInsets.zero,
+        visualDensity: VisualDensity.compact,
+        style: IconButton.styleFrom(
+          foregroundColor: context.quanX.textSecondary,
+          disabledForegroundColor: context.quanX.textTertiary.withValues(
+            alpha: 0.4,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _CarouselMetrics {
   final double viewportWidth;
   final double cardWidth;
   final double cardHeight;
-  final double expandedWidth;
   final double expandedHeight;
   final double coverExpanded;
-  final double sideOffset;
-  final double farOffset;
-  final double topCollapsed;
-  final double topExpanded;
+  final double topBase;
   final double stackHeight;
 
   const _CarouselMetrics({
     required this.viewportWidth,
     required this.cardWidth,
     required this.cardHeight,
-    required this.expandedWidth,
     required this.expandedHeight,
     required this.coverExpanded,
-    required this.sideOffset,
-    required this.farOffset,
-    required this.topCollapsed,
-    required this.topExpanded,
+    required this.topBase,
     required this.stackHeight,
   });
 
-  factory _CarouselMetrics.of(double maxWidth) {
+  factory _CarouselMetrics.of(double maxWidth, double maxHeight) {
     final compact = maxWidth < 760;
-    final cardWidth = compact ? min(maxWidth - 40, 400.0) : 440.0;
-    final cardHeight = compact ? 280.0 : 300.0;
-    final expandedWidth = compact ? maxWidth - 24 : min(800.0, maxWidth - 48);
-    final expandedHeight = compact ? 560.0 : 530.0;
-    final coverExpanded = compact ? 230.0 : 250.0;
-    final sideOffset = compact
-        ? cardWidth * 0.58
-        : min(340.0, maxWidth * 0.215);
-    final farOffset = sideOffset * 1.7;
-    final topCollapsed = compact ? 40.0 : 60.0;
-    final topExpanded = compact ? 16.0 : 20.0;
+    final cardWidth = compact
+        ? min(maxWidth - 40, 400.0)
+        : min(640.0, maxWidth - 48);
+    // 堆叠整体要落在可视高度里：先给翻页器留位置，再压缩卡片高度。
+    final topBase = min(compact ? 84.0 : 104.0, maxHeight * 0.15).clamp(
+      64.0,
+      104.0,
+    );
+    const pagerSpace = 56.0;
+    final expandedHeight = (maxHeight - topBase - pagerSpace).clamp(
+      360.0,
+      570.0,
+    );
+    final cardHeight = max(230.0, min(300.0, expandedHeight * 0.6));
+    final coverExpanded = compact ? 290.0 : 240.0;
     return _CarouselMetrics(
       viewportWidth: maxWidth,
       cardWidth: cardWidth,
       cardHeight: cardHeight,
-      expandedWidth: expandedWidth,
       expandedHeight: expandedHeight,
       coverExpanded: coverExpanded,
-      sideOffset: sideOffset,
-      farOffset: farOffset,
-      topCollapsed: topCollapsed,
-      topExpanded: topExpanded,
-      stackHeight: expandedHeight + topExpanded + 30,
+      topBase: topBase,
+      stackHeight: topBase + expandedHeight + pagerSpace,
     );
   }
 }
@@ -596,6 +667,7 @@ class _ProfileCardData {
 
 class _ProfileCard extends ConsumerStatefulWidget {
   final Profile profile;
+  final Color accent;
   final bool isMain;
   final bool isDraft;
   final bool expanded;
@@ -618,6 +690,7 @@ class _ProfileCard extends ConsumerStatefulWidget {
 
   const _ProfileCard({
     required this.profile,
+    required this.accent,
     required this.isMain,
     required this.isDraft,
     required this.expanded,
@@ -658,11 +731,17 @@ class _ProfileCardState extends ConsumerState<_ProfileCard> {
     final coverHeight = widget.expanded
         ? (widget.isDraft ? 170.0 : widget.coverExpanded)
         : widget.collapsedHeight;
-    final radius = BorderRadius.circular(16);
+    final radius = BorderRadius.circular(24);
     return Container(
       decoration: BoxDecoration(
         borderRadius: radius,
         boxShadow: [
+          if (widget.isMain)
+            BoxShadow(
+              color: widget.accent.withValues(alpha: isDark ? 0.20 : 0.16),
+              blurRadius: 42,
+              offset: const Offset(0, 20),
+            ),
           BoxShadow(
             color: Colors.black.withValues(
               alpha: isDark
@@ -683,29 +762,56 @@ class _ProfileCardState extends ConsumerState<_ProfileCard> {
       ),
       child: ClipRRect(
         borderRadius: radius,
-        child: Material(
-          color: DashboardPalette.surface(context),
-          child: InkWell(
-            onTap: widget.onTap,
-            child: Column(
-              children: [
-                TweenAnimationBuilder<double>(
-                  tween: Tween(
-                    begin: widget.collapsedHeight,
-                    end: coverHeight,
-                  ),
-                  duration: const Duration(milliseconds: 420),
-                  curve: Curves.easeOutCubic,
-                  builder: (_, height, child) {
-                    return SizedBox(height: height, child: child);
-                  },
-                  child: _buildCover(context, l10n, data, quanX),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Material(
+              color: DashboardPalette.surface(context),
+              child: InkWell(
+                onTap: widget.onTap,
+                child: Column(
+                  children: [
+                    TweenAnimationBuilder<double>(
+                      tween: Tween(
+                        begin: widget.collapsedHeight,
+                        end: coverHeight,
+                      ),
+                      duration: const Duration(milliseconds: 420),
+                      curve: Curves.easeOutCubic,
+                      builder: (_, height, child) {
+                        return SizedBox(height: height, child: child);
+                      },
+                      child: _buildCover(context, l10n, data, quanX),
+                    ),
+                    if (widget.expanded)
+                      Expanded(
+                        child: _buildDetails(context, l10n, data, quanX),
+                      ),
+                  ],
                 ),
-                if (widget.expanded)
-                  Expanded(child: _buildDetails(context, l10n, data, quanX)),
-              ],
+              ),
             ),
-          ),
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              child: IgnorePointer(
+                child: Container(
+                  height: 3,
+                  decoration: BoxDecoration(
+                    color: widget.accent,
+                    boxShadow: [
+                      BoxShadow(
+                        color: widget.accent.withValues(alpha: 0.45),
+                        blurRadius: 12,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

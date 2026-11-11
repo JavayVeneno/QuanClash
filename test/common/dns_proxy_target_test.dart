@@ -194,4 +194,110 @@ void main() {
       );
     });
   });
+
+  group('automatic DNS target', () {
+    const config = {
+      'proxies': [
+        {'name': 'jp', 'type': 'trojan'},
+        {'name': 'hk', 'type': 'vmess'},
+      ],
+      'proxy-groups': [
+        {
+          'name': 'select',
+          'type': 'select',
+          'proxies': ['hk', 'jp'],
+        },
+        {
+          'name': 'auto',
+          'type': 'url-test',
+          'proxies': ['jp'],
+        },
+        {
+          'name': 'direct',
+          'type': 'select',
+          'proxies': ['DIRECT'],
+        },
+      ],
+    };
+
+    test('uses the persisted selection of the preferred group', () {
+      expect(
+        resolveAutoDnsProxyTarget(
+          config,
+          preferredGroup: 'select',
+          selectedMap: const {'select': 'jp'},
+        ),
+        'jp',
+      );
+    });
+
+    test('follows a selected group chain to a concrete proxy', () {
+      expect(
+        resolveAutoDnsProxyTarget(
+          config,
+          preferredGroup: 'select',
+          selectedMap: const {'select': 'auto', 'auto': 'jp'},
+        ),
+        'jp',
+      );
+    });
+
+    test('skips reserved members instead of pinning DNS to DIRECT', () {
+      expect(
+        resolveAutoDnsProxyTarget(
+          {
+            'proxies': [
+              {'name': 'jp', 'type': 'trojan'},
+            ],
+            'proxy-groups': [
+              {
+                'name': 'select',
+                'type': 'select',
+                'proxies': ['DIRECT', 'jp'],
+              },
+            ],
+          },
+          preferredGroup: 'select',
+        ),
+        'jp',
+      );
+    });
+
+    test('does not invent a target for provider-backed groups', () {
+      expect(
+        resolveAutoDnsProxyTarget({
+          'proxies': const [],
+          'proxy-groups': [
+            {
+              'name': 'provider',
+              'type': 'select',
+              'use': ['sub'],
+            },
+          ],
+        }),
+        '',
+      );
+    });
+
+    test('breaks selection cycles', () {
+      expect(
+        resolveAutoDnsProxyTarget({
+          'proxies': const [],
+          'proxy-groups': [
+            {
+              'name': 'a',
+              'type': 'select',
+              'proxies': ['b'],
+            },
+            {
+              'name': 'b',
+              'type': 'select',
+              'proxies': ['a'],
+            },
+          ],
+        }),
+        '',
+      );
+    });
+  });
 }

@@ -165,6 +165,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoRunDesc": MessageLookupByLibrary.simpleMessage("アプリ起動時に自動実行"),
     "autoScroll": MessageLookupByLibrary.simpleMessage("自動スクロール"),
     "autoSetSystemDns": MessageLookupByLibrary.simpleMessage("オートセットシステムDNS"),
+    "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
+      "DNS クエリを現在のノードに固定し、ローカル ISP への漏洩を防ぎます。静的に検証できない場合は互換モードに戻ります。",
+    ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("自動更新"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage("自動更新間隔（分）"),
     "backup": MessageLookupByLibrary.simpleMessage("バックアップ"),
@@ -298,6 +301,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "disconnected": MessageLookupByLibrary.simpleMessage("切断済み"),
     "discoverNewVersion": MessageLookupByLibrary.simpleMessage("新バージョンを発見"),
+    "dnsAutoLeakProtectionActive": MessageLookupByLibrary.simpleMessage(
+      "自動漏洩防止が有効です。DNS クエリは現在のノードに固定されます。",
+    ),
     "dnsDesc": MessageLookupByLibrary.simpleMessage("DNS関連設定の更新"),
     "dnsDiagnosticBootstrap": MessageLookupByLibrary.simpleMessage(
       "ブートストラップ：リゾルバー / プロキシのホスト名",
@@ -919,6 +925,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "riskIndexMedium": MessageLookupByLibrary.simpleMessage("中リスク"),
     "riskIndexNoScore": MessageLookupByLibrary.simpleMessage("スコアなし"),
     "riskIndexNotChecked": MessageLookupByLibrary.simpleMessage("未検査"),
+    "riskIndexTapToCheck": MessageLookupByLibrary.simpleMessage(
+      "タップしてリスク指数を検査",
+    ),
     "routeAddress": MessageLookupByLibrary.simpleMessage("ルートアドレス"),
     "routeAddressDesc": MessageLookupByLibrary.simpleMessage("ルートアドレスを設定"),
     "routeMode": MessageLookupByLibrary.simpleMessage("ルートモード"),

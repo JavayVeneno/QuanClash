@@ -23,16 +23,6 @@ class ConnectionBar extends ConsumerWidget {
     }, duration: commonDuration);
   }
 
-  Group? _getCurrentGroup(List<Group> groups) {
-    for (final group in groups) {
-      if (group.type == GroupType.Selector &&
-          (group.now?.isNotEmpty ?? false)) {
-        return group;
-      }
-    }
-    return null;
-  }
-
   String _tagline(AppLocalizations appLocalizations) {
     final hour = DateTime.now().hour;
     if (hour >= 6 && hour < 12) {
@@ -58,8 +48,18 @@ class ConnectionBar extends ConsumerWidget {
     final mode = ref.watch(
       patchClashConfigProvider.select((state) => state.mode),
     );
+    final preferredGroup = ref.watch(
+      currentProfileProvider.select((state) => state?.currentGroupName),
+    );
+    final selectedMap = ref.watch(selectedMapProvider);
     final group = ref.watch(
-      groupsProvider.select((groups) => _getCurrentGroup(groups)),
+      groupsProvider.select(
+        (groups) => computeCurrentGroup(
+          groups,
+          preferredName: preferredGroup,
+          selectedMap: selectedMap,
+        ),
+      ),
     );
     final delayMap = ref.watch(delayDataSourceProvider);
     final lastTraffic = traffics.isNotEmpty ? traffics.last : const Traffic();
@@ -78,9 +78,6 @@ class ConnectionBar extends ConsumerWidget {
       tagline: coreStatus == CoreStatus.connected
           ? _tagline(appLocalizations)
           : '',
-      overviewTitle: appLocalizations.overviewTitle,
-      eyebrow: '${appName.toUpperCase()} / '
-          '${appLocalizations.overviewTitle} // 01',
       serviceRunning: appLocalizations.serviceRunning,
       connected: coreStatus == CoreStatus.connected,
       mode: Intl.message(mode.name),
@@ -104,8 +101,6 @@ class ConnectionHeroSurface extends StatelessWidget {
     required this.statusText,
     required this.statusColor,
     this.tagline = '',
-    this.overviewTitle = 'Overview',
-    this.eyebrow = '',
     this.serviceRunning = 'Service running',
     required this.connected,
     required this.mode,
@@ -123,8 +118,6 @@ class ConnectionHeroSurface extends StatelessWidget {
   final String statusText;
   final Color statusColor;
   final String tagline;
-  final String overviewTitle;
-  final String eyebrow;
   final String serviceRunning;
   final bool connected;
   final String mode;
@@ -138,13 +131,6 @@ class ConnectionHeroSurface extends StatelessWidget {
   final String download;
   final VoidCallback onToggle;
 
-  TextStyle get _labelStyle => const TextStyle(
-    fontFamily: 'JetBrainsMono',
-    fontSize: 9,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 1.6,
-  );
-
   @override
   Widget build(BuildContext context) {
     final quanX = context.quanX;
@@ -154,7 +140,6 @@ class ConnectionHeroSurface extends StatelessWidget {
       builder: (context, constraints) {
         final width = constraints.maxWidth;
         final stacked = width < 720;
-        final labelStyle = _labelStyle.copyWith(color: quanX.textTertiary);
         return GlassPanel(
           radius: 20,
           blurSigma: 20,
@@ -186,9 +171,7 @@ class ConnectionHeroSurface extends StatelessWidget {
                   horizontal: 24,
                   vertical: 24,
                 ),
-                child: stacked
-                    ? _buildStacked(context, labelStyle)
-                    : _buildWide(context, labelStyle),
+                child: stacked ? _buildStacked(context) : _buildWide(context),
               ),
             ],
           ),
@@ -197,7 +180,7 @@ class ConnectionHeroSurface extends StatelessWidget {
     );
   }
 
-  Widget _buildWide(BuildContext context, TextStyle labelStyle) {
+  Widget _buildWide(BuildContext context) {
     final quanX = context.quanX;
     return SizedBox(
       height: 132,
@@ -205,38 +188,12 @@ class ConnectionHeroSurface extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  eyebrow,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: labelStyle.copyWith(
-                    color: DashboardPalette.primary.withValues(alpha: 0.75),
-                    letterSpacing: 1.8,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  overviewTitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _StatusBlock(
-                  statusText: statusText,
-                  statusColor: statusColor,
-                  tagline: tagline,
-                  serviceRunning: serviceRunning,
-                  connected: connected,
-                ),
-              ],
+            child: _StatusBlock(
+              statusText: statusText,
+              statusColor: statusColor,
+              tagline: tagline,
+              serviceRunning: serviceRunning,
+              connected: connected,
             ),
           ),
           const SizedBox(width: 16),
@@ -261,47 +218,23 @@ class ConnectionHeroSurface extends StatelessWidget {
     );
   }
 
-  Widget _buildStacked(BuildContext context, TextStyle labelStyle) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget _buildStacked(BuildContext context) {
+    return Row(
       children: [
-        Text(
-          eyebrow,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: labelStyle.copyWith(
-            color: DashboardPalette.primary.withValues(alpha: 0.75),
-            letterSpacing: 1.8,
+        Expanded(
+          child: _StatusBlock(
+            statusText: statusText,
+            statusColor: statusColor,
+            tagline: tagline,
+            serviceRunning: serviceRunning,
+            connected: connected,
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          overviewTitle,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: context.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _StatusBlock(
-                statusText: statusText,
-                statusColor: statusColor,
-                tagline: tagline,
-                serviceRunning: serviceRunning,
-                connected: connected,
-              ),
-            ),
-            const SizedBox(width: 12),
-            _ActionButton(
-              isStart: isStart,
-              actionLabel: actionLabel,
-              onToggle: onToggle,
-            ),
-          ],
+        const SizedBox(width: 12),
+        _ActionButton(
+          isStart: isStart,
+          actionLabel: actionLabel,
+          onToggle: onToggle,
         ),
       ],
     );
@@ -326,9 +259,7 @@ class _StatusBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final quanX = context.quanX;
-    final statusLine = connected
-        ? '$serviceRunning · $statusText'
-        : statusText;
+    final statusLine = connected ? '$serviceRunning · $statusText' : statusText;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -438,9 +369,7 @@ class _ActionButton extends StatelessWidget {
       style: FilledButton.styleFrom(
         minimumSize: const Size(0, 38),
         padding: const EdgeInsets.symmetric(horizontal: 14),
-        backgroundColor: isStart
-            ? quanX.accent
-            : DashboardPalette.primary,
+        backgroundColor: isStart ? quanX.accent : DashboardPalette.primary,
         foregroundColor: isStart ? quanX.onAccent : Colors.white,
         shape: const RoundedSuperellipseBorder(
           borderRadius: BorderRadius.all(Radius.circular(QuanXRadius.control)),
@@ -504,7 +433,11 @@ class _HeroNetworkPainter extends CustomPainter {
       canvas.drawLine(center, node, guidePaint);
       canvas.drawCircle(node, 2.5, nodePaint);
     }
-    canvas.drawCircle(center, 8, Paint()..color = color.withValues(alpha: 0.12));
+    canvas.drawCircle(
+      center,
+      8,
+      Paint()..color = color.withValues(alpha: 0.12),
+    );
     canvas.drawCircle(center, 4, nodePaint);
     final dotPaint = Paint()..color = guideColor.withValues(alpha: 0.18);
     for (var i = 0; i < 6; i++) {

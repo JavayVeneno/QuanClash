@@ -157,6 +157,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoRunDesc": MessageLookupByLibrary.simpleMessage("应用打开时自动运行"),
     "autoScroll": MessageLookupByLibrary.simpleMessage("自动滚动"),
     "autoSetSystemDns": MessageLookupByLibrary.simpleMessage("自动设置系统DNS"),
+    "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
+      "自动将 DNS 查询固定到当前节点，避免泄露到本地运营商。无法静态验证节点时自动回退为兼容模式。",
+    ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("自动更新"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage("自动更新间隔（分钟）"),
     "backup": MessageLookupByLibrary.simpleMessage("备份"),
@@ -270,6 +273,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "disconnected": MessageLookupByLibrary.simpleMessage("已断开"),
     "discoverNewVersion": MessageLookupByLibrary.simpleMessage("发现新版本"),
+    "dnsAutoLeakProtectionActive": MessageLookupByLibrary.simpleMessage(
+      "已开启自动防泄露：DNS 查询会固定到当前节点。",
+    ),
     "dnsDesc": MessageLookupByLibrary.simpleMessage("更新DNS相关设置"),
     "dnsDiagnosticBootstrap": MessageLookupByLibrary.simpleMessage(
       "引导解析：解析器 / 代理服务器域名",
@@ -815,6 +821,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "riskIndexMedium": MessageLookupByLibrary.simpleMessage("中风险"),
     "riskIndexNoScore": MessageLookupByLibrary.simpleMessage("无评分"),
     "riskIndexNotChecked": MessageLookupByLibrary.simpleMessage("未检测"),
+    "riskIndexTapToCheck": MessageLookupByLibrary.simpleMessage("点击检测风险指数"),
     "routeAddress": MessageLookupByLibrary.simpleMessage("路由地址"),
     "routeAddressDesc": MessageLookupByLibrary.simpleMessage("配置监听路由地址"),
     "routeMode": MessageLookupByLibrary.simpleMessage("路由模式"),

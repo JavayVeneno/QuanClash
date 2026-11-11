@@ -161,6 +161,7 @@ class AutoSetSystemDnsItem extends ConsumerWidget {
     );
     return ListItem.switchItem(
       title: Text(appLocalizations.autoSetSystemDns),
+      subtitle: Text(appLocalizations.autoSetSystemDnsDesc),
       delegate: SwitchDelegate(
         value: autoSetSystemDns,
         onChanged: (bool value) async {

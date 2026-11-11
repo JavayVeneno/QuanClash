@@ -165,22 +165,29 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
     if (!mounted) {
       return;
     }
-    BaseNavigator.push(
-      context,
-      EditorPage(
-        titleEditable: true,
-        title: title,
-        supportRemoteDownload: true,
-        onSave: (context, title, content) {
-          _handleEditorSave(context, title, content, script: script);
-        },
-        onPop: (context, title, content) {
-          return _handleEditorPop(context, title, content, raw, script: script);
-        },
-        languages: const [Language.javaScript],
-        content: raw,
-      ),
+    final page = EditorPage(
+      titleEditable: true,
+      title: title,
+      supportRemoteDownload: true,
+      onSave: (context, title, content) {
+        _handleEditorSave(context, title, content, script: script);
+      },
+      onPop: (context, title, content) {
+        return _handleEditorPop(context, title, content, raw, script: script);
+      },
+      languages: const [Language.javaScript],
+      content: raw,
     );
+    final scope = SubpageScope.of(context);
+    if (scope != null) {
+      scope.push(
+        title.isEmpty ? context.appLocalizations.script : title,
+        null,
+        page,
+      );
+      return;
+    }
+    BaseNavigator.push(context, page);
   }
 
   @override

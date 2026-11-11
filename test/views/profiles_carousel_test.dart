@@ -78,17 +78,21 @@ Finder _cardText(int id, String text) {
   );
 }
 
+/// 卡片堆叠里某张后排卡片露出的顶部边缘（考虑缩放后的视觉上沿）。
+double _exposedEdgeY(WidgetTester tester, int id, double scale) {
+  final key = ValueKey('profile-card-$id');
+  final topLeft = tester.getTopLeft(find.byKey(key));
+  final size = tester.getSize(find.byKey(key));
+  return topLeft.dy + size.height * (1 - scale) / 2 + 6;
+}
+
 void main() {
-  testWidgets('shows active summary and expands details on tap', (tester) async {
+  testWidgets('shows active summary and toggles details on tap', (tester) async {
     await _pump(tester);
     final l10n = AppLocalizations.current;
     expect(find.text('Alpha'), findsWidgets);
     expect(find.text(l10n.profileActive), findsOneWidget);
-    expect(find.text(l10n.profileTapToExpand), findsOneWidget);
     expect(find.text(l10n.profileRemainingTraffic), findsWidgets);
-
-    await tester.tap(_cardText(1, 'Alpha'));
-    await tester.pumpAndSettle();
 
     expect(find.text(l10n.profileSubscriptionUrl), findsOneWidget);
     expect(find.text(l10n.profileNodeCount), findsOneWidget);
@@ -98,25 +102,34 @@ void main() {
     await tester.tap(_cardText(1, l10n.profileCollapse));
     await tester.pumpAndSettle();
     expect(find.text(l10n.profileSubscriptionUrl), findsNothing);
+    expect(find.text(l10n.profileTapToExpand), findsOneWidget);
+
+    await tester.tap(_cardText(1, l10n.profileTapToExpand));
+    await tester.pumpAndSettle();
+    expect(find.text(l10n.profileSubscriptionUrl), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('side cards navigate and wrap around', (tester) async {
+  testWidgets('clicking the exposed stack edge brings a card to front', (
+    tester,
+  ) async {
     await _pump(tester);
     final l10n = AppLocalizations.current;
 
-    await tester.tap(_cardText(2, 'Beta'));
+    // 第二张卡片（缩放 0.96）露出的顶部区域。
+    await tester.tapAt(Offset(700, _exposedEdgeY(tester, 2, 0.96)));
     await tester.pumpAndSettle();
-    expect(_cardText(2, l10n.profileTapToExpand), findsOneWidget);
-    expect(_cardText(1, l10n.profileTapToExpand), findsNothing);
+    expect(_cardText(2, l10n.profileCollapse), findsOneWidget);
+    expect(_cardText(1, l10n.profileCollapse), findsNothing);
 
-    await tester.tap(_cardText(1, 'Alpha'));
+    // 当前卡片换位后，Alpha 落到第三层（缩放 0.88），点它的露出边。
+    await tester.tapAt(Offset(700, _exposedEdgeY(tester, 1, 0.88)));
     await tester.pumpAndSettle();
-    expect(_cardText(1, l10n.profileTapToExpand), findsOneWidget);
+    expect(_cardText(1, l10n.profileCollapse), findsOneWidget);
 
-    await tester.tap(_cardText(4, 'Delta'));
+    await tester.tapAt(Offset(700, _exposedEdgeY(tester, 4, 0.88)));
     await tester.pumpAndSettle();
-    expect(_cardText(4, l10n.profileTapToExpand), findsOneWidget);
+    expect(_cardText(4, l10n.profileCollapse), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -138,15 +151,13 @@ void main() {
     await _pump(tester, currentId: 2);
     final l10n = AppLocalizations.current;
     expect(find.text(l10n.profileLocalYaml), findsWidgets);
-    expect(find.text(l10n.profileTapToExpand), findsOneWidget);
+    expect(find.text(l10n.profileCollapse), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
   testWidgets('subscription URL is masked until revealed', (tester) async {
     await _pump(tester);
     final l10n = AppLocalizations.current;
-    await tester.tap(_cardText(1, 'Alpha'));
-    await tester.pumpAndSettle();
     expect(find.textContaining('•'), findsOneWidget);
     expect(find.text(_profiles.first.url), findsNothing);
 

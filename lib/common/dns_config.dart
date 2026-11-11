@@ -8,6 +8,76 @@ import 'package:quanclash/models/clash_config.dart';
 
 const systemDnsNameserver = 'system://';
 
+/// Returns [raw] as an IP literal host, or null when it is not one.
+///
+/// Accepts a bare address (`8.8.8.8`) and a resolver URI (`udp://8.8.8.8`).
+String? ipLiteralHost(String raw) {
+  final value = raw.trim();
+  if (value.isEmpty) {
+    return null;
+  }
+  if (!value.contains('://')) {
+    return InternetAddress.tryParse(value) != null ? value : null;
+  }
+  try {
+    final host = Uri.parse(value).host;
+    return InternetAddress.tryParse(host) != null ? host : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+/// Make the DNS bootstrap resolvers acceptable to the strict validator.
+///
+/// `default-nameserver` and `proxy-server-nameserver` exist to resolve the
+/// hostnames of the real resolvers, so both must be IP literals: a hostname or
+/// `system` there cannot be resolved and is rejected by [_checkBootstrap].
+/// Providers do ship `default-nameserver: [system, ...]`; without this repair
+/// the whole leak-protection config is discarded and DNS silently stays
+/// unpinned.
+Map<String, dynamic> repairDnsBootstrap(Map<String, dynamic> dns) {
+  var changed = false;
+  final next = Map<String, dynamic>.from(dns);
+
+  final defaults = dns['default-nameserver'];
+  final keptDefaults = defaults is List
+      ? [
+          for (final value in defaults)
+            if (value is String && ipLiteralHost(value) != null) value,
+        ]
+      : <Object>[];
+  if (defaults is List && keptDefaults.length != defaults.length) {
+    next['default-nameserver'] = keptDefaults;
+    changed = true;
+  }
+
+  String? bootstrapHost;
+  final bootstrap = next['proxy-server-nameserver'];
+  for (final value in bootstrap is List ? bootstrap : [bootstrap]) {
+    if (value is String) {
+      bootstrapHost = ipLiteralHost(value);
+      if (bootstrapHost != null) {
+        break;
+      }
+    }
+  }
+  if (bootstrapHost == null) {
+    for (final value in keptDefaults) {
+      bootstrapHost = ipLiteralHost(value as String);
+      if (bootstrapHost != null) {
+        next['proxy-server-nameserver'] = [bootstrapHost];
+        changed = true;
+        break;
+      }
+    }
+  }
+  if (keptDefaults.isEmpty && bootstrapHost != null) {
+    next['default-nameserver'] = [bootstrapHost];
+    changed = true;
+  }
+  return changed ? next : dns;
+}
+
 class EffectiveDnsConfig {
   const EffectiveDnsConfig({
     required this.config,

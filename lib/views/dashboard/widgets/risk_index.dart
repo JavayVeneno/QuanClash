@@ -1,8 +1,6 @@
 import 'package:quanclash/common/common.dart';
 import 'package:quanclash/core/core.dart';
-import 'package:quanclash/enum/enum.dart';
 import 'package:quanclash/l10n/l10n.dart';
-import 'package:quanclash/models/models.dart';
 import 'package:quanclash/providers/providers.dart';
 import 'package:quanclash/state.dart';
 import 'package:quanclash/views/proxies/node_quality.dart';
@@ -18,31 +16,42 @@ import 'dashboard_style.dart';
 class RiskIndex extends ConsumerWidget {
   const RiskIndex({super.key});
 
-  Group? _currentGroup(List<Group> groups) {
-    for (final group in groups) {
-      if (group.type == GroupType.Selector &&
-          (group.now?.isNotEmpty ?? false)) {
-        return group;
-      }
-    }
-    return null;
-  }
-
   void _openDialog(BuildContext context, String proxyName) {
     if (proxyName.isEmpty) {
       globalState.showNotifier(context.appLocalizations.nodeQualityPickNode);
       return;
     }
+    // Opening the risk card is an explicit request for a risk score: preselect
+    // IPPure and start immediately instead of leaving the user with a
+    // Cloudflare-only result and no score.
     showDialog<void>(
       context: context,
-      builder: (_) => NodeQualityDialog(proxyName: proxyName),
+      builder: (_) => NodeQualityDialog(
+        proxyName: proxyName,
+        includeIpPureByDefault: true,
+        autoRun: true,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
-    final group = ref.watch(groupsProvider.select(_currentGroup));
+    final preferredGroup = ref.watch(
+      currentProfileProvider.select((state) => state?.currentGroupName),
+    );
+    final selectedMap = ref.watch(selectedMapProvider);
+    // Probe the node rule mode actually uses, not mihomo's GLOBAL/DIRECT
+    // selector; the risk score is meaningless when measured from the local IP.
+    final group = ref.watch(
+      groupsProvider.select(
+        (groups) => computeCurrentGroup(
+          groups,
+          preferredName: preferredGroup,
+          selectedMap: selectedMap,
+        ),
+      ),
+    );
     final selected = group?.now ?? '';
     final proxyName = selected.isEmpty
         ? ''
@@ -57,7 +66,9 @@ class RiskIndex extends ConsumerWidget {
     final score = fresh && quality?.status == NodeQualityStatus.ok
         ? quality?.riskScore
         : null;
-    final checked = fresh && quality?.status == NodeQualityStatus.ok;
+    // A completed probe that returned no usable score is "no score", not
+    // "not checked"; otherwise a failed IPPure request silently looked idle.
+    final checked = fresh;
     final egressIp = fresh ? quality?.egressIp : null;
     final quanX = context.quanX;
     final color = score != null ? nodeRiskColor(score) : quanX.textTertiary;
@@ -138,7 +149,7 @@ class RiskIndex extends ConsumerWidget {
     bool fresh,
   ) {
     if (!fresh || result == null) {
-      return appLocalizations.riskIndexNotChecked;
+      return appLocalizations.riskIndexTapToCheck;
     }
     final quality = result.quality;
     final ip = quality.egressIp ?? appLocalizations.unknown;

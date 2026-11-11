@@ -338,4 +338,67 @@ void main() {
       expect(group.getCurrentSelectedName(''), '');
     });
   });
+
+  group('computeCurrentGroup', () {
+    const global = Group(
+      name: 'GLOBAL',
+      type: GroupType.Selector,
+      now: 'DIRECT',
+    );
+    const select = Group(
+      name: '节点选择',
+      type: GroupType.Selector,
+      now: 'node-a',
+    );
+    const auto = Group(
+      name: '自动选择',
+      type: GroupType.URLTest,
+      now: 'node-b',
+    );
+
+    test('skips GLOBAL/DIRECT and picks a real node group', () {
+      final group = computeCurrentGroup([global, select, auto]);
+      expect(group?.name, '节点选择');
+    });
+
+    test('prefers the persisted group name', () {
+      final group = computeCurrentGroup(
+        [global, select, auto],
+        preferredName: '自动选择',
+      );
+      expect(group?.name, '自动选择');
+    });
+
+    test('rejects a persisted GLOBAL/DIRECT selection', () {
+      final group = computeCurrentGroup(
+        [global, select],
+        preferredName: 'GLOBAL',
+      );
+      expect(group?.name, '节点选择');
+    });
+
+    test('falls back to non-selector groups with a real node', () {
+      final group = computeCurrentGroup([global, auto]);
+      expect(group?.name, '自动选择');
+    });
+
+    test('resolves a group selected through another group', () {
+      const chain = Group(
+        name: '出口',
+        type: GroupType.Selector,
+        now: '自动选择',
+      );
+      final group = computeCurrentGroup([global, chain, auto]);
+      expect(group?.name, '出口');
+    });
+
+    test('keeps GLOBAL when nothing resolves to a real node', () {
+      final group = computeCurrentGroup([global]);
+      expect(group?.name, 'GLOBAL');
+    });
+
+    test('returns null for an empty group list', () {
+      expect(computeCurrentGroup([]), isNull);
+    });
+  });
 }
