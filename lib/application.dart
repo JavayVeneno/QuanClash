@@ -7,12 +7,14 @@ import 'package:quanclash/core/core.dart';
 import 'package:quanclash/l10n/l10n.dart';
 import 'package:quanclash/manager/hotkey_manager.dart';
 import 'package:quanclash/manager/manager.dart';
+import 'package:quanclash/panel/panel_window_manager.dart';
 import 'package:quanclash/plugins/app.dart';
 import 'package:quanclash/providers/providers.dart';
 import 'package:quanclash/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import 'pages/pages.dart';
 
@@ -56,6 +58,8 @@ class ApplicationState extends ConsumerState<Application> {
         _autoUpdateProfilesTask();
         _initLink();
         app?.initShortcuts();
+        // Windows:托盘面板使用独立窗口,主窗口保持原样。
+        await panelWindow.init();
       }
     });
   }
@@ -96,9 +100,7 @@ class ApplicationState extends ConsumerState<Application> {
       final desktopChild = uiPreviewMode
           ? child
           : HotKeyManager(child: ProxyManager(child: child));
-      return WindowManager(
-        child: TrayManager(child: desktopChild),
-      );
+      return WindowManager(child: TrayManager(child: desktopChild));
     }
     return AndroidManager(child: TileManager(child: child));
   }
@@ -132,6 +134,15 @@ class ApplicationState extends ConsumerState<Application> {
     return VpnManager(child: child);
   }
 
+  void _syncIntlLocale(BuildContext context) {
+    final locale = Intl.canonicalizedLocale(
+      Localizations.localeOf(context).toString(),
+    );
+    if (Intl.defaultLocale != locale) {
+      Intl.defaultLocale = locale;
+    }
+  }
+
   Widget _buildApp({required Widget child}) {
     return StatusManager(child: ThemeManager(child: child));
   }
@@ -153,7 +164,11 @@ class ApplicationState extends ConsumerState<Application> {
             GlobalCupertinoLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
           ],
-          builder: (_, child) {
+          builder: (context, child) {
+            // 本地化 delegate 的加载是异步的，启动或切换语言时多个 locale
+            // 可能乱序完成，把 Intl.defaultLocale 留在旧语言上，导致一部分
+            // 组件按错误的语言渲染。这里以组件树实际解析出的语言为准。
+            _syncIntlLocale(context);
             return AppEnvManager(
               child: GlassScope(
                 plain: themeProps.pureBlack,

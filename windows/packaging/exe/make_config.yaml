@@ -6,7 +6,7 @@ publisher_url: https://github.com/JavayVeneno/quanclash
 display_name: QuanClash
 executable_name: QuanClash.exe
 output_base_file_name: QuanClash.exe
-setup_icon_file: ..\windows\runner\resources\app_icon.ico
+setup_icon_file: windows\runner\resources\app_icon.ico
 locales:
   - lang: zh
     file: ..\windows\packaging\exe\ChineseSimplified.isl

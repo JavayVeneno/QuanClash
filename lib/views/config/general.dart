@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const _defaultUaValue = '';
 const _customUaValue = '__custom_ua__';
-const _presetUas = ['clash-verge/v2.4.2', 'ClashforWindows/0.19.23'];
+const _presetUas = ['mihomo/$coreVersion', 'clash-verge/v2.5.0'];
 
 class LogLevelItem extends ConsumerWidget {
   const LogLevelItem({super.key});

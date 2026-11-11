@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:quanclash/common/common.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// 设置页设计令牌：品牌紫、浅紫底座与浅灰紫背景。
@@ -62,6 +63,84 @@ class SettingsPalette {
   static const radiusCard = 20.0;
   static const radiusControl = 8.0;
   static const rowHeight = 64.0;
+}
+
+/// 把设置页设计令牌注入旧页面，让嵌入卡片内的二级页面沿用同一套配色。
+///
+/// 旧页面大量使用 [ListTile] / [Divider] / [Switch]，这里统一覆盖为：
+/// 浅紫图标底座、13.5/11 的两级文字、`#FAFAFC` 悬停、`#F1F1F5` 分割线。
+class SettingsSubpageTheme extends StatelessWidget {
+  final Widget child;
+
+  const SettingsSubpageTheme({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final text1 = SettingsPalette.text1(context);
+    final text2 = SettingsPalette.text2(context);
+    final text3 = SettingsPalette.text3(context);
+    final hover = SettingsPalette.hover(context);
+    final soft = SettingsPalette.soft(context);
+    final border = SettingsPalette.borderColor(context);
+    final inactiveTrack = SettingsPalette.isDark(context)
+        ? const Color(0xFF3A3A42)
+        : const Color(0xFFE5E5EA);
+
+    return Theme(
+      data: theme.copyWith(
+        colorScheme: theme.colorScheme.copyWith(
+          primaryContainer: soft,
+          onPrimaryContainer: SettingsPalette.primary,
+        ),
+        dividerTheme: DividerThemeData(
+          color: border,
+          thickness: 1,
+          space: 1,
+        ),
+        hoverColor: hover,
+        highlightColor: hover,
+        focusColor: soft,
+        splashColor: soft,
+        iconTheme: theme.iconTheme.copyWith(color: text2),
+        listTileTheme: ListTileThemeData(
+          tileColor: Colors.transparent,
+          textColor: text1,
+          iconColor: text2,
+          selectedColor: SettingsPalette.primary,
+          selectedTileColor: soft,
+          titleTextStyle: TextStyle(
+            fontSize: 13.5,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.1,
+            color: text1,
+          ),
+          subtitleTextStyle: TextStyle(fontSize: 11, color: text3),
+          leadingAndTrailingTextStyle: TextStyle(
+            fontSize: 12,
+            color: text3,
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+          horizontalTitleGap: 14,
+          minLeadingWidth: 32,
+          minVerticalPadding: 10,
+          minTileHeight: SettingsPalette.rowHeight,
+          titleAlignment: ListTileTitleAlignment.center,
+        ),
+        switchTheme: SwitchThemeData(
+          thumbColor: const WidgetStatePropertyAll(Colors.white),
+          trackColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return SettingsPalette.primary;
+            }
+            return inactiveTrack;
+          }),
+          trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
+        ),
+      ),
+      child: child,
+    );
+  }
 }
 
 class SettingsIconTile extends StatelessWidget {
@@ -617,11 +696,15 @@ class SettingsSubpageHeader extends StatelessWidget {
   final String? subtitle;
   final VoidCallback onBack;
 
+  /// 旧页面通过 `CommonScaffold.actions` 提供的操作按钮。
+  final ValueListenable<List<Widget>>? actions;
+
   const SettingsSubpageHeader({
     super.key,
     required this.title,
     this.subtitle,
     required this.onBack,
+    this.actions,
   });
 
   @override
@@ -633,40 +716,68 @@ class SettingsSubpageHeader extends StatelessWidget {
           bottom: BorderSide(color: SettingsPalette.borderColor(context)),
         ),
       ),
-      child: Row(
-        children: [
-          _BackButton(onPressed: onBack),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.3,
-                    color: SettingsPalette.text1(context),
-                  ),
-                ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: 1),
-                  Text(
-                    subtitle!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: SettingsPalette.text3(context),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Row(
+            children: [
+              _BackButton(onPressed: onBack),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.3,
+                        color: SettingsPalette.text1(context),
+                      ),
                     ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 1),
+                      Text(
+                        subtitle!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: SettingsPalette.text3(context),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              if (actions != null)
+                ValueListenableBuilder<List<Widget>>(
+                  valueListenable: actions!,
+                  builder: (_, value, _) {
+                    if (value.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth * 0.45,
+                      ),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        reverse: true,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: value,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -742,8 +853,7 @@ class _RingThumbShape extends SliderComponentShape {
   const _RingThumbShape();
 
   @override
-  Size getPreferredSize(bool isEnabled, bool isDiscrete) =>
-      const Size(18, 18);
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) => const Size(18, 18);
 
   @override
   void paint(
@@ -761,11 +871,7 @@ class _RingThumbShape extends SliderComponentShape {
     required Size sizeWithOverflow,
   }) {
     final canvas = context.canvas;
-    canvas.drawCircle(
-      center,
-      9,
-      Paint()..color = Colors.white,
-    );
+    canvas.drawCircle(center, 9, Paint()..color = Colors.white);
     canvas.drawCircle(
       center,
       9,
@@ -801,15 +907,16 @@ Future<T?> showSettingsModal<T>(
               onTap: () => Navigator.of(context).pop(),
               child: BackdropFilter(
                 filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: ColoredBox(
-                  color: Colors.black.withValues(alpha: 0.08),
-                ),
+                child: ColoredBox(color: Colors.black.withValues(alpha: 0.08)),
               ),
             ),
           ),
           Center(
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: width, maxHeight: maxHeight),
+              constraints: BoxConstraints(
+                maxWidth: width,
+                maxHeight: maxHeight,
+              ),
               child: Container(
                 decoration: BoxDecoration(
                   color: SettingsPalette.surface(context),
@@ -835,46 +942,46 @@ Future<T?> showSettingsModal<T>(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 18, 12, 12),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  title,
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: -0.3,
-                                    color: SettingsPalette.text1(context),
-                                  ),
-                                ),
-                                if (subtitle != null) ...[
-                                  const SizedBox(height: 2),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 18, 12, 12),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   Text(
-                                    subtitle,
+                                    title,
                                     style: TextStyle(
-                                      fontSize: 11,
-                                      color: SettingsPalette.text3(context),
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: -0.3,
+                                      color: SettingsPalette.text1(context),
                                     ),
                                   ),
+                                  if (subtitle != null) ...[
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      subtitle,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: SettingsPalette.text3(context),
+                                      ),
+                                    ),
+                                  ],
                                 ],
-                              ],
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            icon: const Icon(QuanXIcons.x),
-                            iconSize: 18,
-                            color: SettingsPalette.text3(context),
-                          ),
-                        ],
+                            IconButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              icon: const Icon(QuanXIcons.x),
+                              iconSize: 18,
+                              color: SettingsPalette.text3(context),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
                       Flexible(
                         child: SingleChildScrollView(
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),

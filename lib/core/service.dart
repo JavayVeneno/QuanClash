@@ -34,9 +34,15 @@ class CoreService extends CoreHandlerInterface {
   }
 
   Future<void> handleResult(ActionResult result) async {
-    final completer = _callbackCompleterMap[result.id];
+    // Drop the entry as soon as the response arrives. Connection snapshots can
+    // be large; keeping them until the timeout watchdog fired retained them for
+    // minutes and dominated the UI isolate's RSS.
+    final id = result.id;
+    final completer = id == null || id.isEmpty
+        ? null
+        : _callbackCompleterMap.remove(id);
     final data = await parasResult(result);
-    if (result.id?.isEmpty == true) {
+    if (id?.isEmpty == true) {
       coreEventManager.sendEvent(CoreEvent.fromJson(result.data));
     }
     if (completer?.isCompleted == true) {
@@ -149,6 +155,7 @@ class CoreService extends CoreHandlerInterface {
     for (final completer in _callbackCompleterMap.values) {
       completer.safeCompleter(null);
     }
+    _callbackCompleterMap.clear();
   }
 
   @override
@@ -164,9 +171,10 @@ class CoreService extends CoreHandlerInterface {
     Duration? timeout,
   }) async {
     final id = '${method.name}#${utils.id}';
-    _callbackCompleterMap[id] = Completer<T?>();
+    final completer = Completer<T?>();
+    _callbackCompleterMap[id] = completer;
     sendMessage(json.encode(Action(id: id, method: method, data: data)));
-    return (_callbackCompleterMap[id] as Completer<T?>).future.withTimeout(
+    return completer.future.withTimeout(
       timeout: timeout,
       onLast: () {
         final completer = _callbackCompleterMap[id];

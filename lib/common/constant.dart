@@ -13,6 +13,13 @@ import 'package:flutter/material.dart';
 const appName = 'QuanClash';
 const appHelperService = 'QuanClashHelperService';
 const coreName = 'clash.meta';
+
+/// Core version advertised in the default User-Agent.
+///
+/// Subscription providers inspect the UA and only serve the full node list to
+/// clients they recognise as mihomo. Keep this in sync with the bundled core
+/// (`core/Clash.Meta/constant/version.go`) and start the UA with `mihomo/`.
+const coreVersion = '1.10.0';
 const uiPreviewMode = bool.fromEnvironment('UI_PREVIEW') && kDebugMode;
 const browserUa =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';

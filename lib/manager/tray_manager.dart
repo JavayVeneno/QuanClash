@@ -1,4 +1,5 @@
 import 'package:quanclash/common/common.dart';
+import 'package:quanclash/panel/panel_window_manager.dart';
 import 'package:quanclash/providers/action.dart';
 import 'package:quanclash/providers/state.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +58,16 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener {
   void onTrayIconMouseDown() async {
     final currentWindow = window;
     if (currentWindow == null) {
+      return;
+    }
+    // Windows:面板是独立窗口,主窗口保持原样。
+    if (panelWindow.isSupported) {
+      await panelWindow.toggle();
+      return;
+    }
+    // 点击托盘图标会先让面板失焦并自动收起。这次点击只当作「关闭面板」,
+    // 否则收起后又会立刻重新弹出,面板看起来永远关不掉。
+    if (currentWindow.isPanelMode && currentWindow.wasPanelJustHidden) {
       return;
     }
     final isVisible = await currentWindow.isVisible;

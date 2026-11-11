@@ -2674,6 +2674,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Pin DNS queries to the current proxy to keep them off your local ISP. Falls back to compatible mode when the node cannot be statically verified.`
+  String get autoSetSystemDnsDesc {
+    return Intl.message(
+      'Pin DNS queries to the current proxy to keep them off your local ISP. Falls back to compatible mode when the node cannot be statically verified.',
+      name: 'autoSetSystemDnsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `{label} details`
   String details(Object label) {
     return Intl.message(
@@ -4504,6 +4514,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Auto leak protection is on: DNS queries are pinned to the current node.`
+  String get dnsAutoLeakProtectionActive {
+    return Intl.message(
+      'Auto leak protection is on: DNS queries are pinned to the current node.',
+      name: 'dnsAutoLeakProtectionActive',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Proxy-only requires a static all-proxy target and explicit IP-address bootstrap resolvers. Bootstrap is direct; this is not a DNS leak test.`
   String get dnsSafetyModeDesc {
     return Intl.message(
@@ -5259,6 +5279,16 @@ class AppLocalizations {
     return Intl.message(
       'Not checked',
       name: 'riskIndexNotChecked',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap to check the risk index`
+  String get riskIndexTapToCheck {
+    return Intl.message(
+      'Tap to check the risk index',
+      name: 'riskIndexTapToCheck',
       desc: '',
       args: [],
     );

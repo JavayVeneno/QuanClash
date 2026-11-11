@@ -43,6 +43,8 @@ class NodeQualityDialog extends ConsumerStatefulWidget {
     this.loadQuality,
     this.cooldown,
     this.autoCloseOnSuccess = true,
+    this.includeIpPureByDefault = false,
+    this.autoRun = false,
   });
 
   final String proxyName;
@@ -51,6 +53,12 @@ class NodeQualityDialog extends ConsumerStatefulWidget {
 
   /// 检测成功后自动关闭对话框，让用户直接看到节点卡片上的风险徽标。
   final bool autoCloseOnSuccess;
+
+  /// 从「风险指数」卡片进入时预先开启 IPPure，避免用户点了检测却拿不到分数。
+  final bool includeIpPureByDefault;
+
+  /// 用户主动点击风险卡片即视为一次检测请求，进入后立即开始。
+  final bool autoRun;
 
   @override
   ConsumerState<NodeQualityDialog> createState() => _NodeQualityDialogState();
@@ -79,6 +87,15 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
     if (cached != null && isNodeQualityFresh(cached)) {
       _result = cached;
       _includeIpPure = cached.quality.riskScore != null;
+    } else {
+      _includeIpPure = widget.includeIpPureByDefault;
+      if (widget.autoRun) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _run();
+          }
+        });
+      }
     }
     ref.listenManual(coreStatusProvider, (_, _) => _invalidate());
     ref.listenManual(initProvider, (_, _) => _invalidate());
@@ -94,7 +111,7 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
       _failed = false;
       _timedOut = false;
       _loading = false;
-      _includeIpPure = false;
+      _includeIpPure = widget.includeIpPureByDefault;
       _cooldownSeconds = null;
     });
   }

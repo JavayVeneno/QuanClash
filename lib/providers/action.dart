@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:quanclash/common/common.dart';
+import 'package:quanclash/common/dns_config.dart';
+import 'package:quanclash/common/dns_proxy_target.dart';
 import 'package:quanclash/core/core.dart';
 import 'package:quanclash/database/database.dart';
 import 'package:quanclash/enum/enum.dart';
@@ -323,23 +325,81 @@ class SetupAction extends _$SetupAction {
       rawConfig = await handleEvaluate(scriptContent!, rawConfig);
     }
     final directory = await appPath.profilesPath;
-    final res = makeRealProfileTask(
-      MakeRealProfileState(
-        rules: rules,
-        proxyGroups: proxyGroups,
-        profilesPath: directory,
-        profileId: profileId,
-        rawConfig: rawConfig,
-        realPatchConfig: realPatchConfig,
-        overrideDns: overrideDns,
-        appendSystemDns: appendSystemDns,
-        dnsSafetyMode: networkProps.dnsSafetyMode,
-        dnsProxyTarget: networkProps.dnsProxyTarget,
-        addedRules: addedRules,
-        defaultUA: defaultUA,
-      ),
+    Future<RealProfileResult> build({
+      required DnsSafetyMode safetyMode,
+      required String proxyTarget,
+      bool repairBootstrap = false,
+      bool? appendSystemDnsOverride,
+    }) {
+      final patchConfig = repairBootstrap
+          ? realPatchConfig.copyWith(
+              dns: _repairPatchDnsBootstrap(realPatchConfig.dns),
+            )
+          : realPatchConfig;
+      final profileConfig = repairBootstrap
+          ? _repairProfileDnsBootstrap(rawConfig)
+          : rawConfig;
+      return makeRealProfileTask(
+        MakeRealProfileState(
+          rules: rules,
+          proxyGroups: proxyGroups,
+          profilesPath: directory,
+          profileId: profileId,
+          rawConfig: profileConfig,
+          realPatchConfig: patchConfig,
+          overrideDns: overrideDns,
+          appendSystemDns: appendSystemDnsOverride ?? appendSystemDns,
+          dnsSafetyMode: safetyMode,
+          dnsProxyTarget: proxyTarget,
+          addedRules: addedRules,
+          defaultUA: defaultUA,
+        ),
+      );
+    }
+
+    final profile = ref.read(currentProfileProvider);
+    final selectedMap = profile?.id == profileId
+        ? profile!.selectedMap
+        : ref.read(profilesProvider).getProfile(profileId)?.selectedMap ??
+              const <String, String>{};
+    final preferredGroup = profile?.id == profileId
+        ? profile?.currentGroupName
+        : null;
+    // DNS leak protection: when enabled, pin resolvers to the concrete proxy
+    // the config would actually use. This keeps ordinary queries on the proxy
+    // path even when TUN is off. Dynamic/provider-backed nodes cannot be
+    // validated before the core starts, so they fall back to the configured
+    // mode instead of installing a target the core may resolve to DIRECT.
+    final autoTarget =
+        networkProps.autoSetSystemDns && realPatchConfig.mode != Mode.direct
+        ? resolveAutoDnsProxyTarget(
+            rawConfig,
+            selectedMap: selectedMap,
+            preferredGroup: preferredGroup,
+          )
+        : '';
+    final explicitTarget = networkProps.dnsProxyTarget.trim();
+    final configuredMode = networkProps.dnsSafetyMode;
+    final shouldAutoPin =
+        autoTarget.isNotEmpty &&
+        (configuredMode == DnsSafetyMode.compatible ||
+            (configuredMode == DnsSafetyMode.proxyOnly &&
+                explicitTarget.isEmpty));
+    if (shouldAutoPin) {
+      final strict = await build(
+        safetyMode: DnsSafetyMode.proxyOnly,
+        proxyTarget: autoTarget,
+        repairBootstrap: true,
+        appendSystemDnsOverride: false,
+      );
+      if (strict.dnsErrors.isEmpty) {
+        return strict;
+      }
+    }
+    return build(
+      safetyMode: configuredMode,
+      proxyTarget: explicitTarget,
     );
-    return res;
   }
 
   Future<String> getProfileWithId(int profileId) async {
@@ -1032,4 +1092,41 @@ class GeoResourceAction extends _$GeoResourceAction {
       return state.copyWith(geoXUrl: {...state.geoXUrl, geoResource: newUrl});
     });
   }
+}
+
+/// Bootstrap resolvers used to look up proxy server hostnames must be plain
+/// IPs; otherwise strict proxy-only DNS rejects the config. Automatic leak
+/// protection may replace a hostname-based bootstrap with an IP literal from
+/// the same config's default resolvers.
+Dns _repairPatchDnsBootstrap(Dns dns) {
+  final defaults = dns.defaultNameserver
+      .map(ipLiteralHost)
+      .whereType<String>()
+      .toList();
+  var next = dns;
+  if (defaults.length != dns.defaultNameserver.length) {
+    next = next.copyWith(defaultNameserver: defaults);
+  }
+  if (next.proxyServerNameserver.any(
+    (value) => ipLiteralHost(value) != null,
+  )) {
+    return next;
+  }
+  if (defaults.isNotEmpty) {
+    return next.copyWith(proxyServerNameserver: [defaults.first]);
+  }
+  return next;
+}
+
+Map<String, dynamic> _repairProfileDnsBootstrap(Map<String, dynamic> raw) {
+  final dns = raw['dns'];
+  if (dns is! Map) {
+    return raw;
+  }
+  final copy = Map<String, dynamic>.from(dns);
+  final repaired = repairDnsBootstrap(copy);
+  if (identical(repaired, copy)) {
+    return raw;
+  }
+  return Map<String, dynamic>.from(raw)..['dns'] = repaired;
 }

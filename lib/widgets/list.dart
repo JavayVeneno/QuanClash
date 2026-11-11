@@ -12,6 +12,7 @@ import 'card.dart';
 import 'input.dart';
 import 'scaffold.dart';
 import 'sheet.dart';
+import 'subpage_scope.dart';
 
 class Delegate {
   const Delegate();
@@ -271,11 +272,13 @@ class ListItem<T> extends StatelessWidget {
   }) : leading = null,
        onTap = null;
 
-  Widget _buildListTile({
+  Widget _buildListTile(
+    BuildContext context, {
     void Function()? onTap,
     Widget? trailing,
     Widget? leading,
   }) {
+    final inSubpage = SubpageScope.of(context) != null;
     return ListTile(
       key: key,
       dense: dense,
@@ -283,7 +286,7 @@ class ListItem<T> extends StatelessWidget {
       tileColor: color,
       titleTextStyle: titleTextStyle,
       subtitleTextStyle: subtitleTextStyle,
-      leading: leading ?? this.leading,
+      leading: _decorateLeading(context, inSubpage, leading ?? this.leading),
       horizontalTitleGap: horizontalTitleGap,
       title: title,
       minTileHeight: minTileHeight,
@@ -292,7 +295,32 @@ class ListItem<T> extends StatelessWidget {
       titleAlignment: tileTitleAlignment,
       onTap: onTap,
       trailing: trailing ?? this.trailing,
-      contentPadding: padding,
+      // 设置页子页面统一使用卡片内的 24px 内边距。
+      contentPadding: inSubpage ? null : padding,
+    );
+  }
+
+  /// 设置页子页面里把普通图标放进浅紫底座，和主设置页的图标样式保持一致。
+  Widget? _decorateLeading(
+    BuildContext context,
+    bool inSubpage,
+    Widget? leading,
+  ) {
+    if (!inSubpage || leading is! Icon) {
+      return leading;
+    }
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: scheme.primaryContainer,
+        borderRadius: BorderRadius.circular(9),
+      ),
+      child: IconTheme.merge(
+        data: IconThemeData(color: scheme.onPrimaryContainer, size: 16),
+        child: Center(child: leading),
+      ),
     );
   }
 
@@ -315,6 +343,19 @@ class ListItem<T> extends StatelessWidget {
         ),
         closedBuilder: (context, action) {
           Future<void> openAction() async {
+            final scope = SubpageScope.of(context);
+            final titleText = subpageTextOf(title);
+            if (scope != null && titleText != null) {
+              final res = await scope.push(
+                titleText,
+                subpageTextOf(subtitle),
+                child,
+              );
+              if (onChanged != null) {
+                onChanged(res is T ? res : null);
+              }
+              return;
+            }
             final isMobile = globalState.container.read(isMobileViewProvider);
             if (!isMobile || kDebugMode) {
               final res = await showExtend(
@@ -336,7 +377,7 @@ class ListItem<T> extends StatelessWidget {
             action();
           }
 
-          return _buildListTile(onTap: openAction);
+          return _buildListTile(context, onTap: openAction);
         },
         onClosed: onChanged,
         openBuilder: (_, action) {
@@ -349,7 +390,14 @@ class ListItem<T> extends StatelessWidget {
       final child = nextDelegate.widget;
 
       return _buildListTile(
+        context,
         onTap: () {
+          final scope = SubpageScope.of(context);
+          final titleText = subpageTextOf(title);
+          if (scope != null && titleText != null) {
+            scope.push(titleText, subpageTextOf(subtitle), child);
+            return;
+          }
           showExtend(
             context,
             props: ExtendProps(
@@ -366,6 +414,7 @@ class ListItem<T> extends StatelessWidget {
     if (delegate is OptionsDelegate) {
       final optionsDelegate = delegate as OptionsDelegate<T>;
       return _buildListTile(
+        context,
         onTap: () async {
           final value = await globalState.showCommonDialog<T>(
             child: OptionsDialog<T>(
@@ -382,6 +431,7 @@ class ListItem<T> extends StatelessWidget {
     if (delegate is InputDelegate) {
       final inputDelegate = delegate as InputDelegate;
       return _buildListTile(
+        context,
         onTap: () async {
           final value = await globalState.showCommonDialog<String>(
             child: InputDialog(
@@ -403,6 +453,7 @@ class ListItem<T> extends StatelessWidget {
     if (delegate is CheckboxDelegate) {
       final checkboxDelegate = delegate as CheckboxDelegate;
       return _buildListTile(
+        context,
         onTap: () {
           if (checkboxDelegate.onChanged != null) {
             checkboxDelegate.onChanged!(!checkboxDelegate.value);
@@ -417,6 +468,7 @@ class ListItem<T> extends StatelessWidget {
     if (delegate is SwitchDelegate) {
       final switchDelegate = delegate as SwitchDelegate;
       return _buildListTile(
+        context,
         onTap: () {
           if (switchDelegate.onChanged != null) {
             switchDelegate.onChanged!(!switchDelegate.value);
@@ -431,6 +483,7 @@ class ListItem<T> extends StatelessWidget {
     if (delegate is RadioDelegate) {
       final radioDelegate = delegate as RadioDelegate<T>;
       return _buildListTile(
+        context,
         onTap: radioDelegate.onTab,
         leading: Radio<T>(
           visualDensity: VisualDensity.compact,
@@ -442,7 +495,7 @@ class ListItem<T> extends StatelessWidget {
       );
     }
 
-    return _buildListTile(onTap: onTap);
+    return _buildListTile(context, onTap: onTap);
   }
 }
 

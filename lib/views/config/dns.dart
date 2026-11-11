@@ -59,9 +59,16 @@ class DnsSafetyModeItem extends ConsumerWidget {
     final mode = ref.watch(
       networkSettingProvider.select((state) => state.dnsSafetyMode),
     );
+    final autoProtection = ref.watch(
+      networkSettingProvider.select((state) => state.autoSetSystemDns),
+    );
+    final subtitle =
+        mode == DnsSafetyMode.compatible && autoProtection
+        ? '${appLocalizations.dnsSafetyModeDesc} ${appLocalizations.dnsAutoLeakProtectionActive}'
+        : appLocalizations.dnsSafetyModeDesc;
     return ListItem<DnsSafetyMode>.options(
       title: Text(appLocalizations.dnsSafetyMode),
-      subtitle: Text(appLocalizations.dnsSafetyModeDesc),
+      subtitle: Text(subtitle),
       delegate: OptionsDelegate(
         title: appLocalizations.dnsSafetyMode,
         options: DnsSafetyMode.values,

@@ -4,6 +4,155 @@ List<String> validateDnsProxyTarget(Map config, String target) {
   return _DnsProxyGraph(config).validate(target);
 }
 
+const _reservedDnsTargets = {
+  'DIRECT',
+  'REJECT',
+  'REJECT-DROP',
+  'PASS',
+  'COMPATIBLE',
+  'RULES',
+  'GLOBAL',
+};
+
+/// Resolve the proxy a config would actually use, so DNS leak protection can
+/// pin its resolvers without asking the user to type a node name.
+///
+/// Only statically declared proxies are returned: a provider-backed node is
+/// not present in [config] and cannot be validated before the core starts.
+/// Returns an empty string when no concrete, non-reserved proxy is reachable.
+String resolveAutoDnsProxyTarget(
+  Map config, {
+  Map<String, String> selectedMap = const {},
+  String? preferredGroup,
+}) {
+  final proxies = <String>{};
+  final proxyEntries = config['proxies'];
+  if (proxyEntries is List) {
+    for (final entry in proxyEntries) {
+      if (entry is Map && entry['name'] is String) {
+        proxies.add(entry['name'] as String);
+      }
+    }
+  }
+  final groups = <String, Map>{};
+  final groupEntries = config['proxy-groups'];
+  if (groupEntries is List) {
+    for (final entry in groupEntries) {
+      if (entry is Map && entry['name'] is String) {
+        groups[entry['name'] as String] = entry;
+      }
+    }
+  }
+  if (proxies.isEmpty || groups.isEmpty) {
+    return '';
+  }
+
+  String? start;
+  final preferred = preferredGroup?.trim() ?? '';
+  if (preferred.isNotEmpty && groups.containsKey(preferred)) {
+    start = preferred;
+  }
+  if (start == null) {
+    for (final name in groups.keys) {
+      final selected = selectedMap[name];
+      if (selected != null && selected.isNotEmpty) {
+        start = name;
+        break;
+      }
+    }
+  }
+  if (start == null) {
+    for (final entry in groups.values) {
+      if (entry['type'] == 'select') {
+        start = entry['name'] as String;
+        break;
+      }
+    }
+  }
+  if (start == null) {
+    return '';
+  }
+  return _resolveAutoTarget(
+    start,
+    groups: groups,
+    proxies: proxies,
+    selectedMap: selectedMap,
+    visiting: <String>{},
+    depth: 0,
+  );
+}
+
+String _resolveAutoTarget(
+  String name, {
+  required Map<String, Map> groups,
+  required Set<String> proxies,
+  required Map<String, String> selectedMap,
+  required Set<String> visiting,
+  required int depth,
+}) {
+  if (depth > 32 || !visiting.add(name)) {
+    return '';
+  }
+  try {
+    final group = groups[name];
+    if (group == null) {
+      return proxies.contains(name) ? name : '';
+    }
+    final selected = selectedMap[name];
+    if (selected != null && selected.isNotEmpty) {
+      final resolved = _resolveAutoTarget(
+        selected,
+        groups: groups,
+        proxies: proxies,
+        selectedMap: selectedMap,
+        visiting: visiting,
+        depth: depth + 1,
+      );
+      if (resolved.isNotEmpty) {
+        return resolved;
+      }
+    }
+    final now = group['now'];
+    if (now is String && now.isNotEmpty) {
+      final resolved = _resolveAutoTarget(
+        now,
+        groups: groups,
+        proxies: proxies,
+        selectedMap: selectedMap,
+        visiting: visiting,
+        depth: depth + 1,
+      );
+      if (resolved.isNotEmpty) {
+        return resolved;
+      }
+    }
+    final members = group['proxies'];
+    if (members is List) {
+      for (final member in members) {
+        if (member is! String ||
+            member.isEmpty ||
+            _reservedDnsTargets.contains(member.toUpperCase())) {
+          continue;
+        }
+        final resolved = _resolveAutoTarget(
+          member,
+          groups: groups,
+          proxies: proxies,
+          selectedMap: selectedMap,
+          visiting: visiting,
+          depth: depth + 1,
+        );
+        if (resolved.isNotEmpty) {
+          return resolved;
+        }
+      }
+    }
+    return '';
+  } finally {
+    visiting.remove(name);
+  }
+}
+
 class _DnsProxyGraph {
   _DnsProxyGraph(Map config) {
     for (final key in ['proxies', 'proxy-groups']) {

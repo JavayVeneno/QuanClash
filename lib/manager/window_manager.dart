@@ -84,7 +84,7 @@ class _WindowContainerState extends ConsumerState<WindowManager>
             const Duration(milliseconds: 600)) {
       return;
     }
-    currentWindow.hide();
+    currentWindow.hidePanel();
   }
 
   @override
@@ -321,9 +321,7 @@ class _WindowHeaderState extends State<WindowHeader> {
         color: glass.tintStrong,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: glass.divider),
-            ),
+            border: Border(bottom: BorderSide(color: glass.divider)),
           ),
           child: Row(
             children: [

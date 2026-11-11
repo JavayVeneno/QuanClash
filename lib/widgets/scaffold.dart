@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 
 import 'chip.dart';
 import 'inherited.dart';
+import 'subpage_scope.dart';
 
 typedef OnKeywordsUpdateCallback = void Function(List<String> keywords);
 
@@ -349,6 +350,71 @@ class CommonScaffoldState extends State<CommonScaffold> {
   @override
   Widget build(BuildContext context) {
     assert(widget.appBar != null || widget.title != null);
+    final subpageScope = SubpageScope.of(context);
+    if (subpageScope != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        final actions = widget.actions;
+        subpageScope.setActions(
+          actions == null ? const [] : genActions(actions),
+        );
+      });
+      Widget content = widget.body;
+      if (widget.searchState != null) {
+        content = Column(
+          children: [
+            ValueListenableBuilder<AppBarState>(
+              valueListenable: _appBarState,
+              builder: (context, state, _) {
+                if (state.searchState?.query == null) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                  child: TextField(
+                    autofocus: true,
+                    controller: _textController,
+                    style: context.textTheme.titleMedium,
+                    onChanged: (value) {
+                      state.searchState?.onSearch(value);
+                    },
+                    decoration: InputDecoration(
+                      hintText: context.appLocalizations.search,
+                      prefixIcon: const Icon(QuanXIcons.search),
+                      suffixIcon: IconButton(
+                        onPressed: handleExitSearching,
+                        icon: const Icon(QuanXIcons.x),
+                      ),
+                      isDense: true,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                );
+              },
+            ),
+            Expanded(child: widget.body),
+          ],
+        );
+      }
+      final floatingActionButton = widget.floatingActionButton;
+      if (floatingActionButton != null) {
+        content = Stack(
+          children: [
+            Positioned.fill(child: content),
+            Positioned(
+              right: 16,
+              bottom: 16,
+              child: HeroMode(enabled: false, child: floatingActionButton),
+            ),
+          ],
+        );
+      }
+      // 卡片本身是不透明的 DecoratedBox；这里补一层透明 Material，
+      // 让 ListTile 的水波纹绘制在卡片内部而不是被卡片底色遮住。
+      return Material(type: MaterialType.transparency, child: content);
+    }
     final backActionProvider = CommonScaffoldBackActionProvider.of(context);
     final body = SafeArea(
       child: Column(
