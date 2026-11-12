@@ -70,6 +70,13 @@ GPL-3.0 许可证，上游署名与修改说明见 [NOTICE](NOTICE)。
 - `core/Clash.Meta/`：mihomo 子模块（GPL-3.0）。
 - `plugins/`：本地 Flutter 插件（Rust API、构建工具、平台辅助）。
 
+## 参与贡献
+
+欢迎提交 issue 和 pull request。构建、测试与代码生成流程见
+[CONTRIBUTING.md](CONTRIBUTING.md)，社区规范见
+[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)，安全漏洞请按
+[SECURITY.md](SECURITY.md) 私密报告。
+
 ## 许可证与署名
 
 QuanClash 以 **GNU General Public License v3.0** 发布，详见
