@@ -227,7 +227,11 @@ jobs:
             range="${prev:+$prev..}$curr"
           
             git log --no-merges --pretty=format:"%B" "$range" | \
-            awk '!/Update changelog/ && NF {print "- " $0 "\n"}' >> "$out"
+            awk '!/Update changelog/ && !/^Co-Authored-By:/ && NF {print "- " $0 "\n"}' >> "$out"
+
+            # With no previous release, stop after the newest tag; otherwise
+            # the notes would replay every upstream tag in the history.
+            [ -z "$preTag" ] && break
           done
       - name: Patch release.md
         run: |
