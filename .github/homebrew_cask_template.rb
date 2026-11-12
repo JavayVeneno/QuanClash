@@ -7,12 +7,12 @@ cask "quanclash" do
     sha256 arm:   "ARM_SHA256",
            intel: "AMD_SHA256"
 
-    url "https://github.com/JavayVeneno/quanclash/releases/download/v#{version}/QuanClash-#{version}-macos-#{arch}.dmg"
+    url "https://github.com/JavayVeneno/QuanClash/releases/download/v#{version}/QuanClash-#{version}-macos-#{arch}.dmg"
   end
 
   name "QuanClash"
   desc "Multi-platform proxy client based on ClashMeta"
-  homepage "https://github.com/JavayVeneno/quanclash"
+  homepage "https://github.com/JavayVeneno/QuanClash"
 
   livecheck do
     url :url

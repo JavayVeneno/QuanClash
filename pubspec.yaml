@@ -2,6 +2,9 @@ name: quanclash
 description: QuanClash - a desktop-focused multi-platform proxy client built on mihomo.
 publish_to: 'none'
 version: 0.0.2+2
+homepage: https://github.com/JavayVeneno/QuanClash
+repository: https://github.com/JavayVeneno/QuanClash
+issue_tracker: https://github.com/JavayVeneno/QuanClash/issues
 environment:
   sdk: '>=3.8.0 <4.0.0'
 

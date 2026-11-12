@@ -5,7 +5,7 @@
 基于 mihomo 的桌面优先、多平台代理客户端。
 
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
-[![Latest release](https://img.shields.io/github/v/release/JavayVeneno/quanclash)](https://github.com/JavayVeneno/quanclash/releases)
+[![Latest release](https://img.shields.io/github/v/release/JavayVeneno/QuanClash)](https://github.com/JavayVeneno/QuanClash/releases)
 
 [English](README.md)
 
@@ -34,7 +34,7 @@ GPL-3.0 许可证，上游署名与修改说明见 [NOTICE](NOTICE)。
 
 ## 下载
 
-构建产物发布在 [Releases](https://github.com/JavayVeneno/quanclash/releases)
+构建产物发布在 [Releases](https://github.com/JavayVeneno/QuanClash/releases)
 页面，每个版本包含对应平台的 Android APK、Windows 安装包/便携包、macOS DMG
 和 Linux 安装包。
 
