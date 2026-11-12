@@ -2,14 +2,19 @@
 
 # QuanClash
 
-A desktop-focused, multi-platform proxy client built on mihomo.
+A Windows-first desktop proxy client built on mihomo.
 
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 [![Latest release](https://img.shields.io/github/v/release/JavayVeneno/QuanClash)](https://github.com/JavayVeneno/QuanClash/releases)
+[![GitHub stars](https://img.shields.io/github/stars/JavayVeneno/QuanClash?style=flat)](https://github.com/JavayVeneno/QuanClash/stargazers)
 
 [简体中文](README_zh_CN.md)
 
 </div>
+
+<p align="center">
+  <img src="snapshots/quanclash-dashboard.png" alt="QuanClash desktop dashboard" width="920">
+</p>
 
 ## What is QuanClash?
 
@@ -28,6 +33,17 @@ tray and the desktop workflow.
 The project is a modified version of [FlClash](https://github.com/chen08209/FlClash).
 It keeps the GPL-3.0 license and documents the upstream attribution in
 [NOTICE](NOTICE).
+
+## Why QuanClash?
+
+- **Desktop-first layout.** Top navigation on normal windows and a side rail
+  when maximized, instead of a phone layout stretched across a monitor.
+- **Tray-first workflow.** Start, stop and switch nodes from the tray panel
+  without opening the main window.
+- **DNS safety by design.** Explicit `compatible`, `proxyOnly` and `custom`
+  modes plus a read-only DNS path diagnostic.
+- **Real engineering, not a reskin.** Go mihomo core, Rust Windows helper,
+  framed IPC over named pipes, 600+ Flutter tests and Windows CI.
 
 ## Platform support
 
@@ -54,6 +70,8 @@ buildable so the work is not locked in, but treat them as unverified.
   built on top of the existing connection and statistics pipeline.
 
 ## Download
+
+[![Download for Windows](https://img.shields.io/badge/Download-Windows-0078D6?logo=windows&logoColor=white)](https://github.com/JavayVeneno/QuanClash/releases/latest)
 
 Builds are published on the
 [Releases](https://github.com/JavayVeneno/QuanClash/releases) page. Each release

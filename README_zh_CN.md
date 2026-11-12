@@ -2,14 +2,19 @@
 
 # QuanClash
 
-基于 mihomo 的桌面优先、多平台代理客户端。
+基于 mihomo 的 Windows 优先桌面代理客户端。
 
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 [![Latest release](https://img.shields.io/github/v/release/JavayVeneno/QuanClash)](https://github.com/JavayVeneno/QuanClash/releases)
+[![GitHub stars](https://img.shields.io/github/stars/JavayVeneno/QuanClash?style=flat)](https://github.com/JavayVeneno/QuanClash/stargazers)
 
 [English](README.md)
 
 </div>
+
+<p align="center">
+  <img src="snapshots/quanclash-dashboard.png" alt="QuanClash 桌面端仪表盘" width="920">
+</p>
 
 ## 项目简介
 
@@ -24,6 +29,13 @@ QuanClash 是一个 **Windows 优先**的桌面代理客户端，数据面使用
 
 本项目是 [FlClash](https://github.com/chen08209/FlClash) 的修改版本，继续采用
 GPL-3.0 许可证，上游署名与修改说明见 [NOTICE](NOTICE)。
+
+## 为什么选择 QuanClash？
+
+- **桌面优先布局。** 普通窗口使用顶部导航，最大化时切换为侧边栏，而不是把手机布局拉伸到显示器上。
+- **托盘优先工作流。** 不打开主窗口也能在托盘面板里启停内核、切换节点。
+- **DNS 安全是设计的一部分。** 提供显式的 `compatible`、`proxyOnly`、`custom` 模式，以及只读 DNS 路径诊断。
+- **不是换皮项目。** Go mihomo 内核、Rust Windows 辅助服务、命名管道 IPC、600+ Flutter 测试和 Windows CI。
 
 ## 平台支持
 
@@ -46,6 +58,8 @@ GPL-3.0 许可证，上游署名与修改说明见 [NOTICE](NOTICE)。
 - 增量连接检查与 TrafficClass 分类正在现有连接/统计管线之上逐步接入。
 
 ## 下载
+
+[![下载 Windows 版](https://img.shields.io/badge/Download-Windows-0078D6?logo=windows&logoColor=white)](https://github.com/JavayVeneno/QuanClash/releases/latest)
 
 构建产物发布在 [Releases](https://github.com/JavayVeneno/QuanClash/releases)
 页面，目前每个版本提供 Windows 安装包和便携包。
