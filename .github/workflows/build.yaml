@@ -226,8 +226,8 @@ jobs:
             prev="${tags[i+1]}"
             range="${prev:+$prev..}$curr"
           
-            git log --no-merges --pretty=format:"%B" "$range" | \
-            awk '!/Update changelog/ && !/^Co-Authored-By:/ && NF {print "- " $0 "\n"}' >> "$out"
+            git log --no-merges --pretty=format:"%s" "$range" | \
+            awk '!/Update changelog/ && NF {print "- " $0}' >> "$out"
 
             # With no previous release, stop after the newest tag; otherwise
             # the notes would replay every upstream tag in the history.
