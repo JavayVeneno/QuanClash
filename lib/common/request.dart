@@ -14,6 +14,7 @@ import 'package:flutter/foundation.dart';
 class Request {
   late final Dio dio;
   late final Dio _clashDio;
+  late final Dio _directDio;
   String? userAgent;
 
   Request() {
@@ -29,6 +30,20 @@ class Request {
         return client;
       },
     );
+    // 订阅地址在部分机场会按出口 IP 做风控：走代理时 TLS 被掐断，
+    // 直连反而正常。这里保留一个显式直连的客户端做兜底重试。
+    // 全局 HttpOverrides 会给默认客户端装回代理，必须显式覆盖。
+    _directDio = Dio();
+    _directDio.httpClientAdapter = IOHttpClientAdapter(
+      createHttpClient: () {
+        final client = HttpClient();
+        client.findProxy = (_) => 'DIRECT';
+        try {
+          client.userAgent = globalState.ua;
+        } catch (_) {}
+        return client;
+      },
+    );
   }
 
   Future<Response<Uint8List>> getFileResponseForUrl(String url) async {
@@ -37,18 +52,58 @@ class Request {
         url,
         options: Options(responseType: ResponseType.bytes),
       );
+    } on DioException catch (e) {
+      commonPrint.log('getFileResponseForUrl error ${e.toString()}');
+      if (!_shouldRetryDirect(e, url)) throw _localizedError(e);
+      commonPrint.log(
+        'getFileResponseForUrl retry direct after ${e.type}',
+        logLevel: LogLevel.warning,
+      );
+      try {
+        return await _directDio.get<Uint8List>(
+          url,
+          options: Options(
+            responseType: ResponseType.bytes,
+            connectTimeout: const Duration(seconds: 15),
+            receiveTimeout: const Duration(seconds: 30),
+          ),
+        );
+      } on DioException catch (directError) {
+        commonPrint.log('getFileResponseForUrl direct error $directError');
+        throw _localizedError(directError);
+      }
     } catch (e) {
       commonPrint.log('getFileResponseForUrl error ${e.toString()}');
-      if (e is DioException) {
-        if (e.type == DioExceptionType.unknown) {
-          throw currentAppLocalizations.unknownNetworkError;
-        } else if (e.type == DioExceptionType.badResponse) {
-          throw currentAppLocalizations.networkException;
-        }
-        rethrow;
-      }
       throw currentAppLocalizations.unknownNetworkError;
     }
+  }
+
+  /// 只有连接层失败、且原本确实走了代理时才值得再直连试一次。
+  ///
+  /// 响应码错误（403/404 等）不重试，避免把用户的真实 IP 暴露给
+  /// 本来就能连通的服务器。
+  bool _shouldRetryDirect(DioException e, String url) {
+    final retryable = e.type == DioExceptionType.unknown ||
+        e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.connectionTimeout;
+    if (!retryable) return false;
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    try {
+      return QuanClashHttpOverrides.isProxied(uri);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Object _localizedError(DioException e) {
+    if (e.type == DioExceptionType.unknown) {
+      return currentAppLocalizations.unknownNetworkError;
+    }
+    if (e.type == DioExceptionType.badResponse) {
+      return currentAppLocalizations.networkException;
+    }
+    return e;
   }
 
   Future<Response<String>> getTextResponseForUrl(String url) async {
