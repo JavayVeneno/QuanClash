@@ -88,3 +88,6 @@ devtools_options.yaml
 /.claude/
 /.gemini/
 /.mcp.json
+
+# Firebase config is generated from CI secrets (SERVICE_JSON)
+/android/app/google-services.json
