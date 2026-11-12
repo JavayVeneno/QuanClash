@@ -2,7 +2,7 @@ script_template: inno_setup.iss
 app_id: 728B3532-C74B-4870-9068-BE70FE12A3E6
 app_name: QuanClash
 publisher: JavayVeneno
-publisher_url: https://github.com/JavayVeneno/quanclash
+publisher_url: https://github.com/JavayVeneno/QuanClash
 display_name: QuanClash
 executable_name: QuanClash.exe
 output_base_file_name: QuanClash.exe

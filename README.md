@@ -5,7 +5,7 @@
 A desktop-focused, multi-platform proxy client built on mihomo.
 
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
-[![Latest release](https://img.shields.io/github/v/release/JavayVeneno/quanclash)](https://github.com/JavayVeneno/quanclash/releases)
+[![Latest release](https://img.shields.io/github/v/release/JavayVeneno/QuanClash)](https://github.com/JavayVeneno/QuanClash/releases)
 
 [简体中文](README_zh_CN.md)
 
@@ -39,7 +39,7 @@ It keeps the GPL-3.0 license and documents the upstream attribution in
 ## Download
 
 Builds are published on the
-[Releases](https://github.com/JavayVeneno/quanclash/releases) page. Each release
+[Releases](https://github.com/JavayVeneno/QuanClash/releases) page. Each release
 contains the Android APKs, Windows installer/portable zip, macOS DMGs and Linux
 packages that were built for that tag.
 
