@@ -77,6 +77,13 @@ packages that were built for that tag.
 - `plugins/` — local Flutter plugins (Rust API, setup/build tooling, platform
   helpers).
 
+## Contributing
+
+Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md)
+for the build, test and code-generation workflow, [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+for community expectations, and [SECURITY.md](SECURITY.md) for reporting
+vulnerabilities privately.
+
 ## License and attribution
 
 QuanClash is free software under the **GNU General Public License v3.0**. See
