@@ -235,6 +235,17 @@ jobs:
             # the notes would replay every upstream tag in the history.
             [ -z "$preTag" ] && break
           done
+
+          # Re-pushing an existing tag (or a tag that is already the latest
+          # release) yields no range at all. Fall back to the curated section
+          # that version has in CHANGELOG.md.
+          if [ ! -s "$out" ]; then
+            awk -v h="## ${GITHUB_REF_NAME}" '
+              $0 == h { f = 1; next }
+              f && /^## / { exit }
+              f { print }
+            ' CHANGELOG.md | sed -e '/./,$!d' >> "$out"
+          fi
       - name: Patch release.md
         run: |
           version=$(echo "${{ github.ref_name }}" | sed 's/^v//')
