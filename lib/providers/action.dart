@@ -1124,9 +1124,28 @@ Map<String, dynamic> _repairProfileDnsBootstrap(Map<String, dynamic> raw) {
     return raw;
   }
   final copy = Map<String, dynamic>.from(dns);
-  final repaired = repairDnsBootstrap(copy);
+  final repaired = repairDnsBootstrap(
+    copy,
+    proxyServers: _proxyServerHosts(raw),
+  );
   if (identical(repaired, copy)) {
     return raw;
   }
   return Map<String, dynamic>.from(raw)..['dns'] = repaired;
+}
+
+/// Proxy server hosts, used to keep provider-specific DNS for proxy lookups.
+Iterable<String> _proxyServerHosts(Map<String, dynamic> raw) sync* {
+  final proxies = raw['proxies'];
+  if (proxies is! List) {
+    return;
+  }
+  for (final proxy in proxies) {
+    if (proxy is Map) {
+      final server = proxy['server'];
+      if (server is String && server.trim().isNotEmpty) {
+        yield server;
+      }
+    }
+  }
 }

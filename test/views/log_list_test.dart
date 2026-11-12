@@ -57,6 +57,43 @@ void main() {
     expect(find.text('复制信息'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('reverse list with many rows keeps a finite scroll offset', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final logs = [
+      for (var i = 0; i < 500; i++)
+        Log(
+          payload: '[APP] line $i',
+          logLevel: LogLevel.info,
+          dateTime: '2026-11-12 10:00:00',
+        ),
+    ];
+    final controller = ScrollController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      _TestApp(
+        child: SizedBox(
+          height: 400,
+          child: LogList(
+            items: logs,
+            controller: controller,
+            reverse: true,
+            autoScrollToEnd: true,
+            emptyLabel: '暂无日志',
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(controller.position.pixels.isFinite, isTrue);
+  });
 }
 
 class _TestApp extends StatelessWidget {

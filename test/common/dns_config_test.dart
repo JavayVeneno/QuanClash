@@ -755,6 +755,130 @@ void main() {
       expect(identical(repairDnsBootstrap(dns), dns), isTrue);
     });
 
+    test('prefers an encrypted IP resolver as bootstrap', () {
+      final dns = repairDnsBootstrap({
+        'enable': true,
+        'default-nameserver': ['system', '180.76.76.76'],
+        'nameserver': [
+          'https://doh.pub/dns-query',
+          'https://223.5.5.5/dns-query#skip-cert-verify=true',
+        ],
+      });
+      expect(dns['proxy-server-nameserver'], [
+        'https://223.5.5.5/dns-query#skip-cert-verify=true',
+      ]);
+    });
+
+    test('never uses a proxy-pinned resolver as bootstrap', () {
+      final dns = repairDnsBootstrap({
+        'enable': true,
+        'default-nameserver': ['180.76.76.76'],
+        'nameserver': ['https://223.5.5.5/dns-query#node'],
+      });
+      expect(dns['proxy-server-nameserver'], ['180.76.76.76']);
+    });
+
+    test('never uses an IPv6 resolver as bootstrap', () {
+      final dns = repairDnsBootstrap({
+        'enable': true,
+        'default-nameserver': ['180.76.76.76'],
+        'nameserver': ['https://[2400:3200::1]/dns-query'],
+      });
+      expect(dns['proxy-server-nameserver'], ['180.76.76.76']);
+    });
+
+    test('derives a provider policy for proxy server lookups', () {
+      final dns = repairDnsBootstrap(
+        {
+          'enable': true,
+          'default-nameserver': ['system', '223.5.5.5'],
+          'nameserver-policy': {
+            '+.example.com': [
+              'https://108.62.161.127:2096/dns-query/token'
+                  '#skip-cert-verify=true',
+              'https://api-d.dohcore.com/dns-query/token',
+            ],
+            '+.unrelated.com': ['https://1.1.1.1/dns-query'],
+          },
+        },
+        proxyServers: ['42tw.example.com', '5hk.example.com'],
+      );
+      expect(dns['proxy-server-nameserver'], ['223.5.5.5']);
+      expect(dns['proxy-server-nameserver-policy'], {
+        '+.example.com': [
+          'https://108.62.161.127:2096/dns-query/token'
+              '#skip-cert-verify=true',
+        ],
+      });
+    });
+
+    test('derives for proxy providers when servers are unknown', () {
+      final dns = repairDnsBootstrap({
+        'enable': true,
+        'default-nameserver': ['223.5.5.5'],
+        'nameserver-policy': {
+          '+.example.com': ['https://108.62.161.127:2096/dns-query/token'],
+          'geosite:cn': ['223.5.5.5'],
+        },
+      });
+      expect(dns['proxy-server-nameserver-policy'], {
+        '+.example.com': ['https://108.62.161.127:2096/dns-query/token'],
+      });
+    });
+
+    test('keeps an existing proxy-server policy', () {
+      final policy = {
+        '+.example.com': ['https://108.62.161.127:2096/dns-query/token'],
+      };
+      final dns = repairDnsBootstrap(
+        {
+          'enable': true,
+          'default-nameserver': ['223.5.5.5'],
+          'proxy-server-nameserver': ['1.1.1.1'],
+          'proxy-server-nameserver-policy': policy,
+          'nameserver-policy': {
+            '+.example.com': ['https://9.9.9.9/dns-query'],
+          },
+        },
+        proxyServers: ['42tw.example.com'],
+      );
+      expect(dns['proxy-server-nameserver-policy'], policy);
+    });
+
+    test('a provider policy survives strict pinning unpinned', () {
+      final profileDns = repairDnsBootstrap(
+        {
+          'enable': true,
+          'default-nameserver': ['system', '223.5.5.5'],
+          'nameserver': ['https://doh.pub/dns-query'],
+          'nameserver-policy': {
+            '+.example.com': ['https://108.62.161.127:2096/dns-query/token'],
+          },
+        },
+        proxyServers: ['node.example.com'],
+      );
+      final result = buildEffectiveDnsConfig(
+        profileDns: profileDns,
+        patchDns: _patchDns,
+        overrideDns: false,
+        appendSystemDns: false,
+        safetyMode: DnsSafetyMode.proxyOnly,
+        proxyTarget: 'node',
+        proxyConfig: _proxyConfig,
+      );
+      expect(result.errors, isEmpty);
+      expect(result.config['nameserver-policy'], {
+        '+.example.com': [
+          'https://108.62.161.127:2096/dns-query/token#node',
+        ],
+      });
+      expect(result.config['proxy-server-nameserver-policy'], {
+        '+.example.com': [
+          'https://108.62.161.127:2096/dns-query/token',
+        ],
+      });
+    });
+
     test('a repaired subscription config can be pinned strictly', () {
       final profileDns = repairDnsBootstrap({
         'enable': true,

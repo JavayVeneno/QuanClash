@@ -273,6 +273,7 @@ enum ActionMethod {
   stopListener,
   getCountryCode,
   getMemory,
+  getVersion,
   getDnsDiagnostic,
   crash,
   setupConfig,

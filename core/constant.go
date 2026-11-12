@@ -99,6 +99,7 @@ const (
 	getExternalProviderMethod      Method = "getExternalProvider"
 	getCountryCodeMethod           Method = "getCountryCode"
 	getMemoryMethod                Method = "getMemory"
+	getVersionMethod               Method = "getVersion"
 	getDNSDiagnosticMethod         Method = "getDnsDiagnostic"
 	updateGeoDataMethod            Method = "updateGeoData"
 	updateExternalProviderMethod   Method = "updateExternalProvider"

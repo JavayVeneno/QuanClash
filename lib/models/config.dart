@@ -173,6 +173,7 @@ abstract class NetworkProps with _$NetworkProps {
     @Default(false) bool appendSystemDns,
     @Default(DnsSafetyMode.compatible) DnsSafetyMode dnsSafetyMode,
     @Default('') String dnsProxyTarget,
+    @Default(false) bool autoSpeedTest,
   }) = _NetworkProps;
 
   factory NetworkProps.fromJson(Map<String, Object?>? json) =>

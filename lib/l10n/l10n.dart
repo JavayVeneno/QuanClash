@@ -5254,19 +5254,84 @@ class AppLocalizations {
     );
   }
 
-  /// `Node update`
-  String get dashboardNodeUpdate {
+  /// `Current node`
+  String get dashboardCurrentNode {
     return Intl.message(
-      'Node update',
-      name: 'dashboardNodeUpdate',
+      'Current node',
+      name: 'dashboardCurrentNode',
       desc: '',
       args: [],
     );
   }
 
-  /// `Uptime`
-  String get dashboardUptime {
-    return Intl.message('Uptime', name: 'dashboardUptime', desc: '', args: []);
+  /// `Node speed`
+  String get dashboardNodeSpeed {
+    return Intl.message(
+      'Node speed',
+      name: 'dashboardNodeSpeed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Testing…`
+  String get speedTestRunning {
+    return Intl.message(
+      'Testing…',
+      name: 'speedTestRunning',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Speed test failed`
+  String get speedTestFailed {
+    return Intl.message(
+      'Speed test failed',
+      name: 'speedTestFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap to test`
+  String get speedTestTapToRun {
+    return Intl.message(
+      'Tap to test',
+      name: 'speedTestTapToRun',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start the core before testing`
+  String get speedTestInactive {
+    return Intl.message(
+      'Start the core before testing',
+      name: 'speedTestInactive',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Auto speed test`
+  String get autoSpeedTest {
+    return Intl.message(
+      'Auto speed test',
+      name: 'autoSpeedTest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tests on startup and after switching nodes; uses significant data`
+  String get autoSpeedTestDesc {
+    return Intl.message(
+      'Tests on startup and after switching nodes; uses significant data',
+      name: 'autoSpeedTestDesc',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Risk index`

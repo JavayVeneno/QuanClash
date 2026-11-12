@@ -75,10 +75,18 @@ class _CoreContainerState extends ConsumerState<CoreManager>
   @override
   void onLog(Log log) {
     ref.read(logsProvider.notifier).add(log);
-    if (log.logLevel == LogLevel.error) {
+    if (log.logLevel == LogLevel.error && !_isBenignDelayLog(log.payload)) {
       globalState.showNotifier(log.payload);
     }
     super.onLog(log);
+  }
+
+  /// Unified delay probes the test URL twice; the core logs an error when the
+  /// second probe is cut off by the test timeout even though the first one
+  /// already produced a valid delay. Keep it in the log list, but don't raise
+  /// a desktop notification for it.
+  bool _isBenignDelayLog(String payload) {
+    return payload.contains('failed to get the second response from');
   }
 
   @override

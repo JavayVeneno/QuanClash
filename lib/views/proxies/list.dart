@@ -240,6 +240,9 @@ class _ProxiesListViewState extends State<ProxiesListView> {
       _controller.position.minScrollExtent,
       _controller.position.maxScrollExtent,
     );
+    if (!targetScrollOffset.isFinite) {
+      return;
+    }
 
     _controller.jumpTo(targetScrollOffset);
   }
@@ -270,6 +273,9 @@ class _ProxiesListViewState extends State<ProxiesListView> {
   }
 
   void _jumpTo(double offset) {
+    if (!offset.isFinite) {
+      return;
+    }
     if (mounted && _controller.hasClients) {
       _controller.animateTo(
         offset.clamp(

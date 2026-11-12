@@ -325,6 +325,11 @@ class CoreController {
     return int.parse(value);
   }
 
+  /// 内核自身的版本号；内核未连接或旧内核不支持该动作时返回空串。
+  Future<String> getVersion() async {
+    return await _interface.getVersion();
+  }
+
   void resetTraffic() {
     _interface.resetTraffic();
   }

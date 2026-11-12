@@ -1046,6 +1046,9 @@ class _NetworkSettingsTab extends ConsumerWidget {
     final systemProxy = ref.watch(
       networkSettingProvider.select((state) => state.systemProxy),
     );
+    final autoSpeedTest = ref.watch(
+      networkSettingProvider.select((state) => state.autoSpeedTest),
+    );
     final patch = ref.watch(patchClashConfigProvider);
     final port = patch.mixedPort;
     return ListView(
@@ -1092,6 +1095,19 @@ class _NetworkSettingsTab extends ConsumerWidget {
               ref
                   .read(patchClashConfigProvider.notifier)
                   .update((state) => state.copyWith(mode: value));
+            },
+          ),
+        ),
+        SettingsRow(
+          icon: QuanXIcons.gauge,
+          title: l10n.autoSpeedTest,
+          subtitle: l10n.autoSpeedTestDesc,
+          trailing: SettingsSwitch(
+            value: autoSpeedTest,
+            onChanged: (value) {
+              ref
+                  .read(networkSettingProvider.notifier)
+                  .update((state) => state.copyWith(autoSpeedTest: value));
             },
           ),
         ),
@@ -1163,6 +1179,8 @@ class _CoreSettingsTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.appLocalizations;
     final coreStatus = ref.watch(coreStatusProvider);
+    final runningCoreVersion =
+        ref.watch(coreRuntimeVersionProvider).value ?? '';
     final developerMode = ref.watch(
       appSettingProvider.select((state) => state.developerMode),
     );
@@ -1179,7 +1197,10 @@ class _CoreSettingsTab extends ConsumerWidget {
           icon: QuanXIcons.cpu,
           title: l10n.settingsCurrentCore,
           subtitle: statusLabel,
-          trailing: SettingsValue(value: globalState.packageInfo.version),
+          // 内核版本由内核进程返回,与应用版本无关。
+          trailing: SettingsValue(
+            value: runningCoreVersion.isEmpty ? '—' : runningCoreVersion,
+          ),
         ),
         SettingsRow(
           icon: QuanXIcons.database,

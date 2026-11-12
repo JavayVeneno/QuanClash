@@ -28,7 +28,20 @@ class _LogsViewState extends ConsumerState<LogsView> {
   void initState() {
     super.initState();
     _logs = ref.read(logsProvider).list;
-    _scrollController = ScrollController(initialScrollOffset: double.maxFinite);
+    // Start at the newest entry, but never seed the position with an infinite
+    // offset: `double.maxFinite` makes the viewport's scroll math overflow to
+    // Infinity and crashes layout with "Infinity or NaN toInt". Jump once the
+    // real extent is known instead.
+    _scrollController = ScrollController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) {
+        return;
+      }
+      final end = _scrollController.position.maxScrollExtent;
+      if (end.isFinite) {
+        _scrollController.jumpTo(end);
+      }
+    });
     _logsStateNotifier.value = _logsStateNotifier.value.copyWith(logs: _logs);
     ref.listenManual(logsProvider.select((state) => VM(state.list)), (
       prev,

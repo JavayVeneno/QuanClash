@@ -63,15 +63,12 @@ GPL-3.0 许可证，上游署名与修改说明见 [NOTICE](NOTICE)。
    - **Android**：安装 Android SDK/NDK，并设置 `ANDROID_NDK`。
    - **macOS**：安装 `appdmg`（`npm install -g appdmg`）。
 
-仅调试核心时，参考 [.agents/commands.md](.agents/commands.md)。
-
 ## 目录结构
 
 - `lib/`：Flutter 应用（界面、管理器、Provider、核心通信）。
 - `core/`：mihomo 内核的 Go 封装，以及 QuanClash 自有动作。
 - `core/Clash.Meta/`：mihomo 子模块（GPL-3.0）。
 - `plugins/`：本地 Flutter 插件（Rust API、构建工具、平台辅助）。
-- `.agents/`：工程说明、架构文档与核心路线图。
 
 ## 许可证与署名
 
@@ -83,5 +80,4 @@ QuanClash 以 **GNU General Public License v3.0** 发布，详见
 - 数据面：[mihomo / Clash.Meta](https://github.com/MetaCubeX/mihomo)，GPL-3.0。
 
 本分支的修改包括品牌替换、桌面界面重做、DNS 安全配置与诊断、节点质量检测、
-增量连接检查以及 TrafficClass 基础工作；具体变更记录在 git 历史与 `.agents/`
-目录中。
+增量连接检查以及 TrafficClass 基础工作；具体变更记录在 git 历史中。

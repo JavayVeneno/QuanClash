@@ -57,6 +57,9 @@ mixin CoreInterface {
 
   FutureOr<String> getMemory();
 
+  /// 内核自身的版本号（mihomo 分支版本），与应用版本无关。
+  FutureOr<String> getVersion();
+
   Future<Map<String, dynamic>> getDnsDiagnostic();
 
   Future<Map<String, dynamic>> testNodeQuality(
@@ -434,5 +437,10 @@ abstract class CoreHandlerInterface with CoreInterface {
   @override
   Future<String> getMemory() async {
     return await _invoke<String>(method: ActionMethod.getMemory) ?? '';
+  }
+
+  @override
+  Future<String> getVersion() async {
+    return await _invoke<String>(method: ActionMethod.getVersion) ?? '';
   }
 }

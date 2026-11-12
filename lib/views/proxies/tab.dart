@@ -420,6 +420,9 @@ class _ProxyGroupViewState extends ConsumerState<ProxyGroupView> {
     if (!_controller.hasClients) {
       return;
     }
+    if (widget.columns <= 0) {
+      return;
+    }
     final itemHeight = getItemHeight(widget.cardType);
     final proxyIndex = section.proxies.indexWhere(
       (proxy) => proxy.name == selectedName,
@@ -432,8 +435,12 @@ class _ProxyGroupViewState extends ConsumerState<ProxyGroupView> {
         (_sectionOffsets[section.id] ?? 0) +
         (section.title != null ? _sectionHeaderHeight + _sectionGap : 0) +
         contentOffset;
+    final target = offset.clamp(0.0, _controller.position.maxScrollExtent);
+    if (!target.isFinite) {
+      return;
+    }
     _controller.animateTo(
-      offset.clamp(0, _controller.position.maxScrollExtent),
+      target,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeIn,
     );

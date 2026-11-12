@@ -182,6 +182,7 @@ _NetworkProps _$NetworkPropsFromJson(Map<String, dynamic> json) =>
           $enumDecodeNullable(_$DnsSafetyModeEnumMap, json['dnsSafetyMode']) ??
           DnsSafetyMode.compatible,
       dnsProxyTarget: json['dnsProxyTarget'] as String? ?? '',
+      autoSpeedTest: json['autoSpeedTest'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$NetworkPropsToJson(_NetworkProps instance) =>
@@ -193,6 +194,7 @@ Map<String, dynamic> _$NetworkPropsToJson(_NetworkProps instance) =>
       'appendSystemDns': instance.appendSystemDns,
       'dnsSafetyMode': _$DnsSafetyModeEnumMap[instance.dnsSafetyMode]!,
       'dnsProxyTarget': instance.dnsProxyTarget,
+      'autoSpeedTest': instance.autoSpeedTest,
     };
 
 const _$RouteModeEnumMap = {

@@ -79,3 +79,12 @@ devtools_options.yaml
 # FVM Version Cache
 .fvm/
 .fvmrc
+
+# AI agent docs, specs and tooling (kept locally, never versioned)
+/.agents/
+/AGENTS.md
+/CLAUDE.md
+/plugins/rust_api/CLAUDE.md
+/.claude/
+/.gemini/
+/.mcp.json
