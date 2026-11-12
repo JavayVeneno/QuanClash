@@ -20,22 +20,20 @@
 
 QuanClash 是一个 **Windows 优先**的桌面代理客户端，数据面使用
 [mihomo](https://github.com/MetaCubeX/mihomo)（Clash.Meta）。它把桌面端当作
-主目标，而不是给手机应用套一层桌面外壳：应用内毛玻璃视觉体系、顶部图标导航、
-固定仪表盘布局，以及可直接启停和切换节点的托盘面板。
+主目标：应用内毛玻璃视觉体系、顶部图标导航、固定仪表盘布局，以及可直接启停和
+切换节点的托盘面板。
 
-多数开源 Clash 客户端本质上是手机应用——触屏尺寸的布局、过时的视觉，几乎没有
-考虑桌面上的实际使用方式。QuanClash 基于 FlClash，围绕窗口、托盘和桌面工作流
-重新设计这套体验。
+QuanClash 基于 FlClash，围绕窗口、托盘和桌面工作流重新设计这套体验。
 
 本项目是 [FlClash](https://github.com/chen08209/FlClash) 的修改版本，继续采用
 GPL-3.0 许可证，上游署名与修改说明见 [NOTICE](NOTICE)。
 
 ## 为什么选择 QuanClash？
 
-- **桌面优先布局。** 普通窗口使用顶部导航，最大化时切换为侧边栏，而不是把手机布局拉伸到显示器上。
+- **桌面优先布局。** 普通窗口使用顶部导航，最大化时切换为侧边栏，让布局跟随窗口变化。
 - **托盘优先工作流。** 不打开主窗口也能在托盘面板里启停内核、切换节点。
 - **DNS 安全是设计的一部分。** 提供显式的 `compatible`、`proxyOnly`、`custom` 模式，以及只读 DNS 路径诊断。
-- **不是换皮项目。** Go mihomo 内核、Rust Windows 辅助服务、命名管道 IPC、600+ Flutter 测试和 Windows CI。
+- **真实工程。** Go mihomo 内核、Rust Windows 辅助服务、命名管道 IPC、600+ Flutter 测试和 Windows CI。
 
 ## 平台支持
 

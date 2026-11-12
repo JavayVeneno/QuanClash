@@ -20,14 +20,11 @@ A Windows-first desktop proxy client built on mihomo.
 
 QuanClash is a Windows-first desktop proxy client built on
 [mihomo](https://github.com/MetaCubeX/mihomo) (Clash.Meta). It treats the
-desktop as the primary target instead of a mobile app with a desktop build
-bolted on: an in-app frosted-glass visual system, top icon navigation, a fixed
-dashboard layout and a tray panel that can start, stop and switch nodes without
-opening the main window.
+desktop as the primary target: an in-app frosted-glass visual system, top icon
+navigation, a fixed dashboard layout and a tray panel that can start, stop and
+switch nodes without opening the main window.
 
-Most open-source Clash clients are mobile apps first — touch-sized layouts,
-dated visuals and little attention to how a desktop is actually used.
-QuanClash starts from FlClash and rebuilds that experience around windows, the
+QuanClash starts from FlClash and rebuilds the experience around windows, the
 tray and the desktop workflow.
 
 The project is a modified version of [FlClash](https://github.com/chen08209/FlClash).
@@ -36,14 +33,14 @@ It keeps the GPL-3.0 license and documents the upstream attribution in
 
 ## Why QuanClash?
 
-- **Desktop-first layout.** Top navigation on normal windows and a side rail
-  when maximized, instead of a phone layout stretched across a monitor.
+- **Desktop-first layout.** Top navigation in normal windows and a side rail
+  when maximized, so the layout follows the window.
 - **Tray-first workflow.** Start, stop and switch nodes from the tray panel
   without opening the main window.
 - **DNS safety by design.** Explicit `compatible`, `proxyOnly` and `custom`
   modes plus a read-only DNS path diagnostic.
-- **Real engineering, not a reskin.** Go mihomo core, Rust Windows helper,
-  framed IPC over named pipes, 600+ Flutter tests and Windows CI.
+- **Real engineering.** Go mihomo core, Rust Windows helper, framed IPC over
+  named pipes, 600+ Flutter tests and Windows CI.
 
 ## Platform support
 
