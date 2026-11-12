@@ -13,19 +13,36 @@ A desktop-focused, multi-platform proxy client built on mihomo.
 
 ## What is QuanClash?
 
-QuanClash is a Flutter-based proxy client for Windows, macOS, Linux and Android.
-It uses [mihomo](https://github.com/MetaCubeX/mihomo) (Clash.Meta) as its data
-plane and focuses on a desktop-first experience: an in-app frosted-glass visual
-system, top icon navigation, a fixed dashboard layout and a tray panel that can
-start, stop and switch nodes without opening the main window.
+QuanClash is a Windows-first desktop proxy client built on
+[mihomo](https://github.com/MetaCubeX/mihomo) (Clash.Meta). It treats the
+desktop as the primary target instead of a mobile app with a desktop build
+bolted on: an in-app frosted-glass visual system, top icon navigation, a fixed
+dashboard layout and a tray panel that can start, stop and switch nodes without
+opening the main window.
+
+Most open-source Clash clients are mobile apps first — touch-sized layouts,
+dated visuals and little attention to how a desktop is actually used.
+QuanClash starts from FlClash and rebuilds that experience around windows, the
+tray and the desktop workflow.
 
 The project is a modified version of [FlClash](https://github.com/chen08209/FlClash).
 It keeps the GPL-3.0 license and documents the upstream attribution in
 [NOTICE](NOTICE).
 
+## Platform support
+
+| Platform | Status |
+|---|---|
+| Windows | Primary target; built and tested for every release |
+| macOS, Linux, Android | Buildable from the same codebase (inherited from FlClash), but not currently tested or maintained |
+
+Only Windows artifacts are published for now. The other targets are kept
+buildable so the work is not locked in, but treat them as unverified.
+
 ## Features
 
-- Windows, macOS, Linux and Android from one Flutter codebase.
+- A desktop-first interface designed for Windows; the codebase still targets
+  macOS, Linux and Android.
 - Frosted-glass UI with light and dark themes, plus a pure-black mode.
 - Top icon navigation, fixed desktop dashboard and a magpie-style tray panel.
 - Subscription profiles, rule/script overrides, WebDAV sync and system proxy.
@@ -40,8 +57,7 @@ It keeps the GPL-3.0 license and documents the upstream attribution in
 
 Builds are published on the
 [Releases](https://github.com/JavayVeneno/QuanClash/releases) page. Each release
-contains the Android APKs, Windows installer/portable zip, macOS DMGs and Linux
-packages that were built for that tag.
+currently ships the Windows installer and portable zip.
 
 ## Build
 
