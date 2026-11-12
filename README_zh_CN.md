@@ -13,17 +13,30 @@
 
 ## 项目简介
 
-QuanClash 是一个基于 Flutter 的代理客户端，支持 Windows、macOS、Linux 和
-Android。数据面使用 [mihomo](https://github.com/MetaCubeX/mihomo)
-（Clash.Meta），交互以桌面端为主：应用内毛玻璃视觉体系、顶部图标导航、固定
-仪表盘布局，以及可直接启停和切换节点的托盘面板。
+QuanClash 是一个 **Windows 优先**的桌面代理客户端，数据面使用
+[mihomo](https://github.com/MetaCubeX/mihomo)（Clash.Meta）。它把桌面端当作
+主目标，而不是给手机应用套一层桌面外壳：应用内毛玻璃视觉体系、顶部图标导航、
+固定仪表盘布局，以及可直接启停和切换节点的托盘面板。
+
+多数开源 Clash 客户端本质上是手机应用——触屏尺寸的布局、过时的视觉，几乎没有
+考虑桌面上的实际使用方式。QuanClash 基于 FlClash，围绕窗口、托盘和桌面工作流
+重新设计这套体验。
 
 本项目是 [FlClash](https://github.com/chen08209/FlClash) 的修改版本，继续采用
 GPL-3.0 许可证，上游署名与修改说明见 [NOTICE](NOTICE)。
 
+## 平台支持
+
+| 平台 | 状态 |
+|---|---|
+| Windows | 主要目标平台，每次发布都会构建并测试 |
+| macOS、Linux、Android | 同一套代码可以构建（继承自 FlClash），但目前未测试、未维护 |
+
+当前只发布 Windows 产物。其他平台保留可构建状态，避免把路走死，但请视为未经验证。
+
 ## 功能
 
-- 一套 Flutter 代码覆盖 Windows、macOS、Linux 和 Android。
+- 面向 Windows 的桌面优先界面；代码库仍保留 macOS、Linux 和 Android 目标。
 - 毛玻璃界面，支持浅色/深色主题与纯黑模式。
 - 顶部图标导航、桌面固定仪表盘、magpie 式托盘面板。
 - 订阅配置、规则/脚本覆写、WebDAV 同步与系统代理。
@@ -35,8 +48,7 @@ GPL-3.0 许可证，上游署名与修改说明见 [NOTICE](NOTICE)。
 ## 下载
 
 构建产物发布在 [Releases](https://github.com/JavayVeneno/QuanClash/releases)
-页面，每个版本包含对应平台的 Android APK、Windows 安装包/便携包、macOS DMG
-和 Linux 安装包。
+页面，目前每个版本提供 Windows 安装包和便携包。
 
 ## 构建
 

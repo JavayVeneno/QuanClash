@@ -1,5 +1,5 @@
 name: quanclash
-description: QuanClash - a desktop-focused multi-platform proxy client built on mihomo.
+description: QuanClash - a Windows-first desktop proxy client built on mihomo.
 publish_to: 'none'
 version: 0.0.2+2
 homepage: https://github.com/JavayVeneno/QuanClash
