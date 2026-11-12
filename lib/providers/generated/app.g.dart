@@ -243,7 +243,7 @@ final class NodeUsageProvider
   }
 }
 
-String _$nodeUsageHash() => r'39249b900752ba9dbffd8113217c3a8a083a865d';
+String _$nodeUsageHash() => r'26b57b0e65d47d7bfe303e30effb0f97a562e83f';
 
 /// 节点使用记录（本地持久化），供代理页「最近使用 / 常用节点」。
 ///

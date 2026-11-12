@@ -168,6 +168,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
       "DNS クエリを現在のノードに固定し、ローカル ISP への漏洩を防ぎます。静的に検証できない場合は互換モードに戻ります。",
     ),
+    "autoSpeedTest": MessageLookupByLibrary.simpleMessage("自動計測"),
+    "autoSpeedTestDesc": MessageLookupByLibrary.simpleMessage(
+      "起動時とノード切替後に自動で計測します。通信量を多く消費します",
+    ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("自動更新"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage("自動更新間隔（分）"),
     "backup": MessageLookupByLibrary.simpleMessage("バックアップ"),
@@ -259,8 +263,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "dashboard": MessageLookupByLibrary.simpleMessage("ダッシュボード"),
     "dashboardAvailableNodes": MessageLookupByLibrary.simpleMessage("利用可能なノード"),
     "dashboardCoverage": MessageLookupByLibrary.simpleMessage("カバレッジ"),
-    "dashboardNodeUpdate": MessageLookupByLibrary.simpleMessage("ノード更新"),
-    "dashboardUptime": MessageLookupByLibrary.simpleMessage("稼働時間"),
+    "dashboardCurrentNode": MessageLookupByLibrary.simpleMessage("現在のノード"),
+    "dashboardNodeSpeed": MessageLookupByLibrary.simpleMessage("ノード速度"),
     "data": MessageLookupByLibrary.simpleMessage("データ"),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "データの変更が検出されました。保存しますか？",
@@ -1108,6 +1112,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "specialProxy": MessageLookupByLibrary.simpleMessage("特殊プロキシ"),
     "specialRules": MessageLookupByLibrary.simpleMessage("特殊ルール"),
     "speedStatistics": MessageLookupByLibrary.simpleMessage("速度統計"),
+    "speedTestFailed": MessageLookupByLibrary.simpleMessage("計測に失敗しました"),
+    "speedTestInactive": MessageLookupByLibrary.simpleMessage("先にコアを起動してください"),
+    "speedTestRunning": MessageLookupByLibrary.simpleMessage("計測中…"),
+    "speedTestTapToRun": MessageLookupByLibrary.simpleMessage("タップして計測"),
     "splitStrategy": MessageLookupByLibrary.simpleMessage("分流戦略"),
     "splitStrategyNotEmpty": MessageLookupByLibrary.simpleMessage(
       "分流戦略は空にできません",

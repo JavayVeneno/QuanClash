@@ -160,6 +160,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
       "自动将 DNS 查询固定到当前节点，避免泄露到本地运营商。无法静态验证节点时自动回退为兼容模式。",
     ),
+    "autoSpeedTest": MessageLookupByLibrary.simpleMessage("自动测速"),
+    "autoSpeedTestDesc": MessageLookupByLibrary.simpleMessage(
+      "启动和切换节点后自动测速，会消耗较多流量",
+    ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("自动更新"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage("自动更新间隔（分钟）"),
     "backup": MessageLookupByLibrary.simpleMessage("备份"),
@@ -237,8 +241,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "dashboard": MessageLookupByLibrary.simpleMessage("仪表盘"),
     "dashboardAvailableNodes": MessageLookupByLibrary.simpleMessage("可用节点"),
     "dashboardCoverage": MessageLookupByLibrary.simpleMessage("覆盖地区"),
-    "dashboardNodeUpdate": MessageLookupByLibrary.simpleMessage("节点更新"),
-    "dashboardUptime": MessageLookupByLibrary.simpleMessage("稳定运行"),
+    "dashboardCurrentNode": MessageLookupByLibrary.simpleMessage("当前节点"),
+    "dashboardNodeSpeed": MessageLookupByLibrary.simpleMessage("节点测速"),
     "data": MessageLookupByLibrary.simpleMessage("数据"),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage("检测到数据有更改，是否保存"),
     "dataCollectionContent": MessageLookupByLibrary.simpleMessage(
@@ -972,6 +976,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "specialProxy": MessageLookupByLibrary.simpleMessage("特殊代理"),
     "specialRules": MessageLookupByLibrary.simpleMessage("特殊规则"),
     "speedStatistics": MessageLookupByLibrary.simpleMessage("网速统计"),
+    "speedTestFailed": MessageLookupByLibrary.simpleMessage("测速失败"),
+    "speedTestInactive": MessageLookupByLibrary.simpleMessage("请先启动内核再测速"),
+    "speedTestRunning": MessageLookupByLibrary.simpleMessage("测速中…"),
+    "speedTestTapToRun": MessageLookupByLibrary.simpleMessage("点击测速"),
     "splitStrategy": MessageLookupByLibrary.simpleMessage("分流策略"),
     "splitStrategyNotEmpty": MessageLookupByLibrary.simpleMessage("分流策略不能为空"),
     "ssidsEmpty": MessageLookupByLibrary.simpleMessage("SSIDs为空"),

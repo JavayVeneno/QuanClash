@@ -210,6 +210,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
       "Привязывает DNS-запросы к текущему прокси, чтобы они не уходили к местному провайдеру. Если узел нельзя проверить статически, используется совместимый режим.",
     ),
+    "autoSpeedTest": MessageLookupByLibrary.simpleMessage("Автотест скорости"),
+    "autoSpeedTestDesc": MessageLookupByLibrary.simpleMessage(
+      "Тест при запуске и после смены узла; расходует трафик",
+    ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("Автообновление"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage(
       "Интервал автообновления (минуты)",
@@ -331,10 +335,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Доступные узлы",
     ),
     "dashboardCoverage": MessageLookupByLibrary.simpleMessage("Покрытие"),
-    "dashboardNodeUpdate": MessageLookupByLibrary.simpleMessage(
-      "Обновление узлов",
+    "dashboardCurrentNode": MessageLookupByLibrary.simpleMessage(
+      "Текущий узел",
     ),
-    "dashboardUptime": MessageLookupByLibrary.simpleMessage("Время работы"),
+    "dashboardNodeSpeed": MessageLookupByLibrary.simpleMessage("Скорость узла"),
     "data": MessageLookupByLibrary.simpleMessage("Данные"),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "Обнаружены изменения данных, хотите сохранить?",
@@ -1418,6 +1422,16 @@ class MessageLookup extends MessageLookupByLibrary {
     "specialRules": MessageLookupByLibrary.simpleMessage("Специальные правила"),
     "speedStatistics": MessageLookupByLibrary.simpleMessage(
       "Статистика скорости",
+    ),
+    "speedTestFailed": MessageLookupByLibrary.simpleMessage(
+      "Не удалось измерить скорость",
+    ),
+    "speedTestInactive": MessageLookupByLibrary.simpleMessage(
+      "Сначала запустите ядро",
+    ),
+    "speedTestRunning": MessageLookupByLibrary.simpleMessage("Тестирование…"),
+    "speedTestTapToRun": MessageLookupByLibrary.simpleMessage(
+      "Нажмите для теста",
     ),
     "splitStrategy": MessageLookupByLibrary.simpleMessage(
       "Стратегия разделения",

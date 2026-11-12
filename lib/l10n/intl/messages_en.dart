@@ -210,6 +210,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "autoSetSystemDnsDesc": MessageLookupByLibrary.simpleMessage(
       "Pin DNS queries to the current proxy to keep them off your local ISP. Falls back to compatible mode when the node cannot be statically verified.",
     ),
+    "autoSpeedTest": MessageLookupByLibrary.simpleMessage("Auto speed test"),
+    "autoSpeedTestDesc": MessageLookupByLibrary.simpleMessage(
+      "Tests on startup and after switching nodes; uses significant data",
+    ),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("Auto update"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage(
       "Auto update interval (minutes)",
@@ -323,8 +327,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Available nodes",
     ),
     "dashboardCoverage": MessageLookupByLibrary.simpleMessage("Coverage"),
-    "dashboardNodeUpdate": MessageLookupByLibrary.simpleMessage("Node update"),
-    "dashboardUptime": MessageLookupByLibrary.simpleMessage("Uptime"),
+    "dashboardCurrentNode": MessageLookupByLibrary.simpleMessage(
+      "Current node",
+    ),
+    "dashboardNodeSpeed": MessageLookupByLibrary.simpleMessage("Node speed"),
     "data": MessageLookupByLibrary.simpleMessage("Data"),
     "dataChangedSave": MessageLookupByLibrary.simpleMessage(
       "Data changes detected, do you want to save?",
@@ -1347,6 +1353,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "specialProxy": MessageLookupByLibrary.simpleMessage("Special proxy"),
     "specialRules": MessageLookupByLibrary.simpleMessage("special rules"),
     "speedStatistics": MessageLookupByLibrary.simpleMessage("Speed statistics"),
+    "speedTestFailed": MessageLookupByLibrary.simpleMessage(
+      "Speed test failed",
+    ),
+    "speedTestInactive": MessageLookupByLibrary.simpleMessage(
+      "Start the core before testing",
+    ),
+    "speedTestRunning": MessageLookupByLibrary.simpleMessage("Testing…"),
+    "speedTestTapToRun": MessageLookupByLibrary.simpleMessage("Tap to test"),
     "splitStrategy": MessageLookupByLibrary.simpleMessage("Split strategy"),
     "splitStrategyNotEmpty": MessageLookupByLibrary.simpleMessage(
       "Split strategy cannot be empty",

@@ -467,6 +467,11 @@ func handleGetMemory(fn func(value string)) {
 	}()
 }
 
+// handleGetVersion 返回内核（mihomo 分支）自身的版本号，供界面展示。
+func handleGetVersion() string {
+	return constant.Version
+}
+
 func handleGetConfig(path string) (*config.RawConfig, error) {
 	bytes, err := readFile(path)
 	if err != nil {

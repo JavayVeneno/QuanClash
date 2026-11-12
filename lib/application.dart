@@ -27,6 +27,7 @@ class Application extends ConsumerStatefulWidget {
 
 class ApplicationState extends ConsumerState<Application> {
   Timer? _autoUpdateProfilesTaskTimer;
+  Timer? _speedTestTimer;
   bool _preHasVpn = false;
 
   final _pageTransitionsTheme = const PageTransitionsTheme(
@@ -57,10 +58,31 @@ class ApplicationState extends ConsumerState<Application> {
       if (!uiPreviewMode) {
         _autoUpdateProfilesTask();
         _initLink();
+        _initSpeedTest();
         app?.initShortcuts();
         // Windows:托盘面板使用独立窗口,主窗口保持原样。
         await panelWindow.init();
       }
+    });
+  }
+
+  /// 自动测速:内核就绪后测一次,切换节点后延迟再测。
+  ///
+  /// 测速会消耗较多流量,所以由设置里的开关(默认关闭)控制,并在连续切换
+  /// 节点时用 2 秒防抖,避免每个中间节点都跑一遍。
+  void _initSpeedTest() {
+    ref.listenManual(speedTestTriggerProvider, (previous, next) {
+      _speedTestTimer?.cancel();
+      _speedTestTimer = null;
+      if (next == null) {
+        return;
+      }
+      _speedTestTimer = Timer(const Duration(seconds: 2), () {
+        if (!mounted) {
+          return;
+        }
+        ref.read(speedTestProvider.notifier).run(target: next);
+      });
     });
   }
 
@@ -219,6 +241,7 @@ class ApplicationState extends ConsumerState<Application> {
   Future<void> dispose() async {
     linkManager.destroy();
     _autoUpdateProfilesTaskTimer?.cancel();
+    _speedTestTimer?.cancel();
     if (uiPreviewMode) {
       super.dispose();
       return;

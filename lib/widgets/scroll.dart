@@ -63,15 +63,15 @@ class _ScrollToEndBoxState<T> extends State<ScrollToEndBox<T>> {
   Future<bool> _handleTryToEnd() {
     final completer = Completer<bool>();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (mounted &&
-          widget.controller.hasClients &&
-          widget.controller.position.pixels !=
-              widget.controller.position.maxScrollExtent) {
-        await widget.controller.animateTo(
-          duration: kThemeAnimationDuration,
-          widget.controller.position.maxScrollExtent,
-          curve: Curves.easeOut,
-        );
+      if (mounted && widget.controller.hasClients) {
+        final max = widget.controller.position.maxScrollExtent;
+        if (max.isFinite && widget.controller.position.pixels != max) {
+          await widget.controller.animateTo(
+            duration: kThemeAnimationDuration,
+            max,
+            curve: Curves.easeOut,
+          );
+        }
       }
       completer.complete(true);
     });

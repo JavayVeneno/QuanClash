@@ -35,7 +35,21 @@ String? ipLiteralHost(String raw) {
 /// Providers do ship `default-nameserver: [system, ...]`; without this repair
 /// the whole leak-protection config is discarded and DNS silently stays
 /// unpinned.
-Map<String, dynamic> repairDnsBootstrap(Map<String, dynamic> dns) {
+///
+/// [proxyServers] are the `server` hosts of the profile's proxies. Some
+/// providers publish their node addresses only through their own DNS (a
+/// `nameserver-policy` entry covering the proxy domain), while public DNS
+/// returns a parked address. A plain public `proxy-server-nameserver` would
+/// then break every proxy, so the matching policy entries are copied to
+/// `proxy-server-nameserver-policy`; only resolvers addressed by IP literal
+/// are copied, since a hostname resolver would itself need bootstrap DNS.
+/// When the servers are not known up front (proxy providers), every domain
+/// policy entry is copied instead: an entry only takes effect for a proxy
+/// server it actually matches.
+Map<String, dynamic> repairDnsBootstrap(
+  Map<String, dynamic> dns, {
+  Iterable<String> proxyServers = const [],
+}) {
   var changed = false;
   final next = Map<String, dynamic>.from(dns);
 
@@ -62,6 +76,18 @@ Map<String, dynamic> repairDnsBootstrap(Map<String, dynamic> dns) {
     }
   }
   if (bootstrapHost == null) {
+    // Prefer an encrypted resolver already addressed by IP over the plaintext
+    // defaults: proxy server hostnames are then never queried in the clear.
+    final encrypted =
+        _directEncryptedResolver(dns['nameserver']) ??
+        _directEncryptedResolver(dns['fallback']);
+    if (encrypted != null) {
+      next['proxy-server-nameserver'] = [encrypted];
+      bootstrapHost = ipLiteralHost(encrypted);
+      changed = true;
+    }
+  }
+  if (bootstrapHost == null) {
     for (final value in keptDefaults) {
       bootstrapHost = ipLiteralHost(value as String);
       if (bootstrapHost != null) {
@@ -75,7 +101,134 @@ Map<String, dynamic> repairDnsBootstrap(Map<String, dynamic> dns) {
     next['default-nameserver'] = [bootstrapHost];
     changed = true;
   }
+
+  final bootstrapPolicy = dns['proxy-server-nameserver-policy'];
+  final policy = dns['nameserver-policy'];
+  final servers = proxyServers.toList();
+  if (policy is Map &&
+      (bootstrapPolicy is! Map || bootstrapPolicy.isEmpty)) {
+    final derived = <String, List<String>>{};
+    for (final entry in policy.entries) {
+      final key = '${entry.key}';
+      if (!_isDomainRule(key) ||
+          (servers.isNotEmpty &&
+              !servers.any((server) => _policyCovers(key, server)))) {
+        continue;
+      }
+      final values = switch (entry.value) {
+        final String value => [value],
+        final List value => [for (final item in value) if (item is String) item],
+        _ => const <String>[],
+      };
+      final literals = [
+        for (final value in values)
+          if (_isDirectIpResolver(value)) value,
+      ];
+      if (literals.isNotEmpty) {
+        derived[key] = literals;
+      }
+    }
+    if (derived.isNotEmpty) {
+      next['proxy-server-nameserver-policy'] = derived;
+      changed = true;
+    }
+  }
   return changed ? next : dns;
+}
+
+/// First encrypted resolver addressed by an IPv4 literal, usable as bootstrap.
+///
+/// The bootstrap must work before any other DNS is available, so the host has
+/// to be an IP literal; only encrypted transports qualify here. A bare
+/// fragment tag (a proxy selector) would send the query through the proxy and
+/// form a cycle, so only fragment parameters are kept.
+String? _directEncryptedResolver(Object? value) {
+  final values = switch (value) {
+    final String item => [item],
+    final List items => [for (final item in items) if (item is String) item],
+    _ => const <String>[],
+  };
+  String? fallback;
+  for (final item in values) {
+    final uri = _serverUri(item);
+    if (uri == null || !_isOrdinaryResolver(uri)) {
+      continue;
+    }
+    if (uri.scheme == 'udp' || uri.scheme == 'tcp') {
+      continue;
+    }
+    final host = InternetAddress.tryParse(uri.host);
+    if (host == null || host.type != InternetAddressType.IPv4) {
+      continue;
+    }
+    final fragment = _decodedFragment(uri);
+    if (fragment == null) {
+      continue;
+    }
+    final params = fragment
+        .split('&')
+        .where((part) => part.isNotEmpty)
+        .toList();
+    if (params.any((part) => !part.contains('='))) {
+      continue;
+    }
+    final cleaned = params.isEmpty
+        ? uri.removeFragment()
+        : uri.replace(fragment: params.join('&'));
+    final text = cleaned.toString();
+    if (uri.scheme == 'https') {
+      return text;
+    }
+    fallback ??= text;
+  }
+  return fallback;
+}
+
+/// Whether a `nameserver-policy` key matches a proxy server host.
+///
+/// Only domain rules are considered: `geosite:` and `rule-set:` entries carry
+/// no domain we can match against a server host here.
+bool _policyCovers(String key, String server) {
+  if (!_isDomainRule(key)) {
+    return false;
+  }
+  final rule = key.trim().toLowerCase();
+  final domain = server.trim().toLowerCase();
+  if (domain.isEmpty) {
+    return false;
+  }
+  if (rule.startsWith('+.')) {
+    final suffix = rule.substring(2);
+    return domain == suffix || domain.endsWith('.$suffix');
+  }
+  if (rule.startsWith('*.')) {
+    return domain.endsWith(rule.substring(1));
+  }
+  return domain == rule;
+}
+
+/// A policy key naming a domain rather than a `geosite:`/`rule-set:` rule.
+bool _isDomainRule(String key) {
+  final rule = key.trim();
+  return rule.isNotEmpty && !rule.contains(':');
+}
+
+/// A resolver reachable without any other DNS lookup.
+///
+/// Mirrors the strict bootstrap check: an ordinary resolver whose host is an
+/// IP literal and whose fragment carries parameters only (a bare fragment
+/// would route the query through a proxy and form a resolution cycle).
+bool _isDirectIpResolver(String value) {
+  final uri = _serverUri(value);
+  if (uri == null || !_isOrdinaryResolver(uri)) {
+    return false;
+  }
+  if (InternetAddress.tryParse(uri.host) == null) {
+    return false;
+  }
+  final fragment = _decodedFragment(uri);
+  return fragment != null &&
+      !fragment.split('&').any((part) => part.isNotEmpty && !part.contains('='));
 }
 
 class EffectiveDnsConfig {

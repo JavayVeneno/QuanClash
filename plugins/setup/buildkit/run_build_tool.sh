@@ -18,6 +18,14 @@ BUILD_TOOL_TEMP_DIR="$PROJECT_DIR/build/setup_build_tool"
 mkdir -p "$BUILD_TOOL_TEMP_DIR"
 cd "$BUILD_TOOL_TEMP_DIR"
 
+# Dart on Windows cannot resolve MSYS paths such as /e/codes/..., so hand it
+# native paths whenever cygpath is available (Git Bash / MSYS). Use mixed mode
+# (E:/codes/...) so the path stays valid inside the generated YAML pubspec.
+if command -v cygpath >/dev/null 2>&1; then
+  BUILD_TOOL_PKG_DIR=$(cygpath -m "$BUILD_TOOL_PKG_DIR")
+  PROJECT_DIR=$(cygpath -m "$PROJECT_DIR")
+fi
+
 if [[ -z ${FLUTTER_ROOT:-} ]]; then
   DART=dart
 else

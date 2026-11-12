@@ -69,8 +69,6 @@ packages that were built for that tag.
    - **Android:** install the Android SDK and NDK, and set `ANDROID_NDK`.
    - **macOS:** install `appdmg` (`npm install -g appdmg`).
 
-For core-only work, see the commands in [.agents/commands.md](.agents/commands.md).
-
 ## Project layout
 
 - `lib/` — Flutter application (UI, managers, providers, core transport).
@@ -78,7 +76,6 @@ For core-only work, see the commands in [.agents/commands.md](.agents/commands.m
 - `core/Clash.Meta/` — mihomo submodule (GPL-3.0).
 - `plugins/` — local Flutter plugins (Rust API, setup/build tooling, platform
   helpers).
-- `.agents/` — engineering notes, architecture and the core roadmap.
 
 ## License and attribution
 
@@ -92,5 +89,5 @@ QuanClash is free software under the **GNU General Public License v3.0**. See
 
 Changes made in this fork include rebranding, the desktop UI redesign, DNS
 safety configuration and diagnostics, node-quality checks, incremental
-connection inspection and TrafficClass groundwork. The git history and
-`.agents/` record the details.
+connection inspection and TrafficClass groundwork. The git history records
+the details.

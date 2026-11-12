@@ -211,28 +211,173 @@ class BypassDomainItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final appLocalizations = context.appLocalizations;
-    final bypassDomain = ref.watch(
-      networkSettingProvider.select((state) => state.bypassDomain),
-    );
-    return ListItem.open(
+    return ListItem(
       title: Text(appLocalizations.bypassDomain),
       subtitle: Text(appLocalizations.bypassDomainDesc),
-      delegate: OpenDelegate(
-        blur: false,
-        widget: ListInputPage(
-          title: appLocalizations.bypassDomain,
-          items: bypassDomain,
-          itemMaxLength: TextInputLimits.domain,
-          titleBuilder: (item) => Text(item),
-        ),
-        onChanged: (items) {
-          ref
-              .read(networkSettingProvider.notifier)
-              .update(
-                (state) => state.copyWith(bypassDomain: List.from(items)),
-              );
-        },
+      trailing: const Icon(QuanXIcons.chevronRight, size: 16),
+      onTap: () {
+        showDialog<void>(
+          context: context,
+          builder: (_) => const BypassDomainDialog(),
+        );
+      },
+    );
+  }
+}
+
+/// 排除域名编辑器。
+///
+/// 使用新版居中对话框，替代旧的左侧抽屉列表页。
+class BypassDomainDialog extends ConsumerStatefulWidget {
+  const BypassDomainDialog({super.key});
+
+  @override
+  ConsumerState<BypassDomainDialog> createState() => _BypassDomainDialogState();
+}
+
+class _BypassDomainDialogState extends ConsumerState<BypassDomainDialog> {
+  late final List<String> _items;
+  final _controller = TextEditingController();
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _items = List<String>.from(ref.read(networkSettingProvider).bypassDomain);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _add() {
+    final l10n = context.appLocalizations;
+    final value = _controller.text.trim();
+    if (value.isEmpty) {
+      return;
+    }
+    if (_items.contains(value)) {
+      setState(() => _error = l10n.existsTip(l10n.domain));
+      return;
+    }
+    setState(() {
+      _items.add(value);
+      _controller.clear();
+      _error = null;
+    });
+  }
+
+  void _remove(int index) {
+    setState(() {
+      _items.removeAt(index);
+      _error = null;
+    });
+  }
+
+  void _save() {
+    ref
+        .read(networkSettingProvider.notifier)
+        .update(
+          (state) => state.copyWith(bypassDomain: List<String>.from(_items)),
+        );
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.appLocalizations;
+    final quanX = context.quanX;
+    return QuanXDialog(
+      icon: QuanXIcons.ban,
+      color: Theme.of(context).colorScheme.primary,
+      title: l10n.bypassDomain,
+      subtitle: l10n.bypassDomainDesc,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_items.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Text(
+                l10n.noData,
+                style: context.textTheme.bodyMedium?.copyWith(
+                  color: quanX.textTertiary,
+                ),
+              ),
+            )
+          else
+            for (var index = 0; index < _items.length; index++)
+              Container(
+                padding: const EdgeInsets.only(left: 20, right: 8),
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: quanX.separator)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _items[index],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: l10n.delete,
+                      onPressed: () => _remove(index),
+                      icon: Icon(
+                        QuanXIcons.trash2,
+                        size: 16,
+                        color: quanX.textTertiary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+        ],
       ),
+      bottom: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                maxLength: TextInputLimits.domain,
+                buildCounter:
+                    (
+                      _, {
+                      required currentLength,
+                      required isFocused,
+                      required maxLength,
+                    }) {
+                      return null;
+                    },
+                onSubmitted: (_) => _add(),
+                decoration: InputDecoration(
+                  hintText: l10n.domain,
+                  errorText: _error,
+                  isDense: true,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            FilledButton.tonal(onPressed: _add, child: Text(l10n.add)),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(onPressed: _save, child: Text(l10n.confirm)),
+      ],
     );
   }
 }

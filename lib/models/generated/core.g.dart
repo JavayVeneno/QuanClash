@@ -296,6 +296,7 @@ const _$ActionMethodEnumMap = {
   ActionMethod.stopListener: 'stopListener',
   ActionMethod.getCountryCode: 'getCountryCode',
   ActionMethod.getMemory: 'getMemory',
+  ActionMethod.getVersion: 'getVersion',
   ActionMethod.getDnsDiagnostic: 'getDnsDiagnostic',
   ActionMethod.crash: 'crash',
   ActionMethod.setupConfig: 'setupConfig',
