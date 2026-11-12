@@ -13,13 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class Contributor {
   final String avatar;
   final String name;
-  final String link;
 
-  const Contributor({
-    required this.avatar,
-    required this.name,
-    required this.link,
-  });
+  const Contributor({required this.avatar, required this.name});
 }
 
 class AboutView extends StatelessWidget {
@@ -67,16 +62,8 @@ class AboutView extends StatelessWidget {
 
   List<Widget> _buildContributorsSection(AppLocalizations appLocalizations) {
     const contributors = [
-      Contributor(
-        avatar: 'assets/images/avatar/june2.jpg',
-        name: 'June2',
-        link: 'https://t.me/Jibadong',
-      ),
-      Contributor(
-        avatar: 'assets/images/avatar/arue.jpg',
-        name: 'Arue',
-        link: 'https://t.me/xrcm6868',
-      ),
+      Contributor(avatar: 'assets/images/avatar/june2.jpg', name: 'June2'),
+      Contributor(avatar: 'assets/images/avatar/arue.jpg', name: 'Arue'),
     ];
     return generateSection(
       separated: false,
