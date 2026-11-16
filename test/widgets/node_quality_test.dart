@@ -16,16 +16,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 NodeQualityResult _report({
-  bool includeIpPure = false,
+  bool includeRisk = false,
+  bool custom = false,
   bool failed = false,
+  String? status,
+  String? reason,
   String ip = '203.0.113.1',
   DateTime? sampledAt,
 }) => NodeQualityResult.fromJson({
   'schemaVersion': 1,
   'source': 'selected-proxy',
   'proxyName': 'node',
-  'sampledAt':
-      (sampledAt ?? DateTime.utc(2026, 10, 30, 1, 2, 3)).toIso8601String(),
+  'sampledAt': (sampledAt ?? DateTime.utc(2026, 10, 30, 1, 2, 3))
+      .toIso8601String(),
   'network': {
     'provider': 'cloudflare',
     'status': 'ok',
@@ -34,17 +37,19 @@ NodeQualityResult _report({
     'country': 'HK',
     'ttfbMs': 42,
   },
-  'quality': includeIpPure
+  'quality': includeRisk
       ? {
-          'provider': 'ippure',
-          'status': failed ? 'timeout' : 'ok',
+          'provider': custom ? 'custom' : 'ippure',
+          'status': failed ? (status ?? 'timeout') : 'ok',
+          if (failed && reason != null) 'reason': reason,
           if (!failed) ...{
-            'egressIp': '203.0.113.2',
+            // A custom service may not echo the IP; the network probe has it.
+            if (!custom) 'egressIp': '203.0.113.2',
             'riskScore': 75,
             'isResidential': false,
           },
         }
-      : {'provider': 'ippure', 'status': 'not-requested'},
+      : {'provider': custom ? 'custom' : 'ippure', 'status': 'not-requested'},
 });
 
 Future<ProviderContainer> _mount(
@@ -55,8 +60,9 @@ Future<ProviderContainer> _mount(
   Locale locale = const Locale('en'),
   Size size = const Size(1000, 1600),
   NodeQualityCooldown? cooldown,
-  bool includeIpPureByDefault = false,
+  bool includeRiskByDefault = false,
   bool autoRun = false,
+  String riskApiUrl = '',
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -69,6 +75,9 @@ Future<ProviderContainer> _mount(
         initProvider.overrideWithBuild((_, _) => initialized),
         currentProfileIdProvider.overrideWithBuild((_, _) => 1),
         selectedMapProvider.overrideWithValue(const {}),
+        appSettingProvider.overrideWithBuild(
+          (_, _) => AppSettingProps(riskApiUrl: riskApiUrl),
+        ),
       ],
       child: _TestApp(
         locale: locale,
@@ -77,7 +86,7 @@ Future<ProviderContainer> _mount(
           loadQuality: loader,
           cooldown: cooldown ?? NodeQualityCooldown(interval: Duration.zero),
           autoCloseOnSuccess: false,
-          includeIpPureByDefault: includeIpPureByDefault,
+          includeRiskByDefault: includeRiskByDefault,
           autoRun: autoRun,
         ),
       ),
@@ -107,10 +116,14 @@ void main() {
     tester,
   ) async {
     var reads = 0;
-    await _mount(tester, (name, {required includeIpPure}) async {
+    await _mount(tester, (
+      name, {
+      required includeRisk,
+      String riskApiUrl = '',
+    }) async {
       reads++;
       expect(name, 'node');
-      expect(includeIpPure, isFalse);
+      expect(includeRisk, isFalse);
       return _report();
     });
     expect(reads, 0);
@@ -131,14 +144,21 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('risk card entry preselects IPPure and auto-runs', (tester) async {
+  testWidgets('risk card entry preselects IPPure and auto-runs', (
+    tester,
+  ) async {
     var reads = 0;
-    await _mount(tester, (name, {required includeIpPure}) async {
-      reads++;
-      expect(name, 'node');
-      expect(includeIpPure, isTrue);
-      return _report(includeIpPure: true);
-    }, includeIpPureByDefault: true, autoRun: true);
+    await _mount(
+      tester,
+      (name, {required includeRisk, String riskApiUrl = ''}) async {
+        reads++;
+        expect(name, 'node');
+        expect(includeRisk, isTrue);
+        return _report(includeRisk: true);
+      },
+      includeRiskByDefault: true,
+      autoRun: true,
+    );
     await tester.pumpAndSettle();
     expect(reads, 1);
     expect(
@@ -148,14 +168,41 @@ void main() {
     expect(find.text('75'), findsOneWidget);
   });
 
+  testWidgets('custom risk endpoint replaces IPPure and is passed through', (
+    tester,
+  ) async {
+    const url = 'https://ip.net.coffee/api/iprisk/{ip}';
+    String? seen;
+    await _mount(
+      tester,
+      (_, {required includeRisk, String riskApiUrl = ''}) async {
+        expect(includeRisk, isTrue);
+        seen = riskApiUrl;
+        return _report(includeRisk: true, custom: true);
+      },
+      includeRiskByDefault: true,
+      autoRun: true,
+      riskApiUrl: url,
+    );
+    await tester.pumpAndSettle();
+    expect(seen, url);
+    expect(find.text('75'), findsOneWidget);
+    expect(find.textContaining('ip.net.coffee'), findsWidgets);
+    expect(find.textContaining('IPPure'), findsNothing);
+  });
+
   testWidgets(
     'consent alone does not send requests; results distinguish egress IPs',
     (tester) async {
       var reads = 0;
-      await _mount(tester, (_, {required includeIpPure}) async {
+      await _mount(tester, (
+        _, {
+        required includeRisk,
+        String riskApiUrl = '',
+      }) async {
         reads++;
-        expect(includeIpPure, isTrue);
-        return _report(includeIpPure: true);
+        expect(includeRisk, isTrue);
+        return _report(includeRisk: true);
       });
       await _consent(tester);
       await tester.pumpAndSettle();
@@ -181,8 +228,8 @@ void main() {
     (tester) async {
       await _mount(
         tester,
-        (_, {required includeIpPure}) async =>
-            _report(includeIpPure: true, failed: true),
+        (_, {required includeRisk, String riskApiUrl = ''}) async =>
+            _report(includeRisk: true, failed: true),
       );
       await _consent(tester);
       await _run(tester);
@@ -199,12 +246,33 @@ void main() {
     },
   );
 
+  testWidgets('a failed probe explains why it failed', (tester) async {
+    await _mount(
+      tester,
+      (_, {required includeRisk, String riskApiUrl = ''}) async => _report(
+        includeRisk: true,
+        custom: true,
+        failed: true,
+        status: 'failed',
+        reason: 'http-status-404',
+      ),
+      riskApiUrl: 'https://ip.net.coffee/api/iprisk/{ip}',
+    );
+    await _consent(tester);
+    await _run(tester);
+    await tester.pumpAndSettle();
+    expect(
+      find.text(AppLocalizations.current.nodeQualityReasonHttpStatus('404')),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('retry clears stale results; raw errors are hidden', (
     tester,
   ) async {
     var reads = 0;
     final retry = Completer<NodeQualityResult>();
-    await _mount(tester, (_, {required includeIpPure}) {
+    await _mount(tester, (_, {required includeRisk, String riskApiUrl = ''}) {
       reads++;
       return reads == 1 ? Future.value(_report()) : retry.future;
     });
@@ -234,13 +302,13 @@ void main() {
     final pending = Completer<NodeQualityResult>();
     final container = await _mount(
       tester,
-      (_, {required includeIpPure}) => pending.future,
+      (_, {required includeRisk, String riskApiUrl = ''}) => pending.future,
     );
     await _consent(tester);
     await _run(tester);
     container.read(currentProfileIdProvider.notifier).update((_) => 2);
     await tester.pump();
-    pending.complete(_report(includeIpPure: true));
+    pending.complete(_report(includeRisk: true));
     await tester.pumpAndSettle();
     expect(find.textContaining('203.0.113.1'), findsNothing);
     expect(
@@ -254,7 +322,7 @@ void main() {
   ) async {
     final container = await _mount(
       tester,
-      (_, {required includeIpPure}) async => _report(),
+      (_, {required includeRisk, String riskApiUrl = ''}) async => _report(),
     );
     await _run(tester);
     await tester.pumpAndSettle();
@@ -278,7 +346,8 @@ void main() {
   testWidgets('uninitialized core never invokes a check', (tester) async {
     await _mount(
       tester,
-      (_, {required includeIpPure}) async => throw StateError('must not run'),
+      (_, {required includeRisk, String riskApiUrl = ''}) async =>
+          throw StateError('must not run'),
       initialized: false,
     );
     expect(
@@ -297,7 +366,10 @@ void main() {
     'dialog timeout is explicit and late completion cannot replace it',
     (tester) async {
       final pending = Completer<NodeQualityResult>();
-      await _mount(tester, (_, {required includeIpPure}) => pending.future);
+      await _mount(
+        tester,
+        (_, {required includeRisk, String riskApiUrl = ''}) => pending.future,
+      );
       await _run(tester);
       await tester.pump(const Duration(seconds: 16));
       await tester.pumpAndSettle();
@@ -313,7 +385,10 @@ void main() {
 
   testWidgets('closing discards in-flight results', (tester) async {
     final pending = Completer<NodeQualityResult>();
-    await _mount(tester, (_, {required includeIpPure}) => pending.future);
+    await _mount(
+      tester,
+      (_, {required includeRisk, String riskApiUrl = ''}) => pending.future,
+    );
     await _run(tester);
     await tester.pumpWidget(const SizedBox());
     pending.complete(_report());
@@ -332,7 +407,8 @@ void main() {
     ) async {
       await _mount(
         tester,
-        (_, {required includeIpPure}) async => _report(includeIpPure: true),
+        (_, {required includeRisk, String riskApiUrl = ''}) async =>
+            _report(includeRisk: true),
         locale: locale,
         size: const Size(360, 800),
       );
@@ -399,7 +475,7 @@ void main() {
 
   testWidgets('fresh risk score is shown on the node card', (tester) async {
     final report = _report(
-      includeIpPure: true,
+      includeRisk: true,
       sampledAt: DateTime.now().toUtc(),
     );
     await tester.pumpWidget(
@@ -407,9 +483,9 @@ void main() {
         overrides: [
           groupsProvider.overrideWithBuild((_, _) => []),
           selectedMapProvider.overrideWithValue(const {}),
-          realSelectedProxyStateProvider('node').overrideWith(
-            (_) => const SelectedProxyState(proxyName: 'node'),
-          ),
+          realSelectedProxyStateProvider(
+            'node',
+          ).overrideWith((_) => const SelectedProxyState(proxyName: 'node')),
           nodeQualityResultsProvider.overrideWithBuild(
             (_, _) => {'node': report},
           ),
@@ -438,7 +514,7 @@ void main() {
 
   testWidgets('stale risk score is hidden on the node card', (tester) async {
     final report = _report(
-      includeIpPure: true,
+      includeRisk: true,
       sampledAt: DateTime.now().toUtc().subtract(const Duration(hours: 1)),
     );
     await tester.pumpWidget(
@@ -446,9 +522,9 @@ void main() {
         overrides: [
           groupsProvider.overrideWithBuild((_, _) => []),
           selectedMapProvider.overrideWithValue(const {}),
-          realSelectedProxyStateProvider('node').overrideWith(
-            (_) => const SelectedProxyState(proxyName: 'node'),
-          ),
+          realSelectedProxyStateProvider(
+            'node',
+          ).overrideWith((_) => const SelectedProxyState(proxyName: 'node')),
           nodeQualityResultsProvider.overrideWithBuild(
             (_, _) => {'node': report},
           ),
@@ -511,15 +587,15 @@ void main() {
   testWidgets(
     'Cloudflare score is explicitly unavailable and never fabricated',
     (tester) async {
-      await _mount(tester, (_, {required includeIpPure}) async => _report());
+      await _mount(
+        tester,
+        (_, {required includeRisk, String riskApiUrl = ''}) async => _report(),
+      );
       await _run(tester);
       await tester.pumpAndSettle();
       final l10n = AppLocalizations.current;
       expect(find.text(l10n.nodeQualityProbeFootprint), findsOneWidget);
-      expect(
-        find.text(l10n.nodeQualityCloudflareScore),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.nodeQualityCloudflareScore), findsOneWidget);
       expect(
         find.text(l10n.nodeQualityCloudflareScoreUnavailable),
         findsOneWidget,
@@ -537,7 +613,11 @@ void main() {
         interval: const Duration(seconds: 30),
         clock: () => now,
       );
-      await _mount(tester, (_, {required includeIpPure}) async {
+      await _mount(tester, (
+        _, {
+        required includeRisk,
+        String riskApiUrl = '',
+      }) async {
         reads++;
         return _report();
       }, cooldown: cooldown);

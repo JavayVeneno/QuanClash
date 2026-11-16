@@ -99,14 +99,19 @@ class DashboardStats extends ConsumerWidget {
       preferredName: preferredGroup,
       selectedMap: selectedMap,
     );
-    final proxyName = group == null
+    final delayTarget = group?.now ?? '';
+    final proxyName = delayTarget.isEmpty
         ? ''
         : computeRealSelectedProxyState(
-            group.now ?? '',
+            delayTarget,
             groups: groups,
             selectedMap: selectedMap,
           ).proxyName;
-    final delay = ref.watch(delayProvider(proxyName: proxyName));
+    final delay = delayTarget.isEmpty
+        ? null
+        : ref.watch(
+            delayProvider(proxyName: delayTarget, testUrl: group?.testUrl),
+          );
     final nodeCaption = [
       if (group != null && group.name.isNotEmpty) group.name,
       if (delay != null) '$delay ms',

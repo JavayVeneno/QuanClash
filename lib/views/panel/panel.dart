@@ -65,9 +65,10 @@ class PanelView extends ConsumerWidget {
         ? null
         : delayMap[testUrl]?[proxyName];
     final themeProps = ref.watch(themeSettingProvider);
-    final locale = ref.watch(
-      appSettingProvider.select((state) => state.locale),
-    );
+    final locale = utils.getEffectiveLocaleString(
+          ref.watch(appSettingProvider.select((state) => state.locale)),
+        ) ??
+        WidgetsBinding.instance.platformDispatcher.locale.toString();
 
     final state = PanelState(
       isStart: isStart,

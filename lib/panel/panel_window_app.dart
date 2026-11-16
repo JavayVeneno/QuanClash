@@ -139,7 +139,10 @@ class PanelWindowApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
           ],
           supportedLocales: AppLocalizations.delegate.supportedLocales,
-          locale: utils.getLocaleForString(value.locale),
+          locale: utils.getLocaleForString(
+            utils.getEffectiveLocaleString(value.locale) ??
+                WidgetsBinding.instance.platformDispatcher.locale.toString(),
+          ),
           themeMode: themeMode,
           theme: _theme(value, Brightness.light),
           darkTheme: _theme(value, Brightness.dark),

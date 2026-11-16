@@ -85,6 +85,10 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(RestoreStrategy.compatible) RestoreStrategy restoreStrategy,
     @Default(true) bool showTrayTitle,
     @Default('') String customUserAgent,
+
+    /// Optional HTTPS JSON endpoint used instead of IPPure for the risk
+    /// check. Supports an `{ip}` placeholder that is filled with the egress IP.
+    @Default('') String riskApiUrl,
   }) = _AppSettingProps;
 
   factory AppSettingProps.fromJson(Map<String, Object?> json) =>

@@ -164,6 +164,16 @@ class AppLocalizations {
     );
   }
 
+  /// `IP API latency`
+  String get ipApiLatency {
+    return Intl.message(
+      'IP API latency',
+      name: 'ipApiLatency',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Upload`
   String get upload {
     return Intl.message('Upload', name: 'upload', desc: '', args: []);
@@ -949,6 +959,16 @@ class AppLocalizations {
     return Intl.message(
       'Go to download',
       name: 'goDownload',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open releases page`
+  String get openReleases {
+    return Intl.message(
+      'Open releases page',
+      name: 'openReleases',
       desc: '',
       args: [],
     );
@@ -2159,10 +2179,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Relying on third-party api is for reference only`
+  /// `This is the round-trip time to the third-party IP API, not the proxy node delay. The proxy-page delay test measures the selected node against the configured test URL and is authoritative for node speed.`
   String get detectionTip {
     return Intl.message(
-      'Relying on third-party api is for reference only',
+      'This is the round-trip time to the third-party IP API, not the proxy node delay. The proxy-page delay test measures the selected node against the configured test URL and is authoritative for node speed.',
       name: 'detectionTip',
       desc: '',
       args: [],
@@ -5334,6 +5354,101 @@ class AppLocalizations {
     );
   }
 
+  /// `Risk API URL`
+  String get riskApiUrl {
+    return Intl.message('Risk API URL', name: 'riskApiUrl', desc: '', args: []);
+  }
+
+  /// `IPPure (default)`
+  String get riskApiUrlDefault {
+    return Intl.message(
+      'IPPure (default)',
+      name: 'riskApiUrlDefault',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Optional HTTPS JSON endpoint used instead of IPPure when the risk check runs. Only port 443 and a public host are accepted. Add an ip placeholder in the path or query (see the field hint) to receive the node's egress IP. Fields such as riskScore, fraud_score and trust_score are recognized; trust or reputation scores are inverted so a higher value always means more risk. Leave empty to use IPPure.`
+  String get riskApiUrlDesc {
+    return Intl.message(
+      'Optional HTTPS JSON endpoint used instead of IPPure when the risk check runs. Only port 443 and a public host are accepted. Add an ip placeholder in the path or query (see the field hint) to receive the node\'s egress IP. Fields such as riskScore, fraud_score and trust_score are recognized; trust or reputation scores are inverted so a higher value always means more risk. Leave empty to use IPPure.',
+      name: 'riskApiUrlDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a public https:// URL on port 443.`
+  String get riskApiUrlInvalid {
+    return Intl.message(
+      'Enter a public https:// URL on port 443.',
+      name: 'riskApiUrlInvalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Custom API`
+  String get nodeQualityCustom {
+    return Intl.message(
+      'Custom API',
+      name: 'nodeQualityCustom',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Custom · {host}`
+  String nodeQualityCustomProvider(Object host) {
+    return Intl.message(
+      'Custom · $host',
+      name: 'nodeQualityCustomProvider',
+      desc: '',
+      args: [host],
+    );
+  }
+
+  /// `Include custom risk check`
+  String get nodeQualityOptInCustom {
+    return Intl.message(
+      'Include custom risk check',
+      name: 'nodeQualityOptInCustom',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Opt-in for this dialog only: your configured risk service ({host}) receives the node's egress IP and request metadata. Cloudflare receives its own probe. Nothing runs automatically.`
+  String nodeQualityPrivacyCustom(Object host) {
+    return Intl.message(
+      'Opt-in for this dialog only: your configured risk service ($host) receives the node\'s egress IP and request metadata. Cloudflare receives its own probe. Nothing runs automatically.',
+      name: 'nodeQualityPrivacyCustom',
+      desc: '',
+      args: [host],
+    );
+  }
+
+  /// `IP risk score (custom API)`
+  String get nodeQualityRiskScoreCustom {
+    return Intl.message(
+      'IP risk score (custom API)',
+      name: 'nodeQualityRiskScoreCustom',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This score comes from the endpoint you configured. QuanClash normalizes trust or reputation values to a risk scale but cannot verify the service's accuracy. Missing scores remain unknown.`
+  String get nodeQualityScoreScopeCustom {
+    return Intl.message(
+      'This score comes from the endpoint you configured. QuanClash normalizes trust or reputation values to a risk scale but cannot verify the service\'s accuracy. Missing scores remain unknown.',
+      name: 'nodeQualityScoreScopeCustom',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Risk index`
   String get riskIndex {
     return Intl.message('Risk index', name: 'riskIndex', desc: '', args: []);
@@ -6344,6 +6459,96 @@ class AppLocalizations {
     return Intl.message(
       'Resource actions',
       name: 'settingsResourceActions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Request failed: no connection or TLS handshake`
+  String get nodeQualityReasonRequestFailed {
+    return Intl.message(
+      'Request failed: no connection or TLS handshake',
+      name: 'nodeQualityReasonRequestFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The service returned HTTP {code}`
+  String nodeQualityReasonHttpStatus(Object code) {
+    return Intl.message(
+      'The service returned HTTP $code',
+      name: 'nodeQualityReasonHttpStatus',
+      desc: '',
+      args: [code],
+    );
+  }
+
+  /// `The response did not contain the expected JSON fields`
+  String get nodeQualityReasonInvalidResponse {
+    return Intl.message(
+      'The response did not contain the expected JSON fields',
+      name: 'nodeQualityReasonInvalidResponse',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The response exceeded the 256 KB limit`
+  String get nodeQualityReasonTooLarge {
+    return Intl.message(
+      'The response exceeded the 256 KB limit',
+      name: 'nodeQualityReasonTooLarge',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The request timed out`
+  String get nodeQualityReasonTimeout {
+    return Intl.message(
+      'The request timed out',
+      name: 'nodeQualityReasonTimeout',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The risk endpoint is invalid, or no egress IP is available`
+  String get nodeQualityReasonInvalidEndpoint {
+    return Intl.message(
+      'The risk endpoint is invalid, or no egress IP is available',
+      name: 'nodeQualityReasonInvalidEndpoint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Too many checks are running, try again shortly`
+  String get nodeQualityReasonBusy {
+    return Intl.message(
+      'Too many checks are running, try again shortly',
+      name: 'nodeQualityReasonBusy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The core is not running`
+  String get nodeQualityReasonInactive {
+    return Intl.message(
+      'The core is not running',
+      name: 'nodeQualityReasonInactive',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This node cannot run this check`
+  String get nodeQualityReasonUnavailable {
+    return Intl.message(
+      'This node cannot run this check',
+      name: 'nodeQualityReasonUnavailable',
       desc: '',
       args: [],
     );

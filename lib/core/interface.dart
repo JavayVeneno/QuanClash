@@ -62,9 +62,11 @@ mixin CoreInterface {
 
   Future<Map<String, dynamic>> getDnsDiagnostic();
 
+  /// [riskApiUrl] selects a custom JSON risk endpoint; empty means IPPure.
   Future<Map<String, dynamic>> testNodeQuality(
     String proxyName, {
-    required bool includeIpPure,
+    required bool includeRisk,
+    String riskApiUrl = '',
   });
 
   FutureOr<void> resetTraffic();
@@ -219,13 +221,25 @@ abstract class CoreHandlerInterface with CoreInterface {
   @override
   Future<Map<String, dynamic>> testNodeQuality(
     String proxyName, {
-    required bool includeIpPure,
+    required bool includeRisk,
+    String riskApiUrl = '',
   }) async {
+    final providers = ['cloudflare'];
+    final qualityUrls = <String>[];
+    if (includeRisk) {
+      if (riskApiUrl.isEmpty) {
+        providers.add('ippure');
+      } else {
+        providers.add('custom');
+        qualityUrls.add(riskApiUrl);
+      }
+    }
     final result = await _invoke<Map<String, dynamic>>(
       method: ActionMethod.testNodeQuality,
       data: json.encode({
         'proxy-name': proxyName,
-        'providers': ['cloudflare', if (includeIpPure) 'ippure'],
+        'providers': providers,
+        if (qualityUrls.isNotEmpty) 'quality-urls': qualityUrls,
       }),
       timeout: const Duration(seconds: 15),
     );

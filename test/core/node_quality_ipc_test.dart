@@ -133,25 +133,25 @@ rules: ['MATCH,REJECT']
       addTearDown(CoreController.resetInstance);
       final missing = await controller.testNodeQuality(
         'missing',
-        includeIpPure: false,
+        includeRisk: false,
       );
       expect(missing.network.reason, 'proxy-not-found');
       expect(missing.quality.status, NodeQualityStatus.notRequested);
       final group = await controller.testNodeQuality(
         'group',
-        includeIpPure: false,
+        includeRisk: false,
       );
       expect(group.network.reason, 'group-not-supported');
       final basic = await controller.testNodeQuality(
         'node',
-        includeIpPure: false,
+        includeRisk: false,
       );
       expect(basic.network.status, NodeQualityStatus.failed);
       expect(basic.network.egressIp, isNull);
       expect(basic.quality.status, NodeQualityStatus.notRequested);
       final optedIn = await controller.testNodeQuality(
         'node',
-        includeIpPure: true,
+        includeRisk: true,
       );
       expect(optedIn.network.status, NodeQualityStatus.failed);
       expect(optedIn.quality.status, NodeQualityStatus.failed);
@@ -164,7 +164,7 @@ rules: ['MATCH,REJECT']
       await controller.shutdown(false);
       final inactive = await controller.testNodeQuality(
         'node',
-        includeIpPure: false,
+        includeRisk: false,
       );
       expect(inactive.network.reason, 'inactive');
       // On Windows the child must disconnect before joining the blocking

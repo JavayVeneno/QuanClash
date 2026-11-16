@@ -74,35 +74,42 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m22(seconds) =>
       "Проверка выполнялась недавно. Повторите через ${seconds} с.";
 
-  static String m23(time) => "Время проверки: ${time}";
+  static String m23(host) => "Свой API · ${host}";
 
-  static String m24(label) => "${label} пока отсутствуют";
+  static String m24(host) =>
+      "Только для этого диалога: настроенный вами сервис (${host}) получит внешний IP узла и метаданные запроса. Cloudflare получит свой запрос. Автоматически ничего не запускается.";
 
-  static String m25(label) => "${label} должно быть числом";
+  static String m25(code) => "Сервис вернул HTTP ${code}";
 
-  static String m26(label) => "${label} должен быть числом от 1024 до 49151";
+  static String m26(time) => "Время проверки: ${time}";
 
-  static String m27(days) => "${days} дн.";
+  static String m27(label) => "${label} пока отсутствуют";
 
-  static String m28(days) => "Осталось ${days} дн.";
+  static String m28(label) => "${label} должно быть числом";
 
-  static String m29(days) => "Осталось ${days} дн.";
+  static String m29(label) => "${label} должен быть числом от 1024 до 49151";
 
-  static String m30(hours) => "Каждые ${hours} ч";
+  static String m30(days) => "${days} дн.";
 
-  static String m31(minutes) => "Каждые ${minutes} мин";
+  static String m31(days) => "Осталось ${days} дн.";
 
-  static String m32(count) => "${count} узлов";
+  static String m32(days) => "Осталось ${days} дн.";
 
-  static String m33(percent) => "Использовано ${percent}%";
+  static String m33(hours) => "Каждые ${hours} ч";
 
-  static String m34(count) => "${count} секунд";
+  static String m34(minutes) => "Каждые ${minutes} мин";
 
-  static String m35(count) => "Выбрано ${count} элементов";
+  static String m35(count) => "${count} узлов";
 
-  static String m36(label) => "${label} должен быть URL";
+  static String m36(percent) => "Использовано ${percent}%";
 
-  static String m37(count) =>
+  static String m37(count) => "${count} секунд";
+
+  static String m38(count) => "Выбрано ${count} элементов";
+
+  static String m39(label) => "${label} должен быть URL";
+
+  static String m40(count) =>
       "${Intl.plural(count, one: '${count} год назад', few: '${count} года назад', many: '${count} лет назад', other: '${count} года назад')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -372,7 +379,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "destinationIPASN": MessageLookupByLibrary.simpleMessage("ASN назначения"),
     "details": m3,
     "detectionTip": MessageLookupByLibrary.simpleMessage(
-      "Опирается на сторонний API, только для справки",
+      "Это время обмена данными со сторонним IP API, а не задержка узла. Для скорости узла используйте задержку со страницы прокси, измеренную по настроенному тестовому URL.",
     ),
     "developerMode": MessageLookupByLibrary.simpleMessage("Режим разработчика"),
     "developerModeEnableTip": MessageLookupByLibrary.simpleMessage(
@@ -697,6 +704,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidProxy": m16,
     "invalidProxyProvider": m17,
     "invalidSubRule": m18,
+    "ipApiLatency": MessageLookupByLibrary.simpleMessage("Задержка IP API"),
     "ipcidr": MessageLookupByLibrary.simpleMessage("IPCIDR"),
     "ipv6Desc": MessageLookupByLibrary.simpleMessage(
       "При включении будет возможно получать IPv6 трафик",
@@ -826,6 +834,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "Выберите конкретный узел. Динамические группы и балансировка пока не поддерживаются.",
     ),
     "nodeQualityCooldown": m22,
+    "nodeQualityCustom": MessageLookupByLibrary.simpleMessage("Свой API"),
+    "nodeQualityCustomProvider": m23,
     "nodeQualityEdge": MessageLookupByLibrary.simpleMessage("Сервер / страна"),
     "nodeQualityEgressIp": MessageLookupByLibrary.simpleMessage("Выходной IP"),
     "nodeQualityFailed": MessageLookupByLibrary.simpleMessage(
@@ -848,26 +858,61 @@ class MessageLookup extends MessageLookupByLibrary {
     "nodeQualityOptIn": MessageLookupByLibrary.simpleMessage(
       "Проверить риск через IPPure",
     ),
+    "nodeQualityOptInCustom": MessageLookupByLibrary.simpleMessage(
+      "Включить проверку риска через свой API",
+    ),
     "nodeQualityPickNode": MessageLookupByLibrary.simpleMessage(
       "Сначала выберите конкретный узел на странице прокси.",
     ),
     "nodeQualityPrivacy": MessageLookupByLibrary.simpleMessage(
       "Только для этого окна: IPPure получит выходной IP и метаданные запроса. QuanClash не передаёт учётные данные аккаунта или прокси. Cloudflare получает свой запрос. Автоматических проверок нет.",
     ),
+    "nodeQualityPrivacyCustom": m24,
     "nodeQualityProbeFootprint": MessageLookupByLibrary.simpleMessage(
       "Каждая ручная проверка отправляет по одному HTTPS-запросу выбранным сервисам: без автоматических повторов, повторного использования Cookie и подделки отпечатка браузера. Третья сторона всё равно может записать запрос; нулевое влияние не гарантируется.",
+    ),
+    "nodeQualityReasonBusy": MessageLookupByLibrary.simpleMessage(
+      "Слишком много одновременных проверок, повторите позже",
+    ),
+    "nodeQualityReasonHttpStatus": m25,
+    "nodeQualityReasonInactive": MessageLookupByLibrary.simpleMessage(
+      "Ядро не запущено",
+    ),
+    "nodeQualityReasonInvalidEndpoint": MessageLookupByLibrary.simpleMessage(
+      "Адрес проверки недействителен или внешний IP недоступен",
+    ),
+    "nodeQualityReasonInvalidResponse": MessageLookupByLibrary.simpleMessage(
+      "В ответе нет ожидаемых полей JSON",
+    ),
+    "nodeQualityReasonRequestFailed": MessageLookupByLibrary.simpleMessage(
+      "Запрос не выполнен: нет соединения или TLS-рукопожатия",
+    ),
+    "nodeQualityReasonTimeout": MessageLookupByLibrary.simpleMessage(
+      "Время ожидания запроса истекло",
+    ),
+    "nodeQualityReasonTooLarge": MessageLookupByLibrary.simpleMessage(
+      "Ответ превысил предел 256 КБ",
+    ),
+    "nodeQualityReasonUnavailable": MessageLookupByLibrary.simpleMessage(
+      "Этот узел не поддерживает такую проверку",
     ),
     "nodeQualityResidential": MessageLookupByLibrary.simpleMessage("Жилой IP"),
     "nodeQualityRiskScore": MessageLookupByLibrary.simpleMessage(
       "Оценка риска IP (IPPure)",
     ),
+    "nodeQualityRiskScoreCustom": MessageLookupByLibrary.simpleMessage(
+      "Оценка риска IP (свой API)",
+    ),
     "nodeQualityRun": MessageLookupByLibrary.simpleMessage("Проверить"),
-    "nodeQualitySampledAt": m23,
+    "nodeQualitySampledAt": m26,
     "nodeQualityScope": MessageLookupByLibrary.simpleMessage(
       "Ручная HTTPS-проверка через узел. Cloudflare проверяет доступность, выходной IP и TTFB, но не чистоту IP. DNS и начальное разрешение могут идти напрямую. DIRECT проверяет прямое соединение.",
     ),
     "nodeQualityScoreScope": MessageLookupByLibrary.simpleMessage(
       "Данные IPPure Beta справочные: это не процент чистоты, не оценка Cloudflare и не гарантия безопасности. Отсутствующие и непроверенные оценки IPv6 остаются неизвестными.",
+    ),
+    "nodeQualityScoreScopeCustom": MessageLookupByLibrary.simpleMessage(
+      "Оценка получена от настроенного вами эндпоинта. QuanClash приводит оценки доверия/репутации к шкале риска, но не может проверить точность сервиса. Отсутствующие оценки остаются неизвестными.",
     ),
     "nodeQualityStatusFailed": MessageLookupByLibrary.simpleMessage("Ошибка"),
     "nodeQualityStatusOk": MessageLookupByLibrary.simpleMessage("Успех"),
@@ -886,8 +931,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "nullProfileDesc": MessageLookupByLibrary.simpleMessage(
       "Нет профиля, пожалуйста, добавьте профиль",
     ),
-    "nullTip": m24,
-    "numberTip": m25,
+    "nullTip": m27,
+    "numberTip": m28,
     "onDemand": MessageLookupByLibrary.simpleMessage("On Demand"),
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "Configure the program running state for specific scenarios",
@@ -898,6 +943,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
       "При включении будет учитываться только трафик прокси",
+    ),
+    "openReleases": MessageLookupByLibrary.simpleMessage(
+      "Открыть страницу релизов",
     ),
     "optional": MessageLookupByLibrary.simpleMessage("Необязательно"),
     "options": MessageLookupByLibrary.simpleMessage("Опции"),
@@ -957,7 +1005,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "portConflictTip": MessageLookupByLibrary.simpleMessage(
       "Введите другой порт",
     ),
-    "portTip": m26,
+    "portTip": m29,
     "preferH3Desc": MessageLookupByLibrary.simpleMessage(
       "Приоритетное использование HTTP/3 для DOH",
     ),
@@ -986,17 +1034,17 @@ class MessageLookup extends MessageLookupByLibrary {
       "Текущий профиль",
     ),
     "profileCurrentNode": MessageLookupByLibrary.simpleMessage("Текущий узел"),
-    "profileDaysCount": m27,
-    "profileDaysLeft": m28,
-    "profileDaysLeftShort": m29,
+    "profileDaysCount": m30,
+    "profileDaysLeft": m31,
+    "profileDaysLeftShort": m32,
     "profileDraftHint": MessageLookupByLibrary.simpleMessage(
       "Укажите имя и URL подписки; конфигурация загрузится при сохранении",
     ),
     "profileEditTitle": MessageLookupByLibrary.simpleMessage(
       "Изменить профиль",
     ),
-    "profileEveryHours": m30,
-    "profileEveryMinutes": m31,
+    "profileEveryHours": m33,
+    "profileEveryMinutes": m34,
     "profileExpire": MessageLookupByLibrary.simpleMessage("Истекает"),
     "profileHasUpdate": MessageLookupByLibrary.simpleMessage(
       "Профиль был изменен. Хотите отключить автообновление?",
@@ -1018,7 +1066,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Нет данных о трафике",
     ),
     "profileNodeCount": MessageLookupByLibrary.simpleMessage("Узлы"),
-    "profileNodeCountValue": m32,
+    "profileNodeCountValue": m35,
     "profileNotLoaded": MessageLookupByLibrary.simpleMessage(
       "После переключения",
     ),
@@ -1061,7 +1109,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Введите URL подписки",
     ),
     "profileUsed": MessageLookupByLibrary.simpleMessage("Использовано"),
-    "profileUsedPercent": m33,
+    "profileUsedPercent": m36,
     "profiles": MessageLookupByLibrary.simpleMessage("Профили"),
     "profilesSort": MessageLookupByLibrary.simpleMessage("Сортировка профилей"),
     "project": MessageLookupByLibrary.simpleMessage("Проект"),
@@ -1195,6 +1243,16 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "restoreSuccess": MessageLookupByLibrary.simpleMessage(
       "Восстановление успешно",
+    ),
+    "riskApiUrl": MessageLookupByLibrary.simpleMessage("URL API риска"),
+    "riskApiUrlDefault": MessageLookupByLibrary.simpleMessage(
+      "IPPure (по умолчанию)",
+    ),
+    "riskApiUrlDesc": MessageLookupByLibrary.simpleMessage(
+      "Необязательный HTTPS JSON-эндпоинт, который используется вместо IPPure при проверке риска. Допустимы только порт 443 и публичный хост. Добавьте заполнитель ip в путь или параметры запроса (пример в поле ввода), чтобы передать внешний IP узла. Распознаются поля riskScore, fraud_score, trust_score и другие; оценки доверия/репутации инвертируются, чтобы большее значение всегда означало больший риск. Пустое значение — IPPure.",
+    ),
+    "riskApiUrlInvalid": MessageLookupByLibrary.simpleMessage(
+      "Укажите публичный https:// URL на порту 443.",
     ),
     "riskIndex": MessageLookupByLibrary.simpleMessage("Индекс риска"),
     "riskIndexHigh": MessageLookupByLibrary.simpleMessage("Высокий риск"),
@@ -1330,7 +1388,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "search": MessageLookupByLibrary.simpleMessage("Поиск"),
     "seconds": MessageLookupByLibrary.simpleMessage("Секунд"),
-    "secondsCount": m34,
+    "secondsCount": m37,
     "sectionMain": MessageLookupByLibrary.simpleMessage("Основное"),
     "sectionMonitor": MessageLookupByLibrary.simpleMessage("Мониторинг"),
     "sectionSystem": MessageLookupByLibrary.simpleMessage("Система"),
@@ -1349,7 +1407,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Пожалуйста, выберите подправило",
     ),
     "selected": MessageLookupByLibrary.simpleMessage("Выбрано"),
-    "selectedCountTitle": m35,
+    "selectedCountTitle": m38,
     "serviceRunning": MessageLookupByLibrary.simpleMessage("Сервис работает"),
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
     "settingsAboutApp": MessageLookupByLibrary.simpleMessage("О QuanClash"),
@@ -1532,7 +1590,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Получить профиль через URL",
     ),
-    "urlTip": m36,
+    "urlTip": m39,
     "useHosts": MessageLookupByLibrary.simpleMessage("Использовать hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage(
       "Использовать системные hosts",
@@ -1557,7 +1615,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "whitelistMode": MessageLookupByLibrary.simpleMessage(
       "Режим белого списка",
     ),
-    "yearsAgo": m37,
+    "yearsAgo": m40,
     "zh_CN": MessageLookupByLibrary.simpleMessage("Упрощенный китайский"),
   };
 }

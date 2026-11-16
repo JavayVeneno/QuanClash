@@ -1051,6 +1051,9 @@ class _NetworkSettingsTab extends ConsumerWidget {
     );
     final patch = ref.watch(patchClashConfigProvider);
     final port = patch.mixedPort;
+    final riskApiUrl = ref.watch(
+      appSettingProvider.select((state) => state.riskApiUrl),
+    );
     return ListView(
       padding: const EdgeInsets.only(bottom: 24),
       children: [
@@ -1126,6 +1129,13 @@ class _NetworkSettingsTab extends ConsumerWidget {
           },
         ),
         SettingsRow(
+          icon: QuanXIcons.shield,
+          title: l10n.riskApiUrl,
+          subtitle: riskApiUrl.isEmpty ? l10n.riskApiUrlDefault : riskApiUrl,
+          trailing: const SettingsChevron(),
+          onTap: () => _editRiskApiUrl(context, ref, riskApiUrl),
+        ),
+        SettingsRow(
           icon: QuanXIcons.wrench,
           title: l10n.advancedConfig,
           subtitle: l10n.advancedConfigDesc,
@@ -1167,6 +1177,35 @@ class _NetworkSettingsTab extends ConsumerWidget {
           ),
       ],
     );
+  }
+
+  /// Edits the optional custom risk endpoint. An empty value restores IPPure.
+  Future<void> _editRiskApiUrl(
+    BuildContext context,
+    WidgetRef ref,
+    String current,
+  ) async {
+    final l10n = context.appLocalizations;
+    final value = await globalState.showCommonDialog<String>(
+      child: InputDialog(
+        title: l10n.riskApiUrl,
+        value: current,
+        resetValue: '',
+        hintText: 'https://ip.net.coffee/api/iprisk/{ip}',
+        maxLength: TextInputLimits.url,
+        description: l10n.riskApiUrlDesc,
+        validator: (value) {
+          final text = value?.trim() ?? '';
+          if (text.isEmpty) return null;
+          if (!utils.isValidRiskApiUrl(text)) return l10n.riskApiUrlInvalid;
+          return null;
+        },
+      ),
+    );
+    if (value == null) return;
+    ref
+        .read(appSettingProvider.notifier)
+        .update((state) => state.copyWith(riskApiUrl: value.trim()));
   }
 }
 
@@ -1259,7 +1298,7 @@ class _AboutSettingsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.appLocalizations;
-    final version = globalState.packageInfo.version;
+    const version = appVersion;
     return ListView(
       padding: const EdgeInsets.only(bottom: 24),
       children: [
@@ -1274,6 +1313,17 @@ class _AboutSettingsTab extends ConsumerWidget {
           ),
         ),
         SettingsSectionLabel(label: l10n.links),
+        SettingsRow(
+          icon: QuanXIcons.cloudDownload,
+          title: l10n.openReleases,
+          subtitle: 'github.com/$repository/releases',
+          trailing: const SettingsChevron(),
+          onTap: () {
+            globalState.openUrl(
+              'https://github.com/$repository/releases/latest',
+            );
+          },
+        ),
         SettingsRow(
           icon: QuanXIcons.externalLink,
           title: l10n.project,

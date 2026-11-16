@@ -42,13 +42,26 @@ class _LanguageSettingsBody extends ConsumerWidget {
                 : Intl.message(locale.toString()),
             subtitle: locale == null ? l10n.auto : locale.toLanguageTag(),
             selected: current == locale?.toString(),
-            onTap: () {
+            onTap: () async {
               ref
                   .read(appSettingProvider.notifier)
                   .update(
                     (state) => state.copyWith(locale: locale?.toString()),
                   );
-              Navigator.of(context).pop();
+              // Force the selected locale to win over any in-flight delegate
+              // load before this modal scope is popped.
+              await AppLocalizations.load(
+                locale ??
+                    utils.getLocaleForString(
+                          ref.read(
+                            appSettingProvider.select((state) => state.locale),
+                          ),
+                        ) ??
+                    WidgetsBinding.instance.platformDispatcher.locale,
+              );
+              if (context.mounted) {
+                Navigator.of(context).pop();
+              }
             },
           ),
       ],

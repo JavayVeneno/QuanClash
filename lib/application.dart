@@ -208,7 +208,10 @@ class ApplicationState extends ConsumerState<Application> {
           },
           scrollBehavior: BaseScrollBehavior(),
           title: appName,
-          locale: utils.getLocaleForString(locale),
+          locale: utils.getLocaleForString(
+            utils.getEffectiveLocaleString(locale) ??
+                WidgetsBinding.instance.platformDispatcher.locale.toString(),
+          ),
           supportedLocales: AppLocalizations.delegate.supportedLocales,
           themeMode: themeProps.themeMode,
           theme: quanXThemeData(

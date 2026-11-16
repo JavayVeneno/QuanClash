@@ -106,12 +106,21 @@ class CoreController {
 
   Future<NodeQualityResult> testNodeQuality(
     String proxyName, {
-    required bool includeIpPure,
+    required bool includeRisk,
+    String riskApiUrl = '',
   }) async {
     final result = NodeQualityResult.fromJson(
-      await _interface.testNodeQuality(proxyName, includeIpPure: includeIpPure),
+      await _interface.testNodeQuality(
+        proxyName,
+        includeRisk: includeRisk,
+        riskApiUrl: riskApiUrl,
+      ),
     );
-    if (!result.matchesRequest(proxyName, includeIpPure: includeIpPure)) {
+    if (!result.matchesRequest(
+      proxyName,
+      includeRisk: includeRisk,
+      riskApiUrl: riskApiUrl,
+    )) {
       throw const FormatException('Unexpected node quality response');
     }
     return result;
