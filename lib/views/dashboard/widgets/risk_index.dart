@@ -11,7 +11,7 @@ import 'dashboard_style.dart';
 
 /// 仪表盘「风险指数」卡片。
 ///
-/// 展示最近一次经用户主动发起的节点质量检测结果（IPPure 风险分）。
+/// 展示最近一次经用户主动发起的节点质量检测结果（IPPure 或自定义 API 风险分）。
 /// 结果仅保存在内存中，超过 10 分钟或节点已切换时视为未检测。
 class RiskIndex extends ConsumerWidget {
   const RiskIndex({super.key});
@@ -22,13 +22,13 @@ class RiskIndex extends ConsumerWidget {
       return;
     }
     // Opening the risk card is an explicit request for a risk score: preselect
-    // IPPure and start immediately instead of leaving the user with a
-    // Cloudflare-only result and no score.
+    // the configured risk source and start immediately instead of leaving the
+    // user with a Cloudflare-only result and no score.
     showDialog<void>(
       context: context,
       builder: (_) => NodeQualityDialog(
         proxyName: proxyName,
-        includeIpPureByDefault: true,
+        includeRiskByDefault: true,
         autoRun: true,
       ),
     );
@@ -153,6 +153,9 @@ class RiskIndex extends ConsumerWidget {
     }
     final quality = result.quality;
     final ip = quality.egressIp ?? appLocalizations.unknown;
-    return 'IPPure · $ip · ${result.sampledAt.toLocal().showTime.trim()}';
+    final provider = quality.provider == 'custom'
+        ? appLocalizations.nodeQualityCustom
+        : 'IPPure';
+    return '$provider · $ip · ${result.sampledAt.toLocal().showTime.trim()}';
   }
 }

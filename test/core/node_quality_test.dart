@@ -196,7 +196,7 @@ void main() {
     () async {
       for (final optIn in [false, true]) {
         final handler = _Handler(_wire());
-        await handler.testNodeQuality('node', includeIpPure: optIn);
+        await handler.testNodeQuality('node', includeRisk: optIn);
         expect(handler.method, ActionMethod.testNodeQuality);
         expect(handler.timeout, const Duration(seconds: 15));
         expect(jsonDecode(handler.data as String), {
@@ -216,9 +216,71 @@ void main() {
     },
   );
 
+  test(
+    'custom risk URL replaces IPPure and travels with the request',
+    () async {
+      const url = 'https://ip.net.coffee/api/iprisk/{ip}';
+      final handler = _Handler(_wire());
+      await handler.testNodeQuality('node', includeRisk: true, riskApiUrl: url);
+      expect(jsonDecode(handler.data as String), {
+        'proxy-name': 'node',
+        'providers': ['cloudflare', 'custom'],
+        'quality-urls': [url],
+      });
+      final plain = _Handler(_wire());
+      await plain.testNodeQuality('node', includeRisk: false, riskApiUrl: url);
+      expect(jsonDecode(plain.data as String), {
+        'proxy-name': 'node',
+        'providers': ['cloudflare'],
+      });
+    },
+  );
+
+  test('custom quality may omit the echoed IP and still matches', () {
+    final report = NodeQualityResult.fromJson(
+      _wire(
+        quality: {
+          'provider': 'custom',
+          'status': 'ok',
+          'riskScore': 80,
+          'isResidential': true,
+        },
+      ),
+    );
+    expect(report.quality.provider, 'custom');
+    expect(report.quality.egressIp, isNull);
+    expect(report.quality.riskScore, 80);
+    expect(
+      report.matchesRequest(
+        'node',
+        includeRisk: true,
+        riskApiUrl: 'https://ip.net.coffee/api/iprisk/{ip}',
+      ),
+      isTrue,
+    );
+    // A response from the wrong provider must not satisfy a custom request.
+    expect(report.matchesRequest('node', includeRisk: true), isFalse);
+  });
+
+  test('custom quality rejects network-only metrics', () {
+    expect(
+      () => NodeQualityResult.fromJson(
+        _wire(
+          quality: {
+            'provider': 'custom',
+            'status': 'ok',
+            'riskScore': 80,
+            'ttfbMs': 20,
+          },
+        ),
+      ),
+      throwsFormatException,
+    );
+  });
+
   test('missing IPC response is unavailable, not an empty success', () async {
     await expectLater(
-      _Handler(null).testNodeQuality('node', includeIpPure: false),
+      _Handler(null).testNodeQuality('node', includeRisk: false),
       throwsStateError,
     );
   });
@@ -226,18 +288,15 @@ void main() {
   test('facade validates the requested node and opt-in response', () async {
     final controller = CoreController.test(_Handler(_wire()));
     expect(
-      (await controller.testNodeQuality(
-        'node',
-        includeIpPure: false,
-      )).proxyName,
+      (await controller.testNodeQuality('node', includeRisk: false)).proxyName,
       'node',
     );
     await expectLater(
-      controller.testNodeQuality('other', includeIpPure: false),
+      controller.testNodeQuality('other', includeRisk: false),
       throwsFormatException,
     );
     await expectLater(
-      controller.testNodeQuality('node', includeIpPure: true),
+      controller.testNodeQuality('node', includeRisk: true),
       throwsFormatException,
     );
     final unexpected = CoreController.test(
@@ -253,7 +312,7 @@ void main() {
       ),
     );
     await expectLater(
-      unexpected.testNodeQuality('node', includeIpPure: false),
+      unexpected.testNodeQuality('node', includeRisk: false),
       throwsFormatException,
     );
   });

@@ -60,7 +60,11 @@ class NodeQualityProbe {
         (country != null && !RegExp(r'^[A-Z]{2}$').hasMatch(country))) {
       throw const FormatException('Invalid node quality metrics');
     }
-    if (status == NodeQualityStatus.ok && address == null) {
+    // A custom service may return only a score; the network probe already
+    // established the egress IP, so an echoed IP is optional there.
+    if (status == NodeQualityStatus.ok &&
+        address == null &&
+        provider != 'custom') {
       throw const FormatException('Missing node quality IP');
     }
     if (status != NodeQualityStatus.ok &&
@@ -68,7 +72,7 @@ class NodeQualityProbe {
       throw const FormatException('Failed probe contains success metrics');
     }
     if ((provider == 'cloudflare' && (score != null || residential != null)) ||
-        (provider == 'ippure' &&
+        (provider != 'cloudflare' &&
             (ttfb != null || colo != null || country != null))) {
       throw const FormatException('Mixed node quality metrics');
     }
@@ -80,8 +84,13 @@ class NodeQualityProbe {
       colo: colo,
       country: country,
       ttfbMs: ttfb,
-      // IPv6 scoring semantics are unverified, including beta default zeroes.
-      riskScore: address?.type == InternetAddressType.IPv6 ? null : score,
+      // IPPure's IPv6 scoring semantics are unverified, including beta default
+      // zeroes. A custom endpoint's score is the user's chosen source, so it
+      // is reported as returned.
+      riskScore:
+          provider == 'ippure' && address?.type == InternetAddressType.IPv6
+          ? null
+          : score,
       isResidential: residential,
     );
   }
@@ -106,11 +115,16 @@ class NodeQualityResult {
       InternetAddress(network.egressIp!).rawAddress.join(',') !=
           InternetAddress(quality.egressIp!).rawAddress.join(',');
 
-  bool matchesRequest(String name, {required bool includeIpPure}) =>
+  bool matchesRequest(
+    String name, {
+    required bool includeRisk,
+    String riskApiUrl = '',
+  }) =>
       proxyName == name &&
       network.status != NodeQualityStatus.notRequested &&
-      (includeIpPure
-          ? quality.status != NodeQualityStatus.notRequested
+      (includeRisk
+          ? quality.status != NodeQualityStatus.notRequested &&
+                quality.provider == (riskApiUrl.isEmpty ? 'ippure' : 'custom')
           : quality.status == NodeQualityStatus.notRequested);
 
   factory NodeQualityResult.fromJson(Map<String, dynamic> json) {
@@ -124,6 +138,11 @@ class NodeQualityResult {
     if (name.isEmpty || sampledAt == null || !sampledAt.isUtc) {
       throw const FormatException('Invalid node quality identity');
     }
+    final qualityJson = Map<String, dynamic>.from(json['quality'] as Map);
+    final qualityProvider = qualityJson['provider'];
+    if (qualityProvider != 'ippure' && qualityProvider != 'custom') {
+      throw const FormatException('Unexpected node quality provider');
+    }
     return NodeQualityResult._(
       proxyName: name,
       sampledAt: sampledAt,
@@ -132,8 +151,8 @@ class NodeQualityResult {
         provider: 'cloudflare',
       ),
       quality: NodeQualityProbe.fromJson(
-        Map<String, dynamic>.from(json['quality'] as Map),
-        provider: 'ippure',
+        qualityJson,
+        provider: qualityProvider as String,
       ),
     );
   }

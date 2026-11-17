@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:quanclash/common/common.dart';
 import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/l10n/l10n.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -100,6 +101,84 @@ class Utils {
     return '${getDateStringLast2(inHours)}:${getDateStringLast2(inMinutes)}:${getDateStringLast2(inSeconds)}';
   }
 
+  /// Resolves the configured locale to a supported locale string.
+  ///
+  /// Passing null to MaterialApp falls back to the system locale, which is why
+  /// the tray panel could stay in English after choosing Chinese in settings.
+  String? getEffectiveLocaleString(String? locale) {
+    final parsed = getLocaleForString(locale);
+    if (parsed == null) return null;
+    for (final supported in AppLocalizations.delegate.supportedLocales) {
+      if (supported.languageCode != parsed.languageCode) continue;
+      if (supported.countryCode == null ||
+          supported.countryCode == parsed.countryCode) {
+        return supported.toString();
+      }
+    }
+    return null;
+  }
+
+  /// Mirrors the core's validation of a custom risk endpoint.
+  ///
+  /// The core re-validates every request and pins the destination; this keeps
+  /// an unusable value out of settings so the problem shows up while editing
+  /// instead of as a failed probe. `{ip}` is allowed in the path or query and
+  /// is replaced by the egress IP before the request is sent.
+  bool isValidRiskApiUrl(String value) {
+    const placeholder = 'quanclash-ip-placeholder';
+    if (value.length < 12 || value.length > 1024) return false;
+    if (RegExp(r'[\s\\]').hasMatch(value)) return false;
+    final uri = Uri.tryParse(value.replaceAll('{ip}', placeholder));
+    if (uri == null ||
+        uri.scheme != 'https' ||
+        uri.userInfo.isNotEmpty ||
+        uri.hasFragment ||
+        uri.host.isEmpty ||
+        uri.host.contains(placeholder)) {
+      return false;
+    }
+    final host = uri.host.toLowerCase();
+    if (host == 'localhost' ||
+        host.endsWith('.localhost') ||
+        host.endsWith('.local') ||
+        host.endsWith('.internal')) {
+      return false;
+    }
+    final address = InternetAddress.tryParse(host);
+    if (address != null && !_isPublicAddress(address)) return false;
+    if (uri.hasPort && uri.port != 443) return false;
+    if (value.contains('..') ||
+        uri.path.isNotEmpty && !uri.path.startsWith('/') ||
+        uri.path.length > 512) {
+      return false;
+    }
+    if (uri.query.length > 512) return false;
+    return true;
+  }
+
+  bool _isPublicAddress(InternetAddress address) {
+    final bytes = address.rawAddress;
+    if (address.type == InternetAddressType.IPv4) {
+      final a = bytes[0];
+      final b = bytes[1];
+      if (a == 0 || a == 10 || a == 127) return false;
+      if (a == 169 && b == 254) return false;
+      if (a == 172 && b >= 16 && b <= 31) return false;
+      if (a == 192 && b == 168) return false;
+      if (a == 100 && b >= 64 && b <= 127) return false;
+      if (a >= 224) return false;
+      return true;
+    }
+    if (bytes.every((byte) => byte == 0)) return false;
+    if (bytes[0] == 0xff) return false;
+    if ((bytes[0] & 0xfe) == 0xfc) return false;
+    if (bytes[0] == 0xfe && (bytes[1] & 0xc0) == 0x80) return false;
+    if (bytes.take(15).every((byte) => byte == 0) && bytes[15] == 1) {
+      return false;
+    }
+    return true;
+  }
+
   Locale? getLocaleForString(String? localString) {
     if (localString == null) return null;
     final localSplit = localString.split('_');
@@ -156,9 +235,17 @@ class Utils {
     return 'assets/images/icon/status_2.$suffix';
   }
 
+  /// Compares semantic versions and returns 0 when either value is invalid.
+  ///
+  /// Windows executables can expose comma-separated numeric resources from old
+  /// builds. Those are not semantic versions; treating them as an update signal
+  /// (or throwing) made the About page unreliable.
   int compareVersions(String version1, String version2) {
-    final List<String> v1 = version1.split('+')[0].split('.');
-    final List<String> v2 = version2.split('+')[0].split('.');
+    final normalized1 = normalizeVersion(version1);
+    final normalized2 = normalizeVersion(version2);
+    if (normalized1 == null || normalized2 == null) return 0;
+    final List<String> v1 = normalized1.split('+')[0].split('.');
+    final List<String> v2 = normalized2.split('+')[0].split('.');
     final int major1 = int.parse(v1[0]);
     final int major2 = int.parse(v2[0]);
     if (major1 != major2) {
@@ -174,13 +261,31 @@ class Utils {
     if (patch1 != patch2) {
       return patch1.compareTo(patch2);
     }
-    final int build1 = version1.contains('+')
-        ? int.parse(version1.split('+')[1])
+    final int build1 = normalized1.contains('+')
+        ? int.parse(normalized1.split('+')[1])
         : 0;
-    final int build2 = version2.contains('+')
-        ? int.parse(version2.split('+')[1])
+    final int build2 = normalized2.contains('+')
+        ? int.parse(normalized2.split('+')[1])
         : 0;
     return build1.compareTo(build2);
+  }
+
+  /// Accepts plain semver, an optional `v` prefix, and an optional `+build`.
+  String? normalizeVersion(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty || trimmed.length > 64) return null;
+    final withoutPrefix = trimmed.startsWith('v')
+        ? trimmed.substring(1)
+        : trimmed;
+    final parts = withoutPrefix.split('+');
+    if (parts.isEmpty || parts.length > 2) return null;
+    final core = parts[0].split('.');
+    if (core.isEmpty || core.length > 3) return null;
+    for (final part in [...core, if (parts.length == 2) parts[1]]) {
+      if (part.isEmpty || int.tryParse(part) == null) return null;
+    }
+    return core.map(int.parse).join('.') +
+        (parts.length == 2 ? '+${int.parse(parts[1])}' : '');
   }
 
   // String getPinyin(String value) {

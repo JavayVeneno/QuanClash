@@ -22,7 +22,13 @@ func TestNodeQualityRequest(t *testing.T) {
 	for _, data := range []any{nil, map[string]string{}, "", "null", `{}`, `{"proxy-name":"p","providers":[]}`,
 		`{"proxy-name":"p","providers":["other"]}`, `{"proxy-name":"p","providers":["ippure","ippure"]}`,
 		`{"proxy-name":"p","providers":["ippure"],"url":"https://secret"}`,
-		`{"proxy-name":"p","providers":["ippure"]} {}`, strings.Repeat("x", 4097)} {
+		`{"proxy-name":"p","providers":["ippure"]} {}`, strings.Repeat("x", 4097),
+		// Custom endpoints must arrive with exactly one provider and vice versa.
+		`{"proxy-name":"p","providers":["cloudflare","custom"]}`,
+		`{"proxy-name":"p","providers":["cloudflare"],"quality-urls":["https://example.com/a"]}`,
+		`{"proxy-name":"p","providers":["cloudflare","custom"],"quality-urls":["http://example.com/a"]}`,
+		`{"proxy-name":"p","providers":["cloudflare","custom"],"quality-urls":["https://127.0.0.1/a"]}`,
+		`{"proxy-name":"p","providers":["custom","custom"],"quality-urls":["https://example.com/a"]}`} {
 		if _, err := parseNodeQualityRequest(data); err == nil {
 			t.Fatalf("accepted invalid request: %v", data)
 		}
@@ -30,6 +36,84 @@ func TestNodeQualityRequest(t *testing.T) {
 	request, err := parseNodeQualityRequest(`{"proxy-name":"p","providers":["cloudflare","ippure"]}`)
 	if err != nil || request.ProxyName != "p" || len(request.Providers) != 2 {
 		t.Fatalf("valid request rejected: %+v, %v", request, err)
+	}
+	custom, err := parseNodeQualityRequest(`{"proxy-name":"p","providers":["cloudflare","custom"],"quality-urls":["https://ip.net.coffee/api/iprisk/{ip}"]}`)
+	if err != nil || len(custom.QualityURLs) != 1 {
+		t.Fatalf("valid custom request rejected: %+v, %v", custom, err)
+	}
+}
+
+func TestCustomQualityURL(t *testing.T) {
+	for raw, want := range map[string]string{
+		"https://ip.net.coffee/api/iprisk/{ip}": "https://ip.net.coffee:443/api/iprisk/quanclash-ip-placeholder",
+		"https://example.com":                   "https://example.com:443/",
+		"https://example.com/check?ip={ip}":     "https://example.com:443/check?ip=quanclash-ip-placeholder",
+		"https://example.com:443/a":             "https://example.com:443/a",
+	} {
+		got, err := validateCustomQualityURL(raw)
+		if err != nil || got != want {
+			t.Fatalf("%q => %q, %v; want %q", raw, got, err, want)
+		}
+	}
+	for _, raw := range []string{
+		"", "not a url", "http://example.com/a", "ftp://example.com/a",
+		"https://example.com:8443/a", "https://localhost/a", "https://127.0.0.1/a",
+		"https://10.0.0.1/a", "https://192.168.1.1/a", "https://[::1]/a",
+		"https://" + "user" + ":" + "pass" + "@example.com/a", "https://example.com/a#b",
+		"https://example.com/../a", "https://{ip}.example.com/a",
+		"https://example.com/a b",
+	} {
+		if _, err := validateCustomQualityURL(raw); err == nil {
+			t.Fatalf("accepted invalid endpoint: %q", raw)
+		}
+	}
+}
+
+func TestCustomQualityEndpointSubstitution(t *testing.T) {
+	request := NodeQualityRequest{
+		ProxyName: "p", Providers: []string{"cloudflare", "custom"},
+		QualityURLs: []string{"https://ip.net.coffee/api/iprisk/{ip}"},
+	}
+	endpoint, err := customQualityEndpoint(request, "203.0.113.9")
+	if err != nil || endpoint != "https://ip.net.coffee:443/api/iprisk/203.0.113.9" {
+		t.Fatalf("substitution => %q, %v", endpoint, err)
+	}
+	if _, err := customQualityEndpoint(request, ""); err == nil {
+		t.Fatal("missing egress IP did not fail the placeholder")
+	}
+	static := NodeQualityRequest{
+		ProxyName: "p", Providers: []string{"cloudflare", "custom"},
+		QualityURLs: []string{"https://example.com/check"},
+	}
+	if endpoint, err := customQualityEndpoint(static, ""); err != nil || endpoint != "https://example.com:443/check" {
+		t.Fatalf("static endpoint => %q, %v", endpoint, err)
+	}
+}
+
+// Observed payload of https://ip.net.coffee/api/iprisk/<ip> on 2026-11-16.
+// The quoted abuse ratio is zero while the reputation is merely good, so the
+// score must come from the reputation rather than reading as a perfect zero.
+func TestCustomQualityIpNetCoffee(t *testing.T) {
+	body := `{"ip": "111.238.48.199", "cidr": "111.238.48.192/27",
+		"is_datacenter": true, "isResidential": false, "isBroadcast": null,
+		"is_vpn": false, "is_proxy": false, "is_tor": false,
+		"is_crawler": false, "is_abuser": false, "is_mobile": false,
+		"company_type": "business", "company_name": "Tokyo Online CO.,Ltd",
+		"abuser_score": "0 (Very Low)", "asn": 2516, "asnum": 2516,
+		"asOrganization": "KDDI CORPORATION", "country": "Japan",
+		"countryCode": "jp", "trust_score": 88, "rpi_status": "invalid"}`
+	probe, err := parseNodeQualityBody("custom", []byte(body))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if probe.RiskScore == nil || *probe.RiskScore != 12 {
+		t.Fatalf("risk score => %+v", probe.RiskScore)
+	}
+	if probe.EgressIP != "111.238.48.199" {
+		t.Fatalf("egress IP => %q", probe.EgressIP)
+	}
+	if probe.IsResidential == nil || *probe.IsResidential {
+		t.Fatalf("residential => %+v", probe.IsResidential)
 	}
 }
 
@@ -56,6 +140,18 @@ func TestNodeQualityParsers(t *testing.T) {
 		{"quality missing IP", "ippure", `{"fraudScore":75}`, false},
 		{"quality html", "ippure", `<html>secret-token</html>`, false},
 		{"quality trailing", "ippure", `{"ip":"203.0.113.1"} {}`, false},
+		{"custom risk", "custom", `{"ip":"203.0.113.1","risk_score":40,"is_residential":true}`, true},
+		{"custom trust", "custom", `{"ip":"203.0.113.1","trust_score":80}`, true},
+		{"custom camel trust", "custom", `{"trustScore":20}`, true},
+		{"custom quoted ratio", "custom", `{"ip":"203.0.113.1","abuser_score":"0.0234 (Elevated)"}`, true},
+		{"custom trust with quiet abuse", "custom", `{"ip":"203.0.113.1","trust_score":88,"abuser_score":"0 (Very Low)"}`, true},
+		{"custom abuse worse than trust", "custom", `{"ip":"203.0.113.1","trust_score":90,"abuse_score":0.8}`, true},
+		{"custom datacenter", "custom", `{"ip":"203.0.113.1","is_datacenter":true}`, true},
+		{"custom score only", "custom", `{"score":55}`, true},
+		{"custom range", "custom", `{"risk_score":150}`, false},
+		{"custom empty", "custom", `{}`, false},
+		{"custom html", "custom", `<html>secret-token</html>`, false},
+		{"custom bad IP", "custom", `{"ip":"not-an-ip","risk_score":10}`, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			result, err := parseNodeQualityBody(tc.provider, []byte(tc.body))
@@ -73,6 +169,39 @@ func TestNodeQualityParsers(t *testing.T) {
 			}
 			if tc.name == "quality zero" && (result.RiskScore == nil || *result.RiskScore != 0) {
 				t.Fatal("real zero lost")
+			}
+			switch tc.name {
+			case "custom trust":
+				if result.RiskScore == nil || *result.RiskScore != 20 {
+					t.Fatalf("trust polarity not inverted: %+v", result.RiskScore)
+				}
+			case "custom camel trust":
+				if result.RiskScore == nil || *result.RiskScore != 80 {
+					t.Fatalf("camel trust polarity not inverted: %+v", result.RiskScore)
+				}
+			case "custom quoted ratio":
+				if result.RiskScore == nil || *result.RiskScore != 2 {
+					t.Fatalf("quoted ratio not normalized: %+v", result.RiskScore)
+				}
+			case "custom trust with quiet abuse":
+				// A zero abuse ratio must not mask a mediocre reputation.
+				if result.RiskScore == nil || *result.RiskScore != 12 {
+					t.Fatalf("trust not used over quiet abuse: %+v", result.RiskScore)
+				}
+			case "custom abuse worse than trust":
+				// A good reputation must not mask a high abuse ratio.
+				if result.RiskScore == nil || *result.RiskScore != 80 {
+					t.Fatalf("abuse not used over trust: %+v", result.RiskScore)
+				}
+			case "custom datacenter":
+				if result.IsResidential == nil || *result.IsResidential {
+					t.Fatalf("datacenter not inverted: %+v", result.IsResidential)
+				}
+			case "custom risk":
+				if result.RiskScore == nil || *result.RiskScore != 40 ||
+					result.IsResidential == nil || !*result.IsResidential {
+					t.Fatalf("custom risk fields lost: %+v", result)
+				}
 			}
 		})
 	}
@@ -128,10 +257,10 @@ func TestNodeQualityHTTPFailures(t *testing.T) {
 		name, reason string
 		handler      http.HandlerFunc
 	}{
-		{"redirect", "http-status", func(w http.ResponseWriter, r *http.Request) {
+		{"redirect", "http-status-302", func(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "https://secret.example/token", http.StatusFound)
 		}},
-		{"rate limit", "http-status", func(w http.ResponseWriter, _ *http.Request) {
+		{"rate limit", "http-status-429", func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(429)
 			io.WriteString(w, "secret-token")
 		}},
@@ -149,7 +278,7 @@ func TestNodeQualityHTTPFailures(t *testing.T) {
 			client, calls := nodeQualityTestClient(t, tc.handler)
 			result := fetchNodeQuality(context.Background(), "ippure", "https://example.com/v1/info", client)
 			data, _ := json.Marshal(result)
-			if result.Status != "failed" || result.Reason != tc.reason || result.RiskScore != nil || calls.Load() != 1 || strings.Contains(string(data), "secret") {
+			if result.Status != "failed" || !strings.HasPrefix(result.Reason, tc.reason) || result.RiskScore != nil || calls.Load() != 1 || strings.Contains(string(data), "secret") {
 				t.Fatal(string(data), calls.Load())
 			}
 		})

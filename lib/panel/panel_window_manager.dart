@@ -9,6 +9,7 @@ import 'package:quanclash/panel/panel_state.dart';
 import 'package:quanclash/providers/providers.dart';
 import 'package:quanclash/state.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 
@@ -241,7 +242,10 @@ class PanelWindowManager {
         ? null
         : delayMap[testUrl]?[proxyName];
     final themeProps = container.read(themeSettingProvider);
-    final locale = container.read(appSettingProvider).locale;
+    final locale = utils.getEffectiveLocaleString(
+          container.read(appSettingProvider).locale,
+        ) ??
+        WidgetsBinding.instance.platformDispatcher.locale.toString();
     return PanelState(
       isStart: isStart,
       coreStatus: coreStatus.name,

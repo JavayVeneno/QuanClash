@@ -67,35 +67,42 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m22(seconds) => "先ほど検査しました。${seconds} 秒後に再試行できます。";
 
-  static String m23(time) => "検査時刻：${time}";
+  static String m23(host) => "カスタム · ${host}";
 
-  static String m24(label) => "まだ${label}はありません";
+  static String m24(host) =>
+      "このダイアログのみ有効：設定したリスクサービス（${host}）にノードの出口 IP とリクエストメタデータが送信されます。Cloudflare には独自の検査が送信されます。自動実行はされません。";
 
-  static String m25(label) => "${label}は数字でなければなりません";
+  static String m25(code) => "サービスが HTTP ${code} を返しました";
 
-  static String m26(label) => "${label} は 1024 から 49151 の間でなければなりません";
+  static String m26(time) => "検査時刻：${time}";
 
-  static String m27(days) => "${days} 日";
+  static String m27(label) => "まだ${label}はありません";
 
-  static String m28(days) => "残り ${days} 日";
+  static String m28(label) => "${label}は数字でなければなりません";
 
-  static String m29(days) => "残り ${days} 日";
+  static String m29(label) => "${label} は 1024 から 49151 の間でなければなりません";
 
-  static String m30(hours) => "${hours} 時間ごと";
+  static String m30(days) => "${days} 日";
 
-  static String m31(minutes) => "${minutes} 分ごと";
+  static String m31(days) => "残り ${days} 日";
 
-  static String m32(count) => "${count} ノード";
+  static String m32(days) => "残り ${days} 日";
 
-  static String m33(percent) => "使用済み ${percent}%";
+  static String m33(hours) => "${hours} 時間ごと";
 
-  static String m34(count) => "${count} 秒";
+  static String m34(minutes) => "${minutes} 分ごと";
 
-  static String m35(count) => "${count} 項目が選択されています";
+  static String m35(count) => "${count} ノード";
 
-  static String m36(label) => "${label}はURLである必要があります";
+  static String m36(percent) => "使用済み ${percent}%";
 
-  static String m37(count) => "${count}年前";
+  static String m37(count) => "${count} 秒";
+
+  static String m38(count) => "${count} 項目が選択されています";
+
+  static String m39(label) => "${label}はURLである必要があります";
+
+  static String m40(count) => "${count}年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -291,7 +298,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "destinationGeoIP": MessageLookupByLibrary.simpleMessage("宛先地理情報"),
     "destinationIPASN": MessageLookupByLibrary.simpleMessage("宛先IP ASN"),
     "details": m3,
-    "detectionTip": MessageLookupByLibrary.simpleMessage("サードパーティAPIに依存（参考値）"),
+    "detectionTip": MessageLookupByLibrary.simpleMessage(
+      "これはサードパーティ IP API への往復時間で、ノード遅延ではありません。ノード速度はプロキシページでテスト URL に対して測定した遅延を優先してください。",
+    ),
     "developerMode": MessageLookupByLibrary.simpleMessage("デベロッパーモード"),
     "developerModeEnableTip": MessageLookupByLibrary.simpleMessage(
       "デベロッパーモードが有効になりました。",
@@ -545,6 +554,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidProxy": m16,
     "invalidProxyProvider": m17,
     "invalidSubRule": m18,
+    "ipApiLatency": MessageLookupByLibrary.simpleMessage("IP API レイテンシ"),
     "ipcidr": MessageLookupByLibrary.simpleMessage("IPCIDR"),
     "ipv6Desc": MessageLookupByLibrary.simpleMessage("有効化するとIPv6トラフィックを受信可能"),
     "ipv6InboundDesc": MessageLookupByLibrary.simpleMessage("IPv6インバウンドを許可"),
@@ -643,6 +653,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "具体的なノードを選択してください。動的・負荷分散グループは未対応です。",
     ),
     "nodeQualityCooldown": m22,
+    "nodeQualityCustom": MessageLookupByLibrary.simpleMessage("カスタム API"),
+    "nodeQualityCustomProvider": m23,
     "nodeQualityEdge": MessageLookupByLibrary.simpleMessage("エッジ／国・地域"),
     "nodeQualityEgressIp": MessageLookupByLibrary.simpleMessage("出口 IP"),
     "nodeQualityFailed": MessageLookupByLibrary.simpleMessage(
@@ -663,26 +675,61 @@ class MessageLookup extends MessageLookupByLibrary {
     "nodeQualityOptIn": MessageLookupByLibrary.simpleMessage(
       "IPPure リスク検査を含める",
     ),
+    "nodeQualityOptInCustom": MessageLookupByLibrary.simpleMessage(
+      "カスタムリスク検査を含める",
+    ),
     "nodeQualityPickNode": MessageLookupByLibrary.simpleMessage(
       "先にプロキシページで具体的なノードを選択してください。",
     ),
     "nodeQualityPrivacy": MessageLookupByLibrary.simpleMessage(
       "この画面でのみ有効：IPPure に出口 IP とリクエスト情報が送信されます。QuanClash はアカウントやプロキシ認証情報を送信しません。Cloudflare にも独自の検査が送信されます。自動検査はありません。",
     ),
+    "nodeQualityPrivacyCustom": m24,
     "nodeQualityProbeFootprint": MessageLookupByLibrary.simpleMessage(
       "手動検査ごとに、選択したサービスへ HTTPS リクエストを 1 回ずつ送信します。自動再試行、Cookie の再利用、ブラウザ指紋の偽装は行いません。第三者による記録は残り得るため、影響ゼロは保証できません。",
+    ),
+    "nodeQualityReasonBusy": MessageLookupByLibrary.simpleMessage(
+      "同時実行中の検査が多すぎます。しばらくしてから再試行してください",
+    ),
+    "nodeQualityReasonHttpStatus": m25,
+    "nodeQualityReasonInactive": MessageLookupByLibrary.simpleMessage(
+      "コアが起動していません",
+    ),
+    "nodeQualityReasonInvalidEndpoint": MessageLookupByLibrary.simpleMessage(
+      "リスク取得先が無効か、出口 IP が取得できません",
+    ),
+    "nodeQualityReasonInvalidResponse": MessageLookupByLibrary.simpleMessage(
+      "応答に想定した JSON フィールドがありません",
+    ),
+    "nodeQualityReasonRequestFailed": MessageLookupByLibrary.simpleMessage(
+      "リクエスト失敗：接続または TLS ハンドシェイクを完了できませんでした",
+    ),
+    "nodeQualityReasonTimeout": MessageLookupByLibrary.simpleMessage(
+      "リクエストがタイムアウトしました",
+    ),
+    "nodeQualityReasonTooLarge": MessageLookupByLibrary.simpleMessage(
+      "応答が 256 KB の上限を超えました",
+    ),
+    "nodeQualityReasonUnavailable": MessageLookupByLibrary.simpleMessage(
+      "このノードではこの検査を実行できません",
     ),
     "nodeQualityResidential": MessageLookupByLibrary.simpleMessage("住宅 IP"),
     "nodeQualityRiskScore": MessageLookupByLibrary.simpleMessage(
       "IP リスクスコア（IPPure）",
     ),
+    "nodeQualityRiskScoreCustom": MessageLookupByLibrary.simpleMessage(
+      "IP リスクスコア（カスタム API）",
+    ),
     "nodeQualityRun": MessageLookupByLibrary.simpleMessage("今すぐ検査"),
-    "nodeQualitySampledAt": m23,
+    "nodeQualitySampledAt": m26,
     "nodeQualityScope": MessageLookupByLibrary.simpleMessage(
       "このノード経由の手動 HTTPS 検査です。Cloudflare は到達性、出口 IP、エッジの TTFB を測定し、IP の純度は判定しません。DNS／ブートストラップは直接接続の場合があります。DIRECT は直接接続を検査します。",
     ),
     "nodeQualityScoreScope": MessageLookupByLibrary.simpleMessage(
       "IPPure Beta の情報は参考値で、純度の百分率、Cloudflare のスコア、安全性の保証ではありません。欠落した値と未検証の IPv6 スコアは不明と表示します。",
+    ),
+    "nodeQualityScoreScopeCustom": MessageLookupByLibrary.simpleMessage(
+      "スコアは設定したエンドポイントによるものです。QuanClash は信頼/評価スコアをリスク尺度に換算しますが、サービスの正確性は検証できません。取得できない場合は不明と表示します。",
     ),
     "nodeQualityStatusFailed": MessageLookupByLibrary.simpleMessage("失敗"),
     "nodeQualityStatusOk": MessageLookupByLibrary.simpleMessage("成功"),
@@ -701,8 +748,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "nullProfileDesc": MessageLookupByLibrary.simpleMessage(
       "プロファイルがありません。追加してください",
     ),
-    "nullTip": m24,
-    "numberTip": m25,
+    "nullTip": m27,
+    "numberTip": m28,
     "onDemand": MessageLookupByLibrary.simpleMessage("On Demand"),
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "Configure the program running state for specific scenarios",
@@ -712,6 +759,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
       "有効化するとプロキシトラフィックのみ統計",
     ),
+    "openReleases": MessageLookupByLibrary.simpleMessage("リリースページを開く"),
     "optional": MessageLookupByLibrary.simpleMessage("オプション"),
     "options": MessageLookupByLibrary.simpleMessage("オプション"),
     "other": MessageLookupByLibrary.simpleMessage("その他"),
@@ -756,7 +804,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "port": MessageLookupByLibrary.simpleMessage("ポート"),
     "portConflictTip": MessageLookupByLibrary.simpleMessage("別のポートを入力してください"),
-    "portTip": m26,
+    "portTip": m29,
     "preferH3Desc": MessageLookupByLibrary.simpleMessage("DOHのHTTP/3を優先使用"),
     "prerequisites": MessageLookupByLibrary.simpleMessage("Prerequisites"),
     "pressKeyboard": MessageLookupByLibrary.simpleMessage("キーボードを押してください"),
@@ -775,15 +823,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "profileCollapse": MessageLookupByLibrary.simpleMessage("閉じる"),
     "profileCurrentConfig": MessageLookupByLibrary.simpleMessage("現在の設定"),
     "profileCurrentNode": MessageLookupByLibrary.simpleMessage("現在のノード"),
-    "profileDaysCount": m27,
-    "profileDaysLeft": m28,
-    "profileDaysLeftShort": m29,
+    "profileDaysCount": m30,
+    "profileDaysLeft": m31,
+    "profileDaysLeftShort": m32,
     "profileDraftHint": MessageLookupByLibrary.simpleMessage(
       "名前と購読 URL を入力すると、保存時に設定を取得します",
     ),
     "profileEditTitle": MessageLookupByLibrary.simpleMessage("設定を編集"),
-    "profileEveryHours": m30,
-    "profileEveryMinutes": m31,
+    "profileEveryHours": m33,
+    "profileEveryMinutes": m34,
     "profileExpire": MessageLookupByLibrary.simpleMessage("有効期限"),
     "profileHasUpdate": MessageLookupByLibrary.simpleMessage(
       "プロファイルが変更されました。自動更新を無効化しますか？",
@@ -801,7 +849,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "profileNew": MessageLookupByLibrary.simpleMessage("新しい設定"),
     "profileNoTrafficInfo": MessageLookupByLibrary.simpleMessage("通信量情報なし"),
     "profileNodeCount": MessageLookupByLibrary.simpleMessage("ノード数"),
-    "profileNodeCountValue": m32,
+    "profileNodeCountValue": m35,
     "profileNotLoaded": MessageLookupByLibrary.simpleMessage("切り替え後に表示"),
     "profileOff": MessageLookupByLibrary.simpleMessage("オフ"),
     "profileOpenEditor": MessageLookupByLibrary.simpleMessage("エディタを開く"),
@@ -828,7 +876,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "購読 URL を入力してください",
     ),
     "profileUsed": MessageLookupByLibrary.simpleMessage("使用済み"),
-    "profileUsedPercent": m33,
+    "profileUsedPercent": m36,
     "profiles": MessageLookupByLibrary.simpleMessage("プロファイル一覧"),
     "profilesSort": MessageLookupByLibrary.simpleMessage("プロファイルの並び替え"),
     "project": MessageLookupByLibrary.simpleMessage("プロジェクト"),
@@ -923,6 +971,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreStrategy_compatible": MessageLookupByLibrary.simpleMessage("互換"),
     "restoreStrategy_override": MessageLookupByLibrary.simpleMessage("上書き"),
     "restoreSuccess": MessageLookupByLibrary.simpleMessage("復元に成功しました"),
+    "riskApiUrl": MessageLookupByLibrary.simpleMessage("リスク API URL"),
+    "riskApiUrlDefault": MessageLookupByLibrary.simpleMessage("IPPure（デフォルト）"),
+    "riskApiUrlDesc": MessageLookupByLibrary.simpleMessage(
+      "任意：リスク検査時に IPPure の代わりに使う HTTPS JSON エンドポイント。ポート 443 と公開ホストのみ利用できます。パスまたはクエリに ip プレースホルダー（入力欄の例を参照）を入れると、ノードの出口 IP が渡されます。riskScore、fraud_score、trust_score などのフィールドを認識し、信頼/評価スコアは反転して「高いほど危険」に統一します。空欄なら IPPure を使用します。",
+    ),
+    "riskApiUrlInvalid": MessageLookupByLibrary.simpleMessage(
+      "ポート 443 の https:// 公開 URL を入力してください。",
+    ),
     "riskIndex": MessageLookupByLibrary.simpleMessage("リスク指数"),
     "riskIndexHigh": MessageLookupByLibrary.simpleMessage("高リスク"),
     "riskIndexLow": MessageLookupByLibrary.simpleMessage("低リスク"),
@@ -1045,7 +1101,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "search": MessageLookupByLibrary.simpleMessage("検索"),
     "seconds": MessageLookupByLibrary.simpleMessage("秒"),
-    "secondsCount": m34,
+    "secondsCount": m37,
     "sectionMain": MessageLookupByLibrary.simpleMessage("メイン"),
     "sectionMonitor": MessageLookupByLibrary.simpleMessage("監視"),
     "sectionSystem": MessageLookupByLibrary.simpleMessage("システム"),
@@ -1060,7 +1116,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "selectSubRule": MessageLookupByLibrary.simpleMessage("サブルールを選択してください"),
     "selected": MessageLookupByLibrary.simpleMessage("選択済み"),
-    "selectedCountTitle": m35,
+    "selectedCountTitle": m38,
     "serviceRunning": MessageLookupByLibrary.simpleMessage("サービス正常稼働中"),
     "settings": MessageLookupByLibrary.simpleMessage("設定"),
     "settingsAboutApp": MessageLookupByLibrary.simpleMessage("QuanClash について"),
@@ -1187,7 +1243,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadSpeed": MessageLookupByLibrary.simpleMessage("アップロード速度"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("URL経由でプロファイルを取得"),
-    "urlTip": m36,
+    "urlTip": m39,
     "useHosts": MessageLookupByLibrary.simpleMessage("ホストを使用"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("システムホストを使用"),
     "userAgent": MessageLookupByLibrary.simpleMessage("ユーザーエージェント"),
@@ -1204,7 +1260,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("変更はVPN再起動後に有効"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV設定"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("ホワイトリストモード"),
-    "yearsAgo": m37,
+    "yearsAgo": m40,
     "zh_CN": MessageLookupByLibrary.simpleMessage("簡体字中国語"),
   };
 }

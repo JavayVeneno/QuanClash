@@ -14,7 +14,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 typedef NodeQualityLoader =
     Future<NodeQualityResult> Function(
       String proxyName, {
-      required bool includeIpPure,
+      required bool includeRisk,
+      String riskApiUrl,
     });
 
 /// 节点质量结果的展示有效期。超过后卡片和仪表盘都视为「未检测」。
@@ -43,7 +44,7 @@ class NodeQualityDialog extends ConsumerStatefulWidget {
     this.loadQuality,
     this.cooldown,
     this.autoCloseOnSuccess = true,
-    this.includeIpPureByDefault = false,
+    this.includeRiskByDefault = false,
     this.autoRun = false,
   });
 
@@ -54,8 +55,8 @@ class NodeQualityDialog extends ConsumerStatefulWidget {
   /// 检测成功后自动关闭对话框，让用户直接看到节点卡片上的风险徽标。
   final bool autoCloseOnSuccess;
 
-  /// 从「风险指数」卡片进入时预先开启 IPPure，避免用户点了检测却拿不到分数。
-  final bool includeIpPureByDefault;
+  /// 从「风险指数」卡片进入时预先开启风险检测，避免用户点了检测却拿不到分数。
+  final bool includeRiskByDefault;
 
   /// 用户主动点击风险卡片即视为一次检测请求，进入后立即开始。
   final bool autoRun;
@@ -66,7 +67,7 @@ class NodeQualityDialog extends ConsumerStatefulWidget {
 
 class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
   NodeQualityResult? _result;
-  bool _includeIpPure = false;
+  bool _includeRisk = false;
   bool _loading = false;
   bool _failed = false;
   bool _timedOut = false;
@@ -81,14 +82,12 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
   @override
   void initState() {
     super.initState();
-    final cached = ref.read(
-      nodeQualityResultsProvider,
-    )[widget.proxyName];
+    final cached = ref.read(nodeQualityResultsProvider)[widget.proxyName];
     if (cached != null && isNodeQualityFresh(cached)) {
       _result = cached;
-      _includeIpPure = cached.quality.riskScore != null;
+      _includeRisk = cached.quality.riskScore != null;
     } else {
-      _includeIpPure = widget.includeIpPureByDefault;
+      _includeRisk = widget.includeRiskByDefault;
       if (widget.autoRun) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
@@ -111,7 +110,7 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
       _failed = false;
       _timedOut = false;
       _loading = false;
-      _includeIpPure = widget.includeIpPureByDefault;
+      _includeRisk = widget.includeRiskByDefault;
       _cooldownSeconds = null;
     });
   }
@@ -129,8 +128,10 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
       return;
     }
     final cooldown = widget.cooldown ?? _sharedNodeQualityCooldown;
-    final includeIpPure = _includeIpPure;
-    final remaining = _remainingCooldown(cooldown, includeIpPure);
+    final includeRisk = _includeRisk;
+    final riskApiUrl = ref.read(appSettingProvider).riskApiUrl;
+    final provider = riskApiUrl.isEmpty ? 'ippure' : 'custom';
+    final remaining = _remainingCooldown(cooldown, includeRisk, provider);
     if (remaining > Duration.zero) {
       setState(() {
         _cooldownSeconds = (remaining.inMilliseconds / 1000).ceil();
@@ -143,8 +144,8 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
     final revision = ++_revision;
     final name = widget.proxyName;
     cooldown.record(name, 'cloudflare');
-    if (includeIpPure) {
-      cooldown.record(name, 'ippure');
+    if (includeRisk) {
+      cooldown.record(name, provider);
     }
     setState(() {
       _result = null;
@@ -157,12 +158,17 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
       final result =
           await (widget.loadQuality ?? coreController.testNodeQuality)(
             name,
-            includeIpPure: includeIpPure,
+            includeRisk: includeRisk,
+            riskApiUrl: riskApiUrl,
           ).timeout(const Duration(seconds: 15));
       if (!mounted || revision != _revision || !_available) {
         return;
       }
-      if (!result.matchesRequest(name, includeIpPure: includeIpPure)) {
+      if (!result.matchesRequest(
+        name,
+        includeRisk: includeRisk,
+        riskApiUrl: riskApiUrl,
+      )) {
         throw const FormatException('Unexpected node quality response');
       }
       ref.read(nodeQualityResultsProvider.notifier).put(result);
@@ -184,7 +190,10 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
   }
 
   /// 成功后短暂停留，让用户看到「探测成功」，随后关闭对话框。
-  Future<void> _scheduleAutoClose(NodeQualityResult result, int revision) async {
+  Future<void> _scheduleAutoClose(
+    NodeQualityResult result,
+    int revision,
+  ) async {
     if (!widget.autoCloseOnSuccess) {
       return;
     }
@@ -202,11 +211,12 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
 
   Duration _remainingCooldown(
     NodeQualityCooldown cooldown,
-    bool includeIpPure,
+    bool includeRisk,
+    String provider,
   ) {
     var remaining = Duration.zero;
-    for (final provider in ['cloudflare', if (includeIpPure) 'ippure']) {
-      final providerRemaining = cooldown.remaining(widget.proxyName, provider);
+    for (final key in ['cloudflare', if (includeRisk) provider]) {
+      final providerRemaining = cooldown.remaining(widget.proxyName, key);
       if (providerRemaining > remaining) {
         remaining = providerRemaining;
       }
@@ -227,6 +237,22 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
     final isDark = Theme.brightnessOf(context) == Brightness.dark;
     final surface = DashboardPalette.surface(context);
     final result = _result;
+    final riskApiUrl = ref.watch(
+      appSettingProvider.select((state) => state.riskApiUrl),
+    );
+    final customHost = riskApiUrl.isEmpty
+        ? null
+        : Uri.tryParse(riskApiUrl.replaceAll('{ip}', 'ip'))?.host ?? '';
+    // The card describes the result that is on screen, which may predate a
+    // settings change; the consent switch describes the next run.
+    final showCustomQuality = result != null
+        ? result.quality.provider == 'custom'
+        : customHost != null;
+    final qualityTitle = showCustomQuality
+        ? l10n.nodeQualityCustomProvider(
+            customHost == null || customHost.isEmpty ? riskApiUrl : customHost,
+          )
+        : 'IPPure (Beta)';
     final maxHeight = MediaQuery.sizeOf(context).height - 96;
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -269,7 +295,7 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
                     children: [
                       _buildScope(context, l10n),
                       const SizedBox(height: 12),
-                      _buildConsent(context, l10n),
+                      _buildConsent(context, l10n, customHost),
                       const SizedBox(height: 10),
                       Text(
                         l10n.nodeQualityProbeFootprint,
@@ -323,6 +349,7 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
                         _ProbeCard(
                           title: 'Cloudflare',
                           status: result.network.status,
+                          reason: result.network.reason,
                           l10n: l10n,
                           rows: [
                             if (result.network.egressIp != null)
@@ -352,10 +379,14 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
                         ),
                         const SizedBox(height: 10),
                         _ProbeCard(
-                          title: 'IPPure (Beta)',
+                          title: qualityTitle,
                           status: result.quality.status,
+                          reason: result.quality.reason,
                           l10n: l10n,
                           riskScore: result.quality.riskScore,
+                          riskLabel: showCustomQuality
+                              ? l10n.nodeQualityRiskScoreCustom
+                              : l10n.nodeQualityRiskScore,
                           rows: [
                             if (result.quality.egressIp != null)
                               _ProbeRow(
@@ -373,7 +404,9 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
                               },
                             ),
                           ],
-                          footer: l10n.nodeQualityScoreScope,
+                          footer: showCustomQuality
+                              ? l10n.nodeQualityScoreScopeCustom
+                              : l10n.nodeQualityScoreScope,
                         ),
                         const SizedBox(height: 12),
                         Text(
@@ -461,7 +494,11 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
     );
   }
 
-  Widget _buildConsent(BuildContext context, AppLocalizations l10n) {
+  Widget _buildConsent(
+    BuildContext context,
+    AppLocalizations l10n,
+    String? customHost,
+  ) {
     final quanX = context.quanX;
     return Material(
       color: quanX.surfaceElevated,
@@ -474,23 +511,29 @@ class _NodeQualityDialogState extends ConsumerState<NodeQualityDialog> {
         key: const ValueKey('node-quality-consent'),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
         title: Text(
-          l10n.nodeQualityOptIn,
+          customHost == null
+              ? l10n.nodeQualityOptIn
+              : l10n.nodeQualityOptInCustom,
           style: context.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
         subtitle: Text(
-          l10n.nodeQualityPrivacy,
+          customHost == null
+              ? l10n.nodeQualityPrivacy
+              : l10n.nodeQualityPrivacyCustom(
+                  customHost.isEmpty ? l10n.unknown : customHost,
+                ),
           style: context.textTheme.bodySmall?.copyWith(
             color: quanX.textTertiary,
           ),
         ),
-        value: _includeIpPure,
+        value: _includeRisk,
         onChanged: _loading || !_available
             ? null
             : (value) {
                 setState(() {
-                  _includeIpPure = value;
+                  _includeRisk = value;
                   _result = null;
                   _failed = false;
                   _timedOut = false;
@@ -594,21 +637,30 @@ class _ProbeCard extends StatelessWidget {
     required this.status,
     required this.l10n,
     required this.rows,
+    this.reason,
     this.riskScore,
+    this.riskLabel,
     this.footer,
   });
 
   final String title;
   final NodeQualityStatus status;
+  final String? reason;
   final AppLocalizations l10n;
   final List<_ProbeRow> rows;
   final int? riskScore;
+  final String? riskLabel;
   final String? footer;
 
   @override
   Widget build(BuildContext context) {
     final quanX = context.quanX;
     final isDark = Theme.brightnessOf(context) == Brightness.dark;
+    // A bare "failed" tells the user nothing; the core sends a stable reason
+    // code for every failure it can categorize.
+    final reasonText = status == NodeQualityStatus.ok
+        ? null
+        : _probeReasonText(reason, l10n);
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       decoration: BoxDecoration(
@@ -636,9 +688,23 @@ class _ProbeCard extends StatelessWidget {
               _StatusChip(status: status, l10n: l10n),
             ],
           ),
+          if (reasonText != null) ...[
+            const SizedBox(height: 6),
+            Text(
+              reasonText,
+              style: context.textTheme.bodySmall?.copyWith(
+                color: quanX.textTertiary,
+                height: 1.4,
+              ),
+            ),
+          ],
           if (riskScore != null) ...[
             const SizedBox(height: 10),
-            _RiskScoreRow(score: riskScore!, l10n: l10n),
+            _RiskScoreRow(
+              score: riskScore!,
+              l10n: l10n,
+              label: riskLabel ?? l10n.nodeQualityRiskScore,
+            ),
           ],
           for (final row in rows) ...[
             const SizedBox(height: 8),
@@ -732,16 +798,21 @@ class _StatusChip extends StatelessWidget {
 }
 
 class _RiskScoreRow extends StatelessWidget {
-  const _RiskScoreRow({required this.score, required this.l10n});
+  const _RiskScoreRow({
+    required this.score,
+    required this.l10n,
+    required this.label,
+  });
 
   final int score;
   final AppLocalizations l10n;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
     final quanX = context.quanX;
     final color = nodeRiskColor(score);
-    final label = score <= 30
+    final riskLabel = score <= 30
         ? l10n.riskIndexLow
         : score <= 60
         ? l10n.riskIndexMedium
@@ -754,7 +825,7 @@ class _RiskScoreRow extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                l10n.nodeQualityRiskScore,
+                label,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: context.textTheme.bodySmall?.copyWith(
@@ -788,16 +859,13 @@ class _RiskScoreRow extends StatelessWidget {
           children: [
             Flexible(
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 7,
-                  vertical: 2,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  label,
+                  riskLabel,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: context.textTheme.labelSmall?.copyWith(
@@ -812,6 +880,31 @@ class _RiskScoreRow extends StatelessWidget {
       ],
     );
   }
+}
+
+String? _probeReasonText(String? reason, AppLocalizations l10n) {
+  if (reason == null) {
+    return null;
+  }
+  const httpPrefix = 'http-status-';
+  if (reason.startsWith(httpPrefix)) {
+    return l10n.nodeQualityReasonHttpStatus(
+      reason.substring(httpPrefix.length),
+    );
+  }
+  return switch (reason) {
+    'request-failed' => l10n.nodeQualityReasonRequestFailed,
+    'invalid-response' => l10n.nodeQualityReasonInvalidResponse,
+    'response-too-large' => l10n.nodeQualityReasonTooLarge,
+    'timeout' => l10n.nodeQualityReasonTimeout,
+    'invalid-endpoint' => l10n.nodeQualityReasonInvalidEndpoint,
+    'busy' => l10n.nodeQualityReasonBusy,
+    'inactive' => l10n.nodeQualityReasonInactive,
+    'proxy-not-found' ||
+    'group-not-supported' ||
+    'unsupported-provider' => l10n.nodeQualityReasonUnavailable,
+    _ => null,
+  };
 }
 
 final NodeQualityCooldown _sharedNodeQualityCooldown = NodeQualityCooldown();

@@ -11,6 +11,14 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 
 const appName = 'QuanClash';
+
+/// App version compiled into Dart, independent of platform metadata.
+///
+/// Windows reads the version from the executable's VERSIONINFO resource, which
+/// can lag behind the source tree on incremental builds and made the About
+/// page report a stale release. Keep this in sync with `pubspec.yaml`;
+/// `test/app_version_test.dart` fails when the two drift apart.
+const appVersion = '0.0.3';
 const appHelperService = 'QuanClashHelperService';
 const coreName = 'clash.meta';
 

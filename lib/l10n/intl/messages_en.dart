@@ -74,35 +74,42 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m22(seconds) => "Checked recently. Try again in ${seconds}s.";
 
-  static String m23(time) => "Sampled at ${time}";
+  static String m23(host) => "Custom · ${host}";
 
-  static String m24(label) => "No ${label} yet";
+  static String m24(host) =>
+      "Opt-in for this dialog only: your configured risk service (${host}) receives the node\'s egress IP and request metadata. Cloudflare receives its own probe. Nothing runs automatically.";
 
-  static String m25(label) => "${label} must be a number";
+  static String m25(code) => "The service returned HTTP ${code}";
 
-  static String m26(label) => "${label} must be between 1024 and 49151";
+  static String m26(time) => "Sampled at ${time}";
 
-  static String m27(days) => "${days} days";
+  static String m27(label) => "No ${label} yet";
 
-  static String m28(days) => "${days} days left";
+  static String m28(label) => "${label} must be a number";
 
-  static String m29(days) => "${days} d left";
+  static String m29(label) => "${label} must be between 1024 and 49151";
 
-  static String m30(hours) => "Every ${hours} h";
+  static String m30(days) => "${days} days";
 
-  static String m31(minutes) => "Every ${minutes} min";
+  static String m31(days) => "${days} days left";
 
-  static String m32(count) => "${count} nodes";
+  static String m32(days) => "${days} d left";
 
-  static String m33(percent) => "Used ${percent}%";
+  static String m33(hours) => "Every ${hours} h";
 
-  static String m34(count) => "${count} seconds";
+  static String m34(minutes) => "Every ${minutes} min";
 
-  static String m35(count) => "${count} items have been selected";
+  static String m35(count) => "${count} nodes";
 
-  static String m36(label) => "${label} must be a url";
+  static String m36(percent) => "Used ${percent}%";
 
-  static String m37(count) =>
+  static String m37(count) => "${count} seconds";
+
+  static String m38(count) => "${count} items have been selected";
+
+  static String m39(label) => "${label} must be a url";
+
+  static String m40(count) =>
       "${Intl.plural(count, one: '1 year ago', other: '${count} years ago')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -366,7 +373,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "details": m3,
     "detectionTip": MessageLookupByLibrary.simpleMessage(
-      "Relying on third-party api is for reference only",
+      "This is the round-trip time to the third-party IP API, not the proxy node delay. The proxy-page delay test measures the selected node against the configured test URL and is authoritative for node speed.",
     ),
     "developerMode": MessageLookupByLibrary.simpleMessage("Developer mode"),
     "developerModeEnableTip": MessageLookupByLibrary.simpleMessage(
@@ -675,6 +682,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidProxy": m16,
     "invalidProxyProvider": m17,
     "invalidSubRule": m18,
+    "ipApiLatency": MessageLookupByLibrary.simpleMessage("IP API latency"),
     "ipcidr": MessageLookupByLibrary.simpleMessage("Ipcidr"),
     "ipv6Desc": MessageLookupByLibrary.simpleMessage(
       "When turned on it will be able to receive IPv6 traffic",
@@ -796,6 +804,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "Select a concrete node. Mutable or load-balancing groups are not supported.",
     ),
     "nodeQualityCooldown": m22,
+    "nodeQualityCustom": MessageLookupByLibrary.simpleMessage("Custom API"),
+    "nodeQualityCustomProvider": m23,
     "nodeQualityEdge": MessageLookupByLibrary.simpleMessage("Edge / country"),
     "nodeQualityEgressIp": MessageLookupByLibrary.simpleMessage("Egress IP"),
     "nodeQualityFailed": MessageLookupByLibrary.simpleMessage(
@@ -818,14 +828,43 @@ class MessageLookup extends MessageLookupByLibrary {
     "nodeQualityOptIn": MessageLookupByLibrary.simpleMessage(
       "Include IPPure risk check",
     ),
+    "nodeQualityOptInCustom": MessageLookupByLibrary.simpleMessage(
+      "Include custom risk check",
+    ),
     "nodeQualityPickNode": MessageLookupByLibrary.simpleMessage(
       "Select a concrete proxy on the Proxies page first.",
     ),
     "nodeQualityPrivacy": MessageLookupByLibrary.simpleMessage(
       "Opt-in for this dialog only: IPPure receives the node\'s egress IP and request metadata. No account or proxy credentials are sent by QuanClash. Cloudflare receives its own probe. Nothing runs automatically.",
     ),
+    "nodeQualityPrivacyCustom": m24,
     "nodeQualityProbeFootprint": MessageLookupByLibrary.simpleMessage(
       "Each manual check sends one HTTPS request per selected provider: no automatic retries, no shared cookies and no spoofed browser fingerprint. Third parties may still log it; zero impact cannot be guaranteed.",
+    ),
+    "nodeQualityReasonBusy": MessageLookupByLibrary.simpleMessage(
+      "Too many checks are running, try again shortly",
+    ),
+    "nodeQualityReasonHttpStatus": m25,
+    "nodeQualityReasonInactive": MessageLookupByLibrary.simpleMessage(
+      "The core is not running",
+    ),
+    "nodeQualityReasonInvalidEndpoint": MessageLookupByLibrary.simpleMessage(
+      "The risk endpoint is invalid, or no egress IP is available",
+    ),
+    "nodeQualityReasonInvalidResponse": MessageLookupByLibrary.simpleMessage(
+      "The response did not contain the expected JSON fields",
+    ),
+    "nodeQualityReasonRequestFailed": MessageLookupByLibrary.simpleMessage(
+      "Request failed: no connection or TLS handshake",
+    ),
+    "nodeQualityReasonTimeout": MessageLookupByLibrary.simpleMessage(
+      "The request timed out",
+    ),
+    "nodeQualityReasonTooLarge": MessageLookupByLibrary.simpleMessage(
+      "The response exceeded the 256 KB limit",
+    ),
+    "nodeQualityReasonUnavailable": MessageLookupByLibrary.simpleMessage(
+      "This node cannot run this check",
     ),
     "nodeQualityResidential": MessageLookupByLibrary.simpleMessage(
       "Residential",
@@ -833,13 +872,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "nodeQualityRiskScore": MessageLookupByLibrary.simpleMessage(
       "IP risk score (IPPure)",
     ),
+    "nodeQualityRiskScoreCustom": MessageLookupByLibrary.simpleMessage(
+      "IP risk score (custom API)",
+    ),
     "nodeQualityRun": MessageLookupByLibrary.simpleMessage("Check now"),
-    "nodeQualitySampledAt": m23,
+    "nodeQualitySampledAt": m26,
     "nodeQualityScope": MessageLookupByLibrary.simpleMessage(
       "Manual HTTPS checks through this node. Cloudflare measures reachability, egress IP and edge TTFB, not IP purity. Adapter DNS/bootstrap may still be direct. DIRECT tests your direct connection.",
     ),
     "nodeQualityScoreScope": MessageLookupByLibrary.simpleMessage(
       "IPPure Beta risk data is advisory, not a purity percentage, a Cloudflare score or a security guarantee. Missing or unverified IPv6 scores remain unknown.",
+    ),
+    "nodeQualityScoreScopeCustom": MessageLookupByLibrary.simpleMessage(
+      "This score comes from the endpoint you configured. QuanClash normalizes trust or reputation values to a risk scale but cannot verify the service\'s accuracy. Missing scores remain unknown.",
     ),
     "nodeQualityStatusFailed": MessageLookupByLibrary.simpleMessage("Failed"),
     "nodeQualityStatusOk": MessageLookupByLibrary.simpleMessage("OK"),
@@ -858,8 +903,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "nullProfileDesc": MessageLookupByLibrary.simpleMessage(
       "No profile, Please add a profile",
     ),
-    "nullTip": m24,
-    "numberTip": m25,
+    "nullTip": m27,
+    "numberTip": m28,
     "onDemand": MessageLookupByLibrary.simpleMessage("On Demand"),
     "onDemandDesc": MessageLookupByLibrary.simpleMessage(
       "Configure the program running state for specific scenarios",
@@ -871,6 +916,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
       "When turned on, only statistics proxy traffic",
     ),
+    "openReleases": MessageLookupByLibrary.simpleMessage("Open releases page"),
     "optional": MessageLookupByLibrary.simpleMessage("Optional"),
     "options": MessageLookupByLibrary.simpleMessage("Options"),
     "other": MessageLookupByLibrary.simpleMessage("Other"),
@@ -921,7 +967,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "portConflictTip": MessageLookupByLibrary.simpleMessage(
       "Please enter a different port",
     ),
-    "portTip": m26,
+    "portTip": m29,
     "preferH3Desc": MessageLookupByLibrary.simpleMessage(
       "Prioritize the use of DOH\'s http/3",
     ),
@@ -948,15 +994,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "profileCollapse": MessageLookupByLibrary.simpleMessage("Collapse"),
     "profileCurrentConfig": MessageLookupByLibrary.simpleMessage("Current"),
     "profileCurrentNode": MessageLookupByLibrary.simpleMessage("Current node"),
-    "profileDaysCount": m27,
-    "profileDaysLeft": m28,
-    "profileDaysLeftShort": m29,
+    "profileDaysCount": m30,
+    "profileDaysLeft": m31,
+    "profileDaysLeftShort": m32,
     "profileDraftHint": MessageLookupByLibrary.simpleMessage(
       "Enter a name and subscription URL; the config is fetched on save",
     ),
     "profileEditTitle": MessageLookupByLibrary.simpleMessage("Edit profile"),
-    "profileEveryHours": m30,
-    "profileEveryMinutes": m31,
+    "profileEveryHours": m33,
+    "profileEveryMinutes": m34,
     "profileExpire": MessageLookupByLibrary.simpleMessage("Expires"),
     "profileHasUpdate": MessageLookupByLibrary.simpleMessage(
       "The profile has been modified. Do you want to disable auto update?",
@@ -976,7 +1022,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "No traffic info",
     ),
     "profileNodeCount": MessageLookupByLibrary.simpleMessage("Nodes"),
-    "profileNodeCountValue": m32,
+    "profileNodeCountValue": m35,
     "profileNotLoaded": MessageLookupByLibrary.simpleMessage(
       "Shown after switching",
     ),
@@ -1013,7 +1059,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Enter a subscription URL",
     ),
     "profileUsed": MessageLookupByLibrary.simpleMessage("Used"),
-    "profileUsedPercent": m33,
+    "profileUsedPercent": m36,
     "profiles": MessageLookupByLibrary.simpleMessage("Profiles"),
     "profilesSort": MessageLookupByLibrary.simpleMessage("Profiles sort"),
     "project": MessageLookupByLibrary.simpleMessage("Project"),
@@ -1134,6 +1180,16 @@ class MessageLookup extends MessageLookupByLibrary {
       "Override",
     ),
     "restoreSuccess": MessageLookupByLibrary.simpleMessage("Restore success"),
+    "riskApiUrl": MessageLookupByLibrary.simpleMessage("Risk API URL"),
+    "riskApiUrlDefault": MessageLookupByLibrary.simpleMessage(
+      "IPPure (default)",
+    ),
+    "riskApiUrlDesc": MessageLookupByLibrary.simpleMessage(
+      "Optional HTTPS JSON endpoint used instead of IPPure when the risk check runs. Only port 443 and a public host are accepted. Add an ip placeholder in the path or query (see the field hint) to receive the node\'s egress IP. Fields such as riskScore, fraud_score and trust_score are recognized; trust or reputation scores are inverted so a higher value always means more risk. Leave empty to use IPPure.",
+    ),
+    "riskApiUrlInvalid": MessageLookupByLibrary.simpleMessage(
+      "Enter a public https:// URL on port 443.",
+    ),
     "riskIndex": MessageLookupByLibrary.simpleMessage("Risk index"),
     "riskIndexHigh": MessageLookupByLibrary.simpleMessage("High risk"),
     "riskIndexLow": MessageLookupByLibrary.simpleMessage("Low risk"),
@@ -1266,7 +1322,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
     "seconds": MessageLookupByLibrary.simpleMessage("Seconds"),
-    "secondsCount": m34,
+    "secondsCount": m37,
     "sectionMain": MessageLookupByLibrary.simpleMessage("Main"),
     "sectionMonitor": MessageLookupByLibrary.simpleMessage("Monitor"),
     "sectionSystem": MessageLookupByLibrary.simpleMessage("System"),
@@ -1285,7 +1341,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Please select sub rule",
     ),
     "selected": MessageLookupByLibrary.simpleMessage("Selected"),
-    "selectedCountTitle": m35,
+    "selectedCountTitle": m38,
     "serviceRunning": MessageLookupByLibrary.simpleMessage("Service running"),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "settingsAboutApp": MessageLookupByLibrary.simpleMessage("About QuanClash"),
@@ -1448,7 +1504,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Obtain profile through URL",
     ),
-    "urlTip": m36,
+    "urlTip": m39,
     "useHosts": MessageLookupByLibrary.simpleMessage("Use hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("Use system hosts"),
     "userAgent": MessageLookupByLibrary.simpleMessage("User-Agent"),
@@ -1469,7 +1525,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "WebDAV configuration",
     ),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("Whitelist mode"),
-    "yearsAgo": m37,
+    "yearsAgo": m40,
     "zh_CN": MessageLookupByLibrary.simpleMessage("Simplified Chinese"),
   };
 }

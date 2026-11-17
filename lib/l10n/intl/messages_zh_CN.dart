@@ -67,35 +67,42 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m22(seconds) => "刚刚检测过，${seconds} 秒后可再次检测。";
 
-  static String m23(time) => "采样时间：${time}";
+  static String m23(host) => "自定义 · ${host}";
 
-  static String m24(label) => "暂无${label}";
+  static String m24(host) =>
+      "仅对本次检测生效：你配置的风险服务（${host}）会收到节点的出口 IP 和请求元数据。Cloudflare 仍会收到自己的探测请求。不会自动执行。";
 
-  static String m25(label) => "${label}必须为数字";
+  static String m25(code) => "服务返回 HTTP ${code}";
 
-  static String m26(label) => "${label} 必须在 1024 到 49151 之间";
+  static String m26(time) => "采样时间：${time}";
 
-  static String m27(days) => "${days} 天";
+  static String m27(label) => "暂无${label}";
 
-  static String m28(days) => "剩余 ${days} 天";
+  static String m28(label) => "${label}必须为数字";
 
-  static String m29(days) => "剩 ${days} 天";
+  static String m29(label) => "${label} 必须在 1024 到 49151 之间";
 
-  static String m30(hours) => "每 ${hours} 小时";
+  static String m30(days) => "${days} 天";
 
-  static String m31(minutes) => "每 ${minutes} 分钟";
+  static String m31(days) => "剩余 ${days} 天";
 
-  static String m32(count) => "${count} 个节点";
+  static String m32(days) => "剩 ${days} 天";
 
-  static String m33(percent) => "已用 ${percent}%";
+  static String m33(hours) => "每 ${hours} 小时";
 
-  static String m34(count) => "${count} 秒";
+  static String m34(minutes) => "每 ${minutes} 分钟";
 
-  static String m35(count) => "已选择 ${count} 项";
+  static String m35(count) => "${count} 个节点";
 
-  static String m36(label) => "${label}必须为URL";
+  static String m36(percent) => "已用 ${percent}%";
 
-  static String m37(count) => "${count} 年前";
+  static String m37(count) => "${count} 秒";
+
+  static String m38(count) => "已选择 ${count} 项";
+
+  static String m39(label) => "${label}必须为URL";
+
+  static String m40(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -265,7 +272,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "destinationGeoIP": MessageLookupByLibrary.simpleMessage("目标地理定位"),
     "destinationIPASN": MessageLookupByLibrary.simpleMessage("目标IP ASN"),
     "details": m3,
-    "detectionTip": MessageLookupByLibrary.simpleMessage("依赖第三方api，仅供参考"),
+    "detectionTip": MessageLookupByLibrary.simpleMessage(
+      "这里显示的是第三方 IP API 的往返耗时，不是节点延迟。节点速度请以代理页使用测试地址测得的延迟为准。",
+    ),
     "developerMode": MessageLookupByLibrary.simpleMessage("开发者模式"),
     "developerModeEnableTip": MessageLookupByLibrary.simpleMessage("开发者模式已启用。"),
     "diagnostics": MessageLookupByLibrary.simpleMessage("诊断"),
@@ -489,6 +498,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "invalidProxy": m16,
     "invalidProxyProvider": m17,
     "invalidSubRule": m18,
+    "ipApiLatency": MessageLookupByLibrary.simpleMessage("IP API 延迟"),
     "ipcidr": MessageLookupByLibrary.simpleMessage("IP/掩码"),
     "ipv6Desc": MessageLookupByLibrary.simpleMessage("开启后将可以接收IPv6流量"),
     "ipv6InboundDesc": MessageLookupByLibrary.simpleMessage("允许IPv6入站"),
@@ -575,6 +585,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "请选择具体节点；暂不支持动态切换或负载均衡组。",
     ),
     "nodeQualityCooldown": m22,
+    "nodeQualityCustom": MessageLookupByLibrary.simpleMessage("自定义 API"),
+    "nodeQualityCustomProvider": m23,
     "nodeQualityEdge": MessageLookupByLibrary.simpleMessage("边缘机房／国家或地区"),
     "nodeQualityEgressIp": MessageLookupByLibrary.simpleMessage("出口 IP"),
     "nodeQualityFailed": MessageLookupByLibrary.simpleMessage(
@@ -593,26 +605,55 @@ class MessageLookup extends MessageLookupByLibrary {
     "nodeQualityOptIn": MessageLookupByLibrary.simpleMessage(
       "同时查询 IPPure 风险信息",
     ),
+    "nodeQualityOptInCustom": MessageLookupByLibrary.simpleMessage("包含自定义风险检测"),
     "nodeQualityPickNode": MessageLookupByLibrary.simpleMessage(
       "请先在代理页选择一个具体节点。",
     ),
     "nodeQualityPrivacy": MessageLookupByLibrary.simpleMessage(
       "仅在本次窗口内主动开启：IPPure 会收到节点出口 IP 和请求元数据，QuanClash 不发送账户或代理凭据。Cloudflare 会收到其自身探测请求。不会自动检测。",
     ),
+    "nodeQualityPrivacyCustom": m24,
     "nodeQualityProbeFootprint": MessageLookupByLibrary.simpleMessage(
       "每次手动检测按所选服务商各发送一次 HTTPS 请求：不自动重试、不复用 Cookie、不伪造浏览器指纹。第三方仍可能记录请求，无法承诺零影响。",
+    ),
+    "nodeQualityReasonBusy": MessageLookupByLibrary.simpleMessage(
+      "同时进行的检测过多，请稍后重试",
+    ),
+    "nodeQualityReasonHttpStatus": m25,
+    "nodeQualityReasonInactive": MessageLookupByLibrary.simpleMessage("核心未运行"),
+    "nodeQualityReasonInvalidEndpoint": MessageLookupByLibrary.simpleMessage(
+      "风险接口地址无效，或缺少出口 IP",
+    ),
+    "nodeQualityReasonInvalidResponse": MessageLookupByLibrary.simpleMessage(
+      "返回内容无法解析为预期的 JSON 字段",
+    ),
+    "nodeQualityReasonRequestFailed": MessageLookupByLibrary.simpleMessage(
+      "网络请求失败：无法建立连接或完成 TLS 握手",
+    ),
+    "nodeQualityReasonTimeout": MessageLookupByLibrary.simpleMessage("请求超时"),
+    "nodeQualityReasonTooLarge": MessageLookupByLibrary.simpleMessage(
+      "返回内容超过 256 KB 上限",
+    ),
+    "nodeQualityReasonUnavailable": MessageLookupByLibrary.simpleMessage(
+      "当前节点无法进行此类检测",
     ),
     "nodeQualityResidential": MessageLookupByLibrary.simpleMessage("住宅 IP"),
     "nodeQualityRiskScore": MessageLookupByLibrary.simpleMessage(
       "IP 风险分（IPPure）",
     ),
+    "nodeQualityRiskScoreCustom": MessageLookupByLibrary.simpleMessage(
+      "IP 风险分（自定义 API）",
+    ),
     "nodeQualityRun": MessageLookupByLibrary.simpleMessage("开始检测"),
-    "nodeQualitySampledAt": m23,
+    "nodeQualitySampledAt": m26,
     "nodeQualityScope": MessageLookupByLibrary.simpleMessage(
       "手动通过此节点进行 HTTPS 检测。Cloudflare 提供连通性、出口 IP 和边缘首字节时间，不代表 IP 纯净度。节点 DNS／引导解析仍可能直连；DIRECT 检测的是直连出口。",
     ),
     "nodeQualityScoreScope": MessageLookupByLibrary.simpleMessage(
       "IPPure Beta 风险信息仅供参考，不是纯净百分比、Cloudflare 评分或安全保证。缺失的分数和未验证的 IPv6 分数均显示未知。",
+    ),
+    "nodeQualityScoreScopeCustom": MessageLookupByLibrary.simpleMessage(
+      "分数来自你配置的接口。QuanClash 会把信任/信誉分换算为风险分，但无法验证该服务的准确性。缺失的分数仍显示为未知。",
     ),
     "nodeQualityStatusFailed": MessageLookupByLibrary.simpleMessage("失败"),
     "nodeQualityStatusOk": MessageLookupByLibrary.simpleMessage("成功"),
@@ -623,8 +664,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "none": MessageLookupByLibrary.simpleMessage("无"),
     "notSelectedTip": MessageLookupByLibrary.simpleMessage("当前代理组无法选中"),
     "nullProfileDesc": MessageLookupByLibrary.simpleMessage("没有配置文件,请先添加配置文件"),
-    "nullTip": m24,
-    "numberTip": m25,
+    "nullTip": m27,
+    "numberTip": m28,
     "onDemand": MessageLookupByLibrary.simpleMessage("按需运行"),
     "onDemandDesc": MessageLookupByLibrary.simpleMessage("配置程序特定场景运行状态"),
     "onlyIcon": MessageLookupByLibrary.simpleMessage("仅图标"),
@@ -632,6 +673,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "onlyStatisticsProxyDesc": MessageLookupByLibrary.simpleMessage(
       "开启后，将只统计代理流量",
     ),
+    "openReleases": MessageLookupByLibrary.simpleMessage("打开发布页"),
     "optional": MessageLookupByLibrary.simpleMessage("可选"),
     "options": MessageLookupByLibrary.simpleMessage("选项"),
     "other": MessageLookupByLibrary.simpleMessage("其他"),
@@ -670,7 +712,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "port": MessageLookupByLibrary.simpleMessage("端口"),
     "portConflictTip": MessageLookupByLibrary.simpleMessage("请输入不同的端口"),
-    "portTip": m26,
+    "portTip": m29,
     "preferH3Desc": MessageLookupByLibrary.simpleMessage("优先使用DOH的http/3"),
     "prerequisites": MessageLookupByLibrary.simpleMessage("前置条件"),
     "pressKeyboard": MessageLookupByLibrary.simpleMessage("请按下按键"),
@@ -689,15 +731,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "profileCollapse": MessageLookupByLibrary.simpleMessage("收起详情"),
     "profileCurrentConfig": MessageLookupByLibrary.simpleMessage("当前配置"),
     "profileCurrentNode": MessageLookupByLibrary.simpleMessage("当前节点"),
-    "profileDaysCount": m27,
-    "profileDaysLeft": m28,
-    "profileDaysLeftShort": m29,
+    "profileDaysCount": m30,
+    "profileDaysLeft": m31,
+    "profileDaysLeftShort": m32,
     "profileDraftHint": MessageLookupByLibrary.simpleMessage(
       "填写名称和订阅地址，保存后自动拉取配置",
     ),
     "profileEditTitle": MessageLookupByLibrary.simpleMessage("编辑配置"),
-    "profileEveryHours": m30,
-    "profileEveryMinutes": m31,
+    "profileEveryHours": m33,
+    "profileEveryMinutes": m34,
     "profileExpire": MessageLookupByLibrary.simpleMessage("到期"),
     "profileHasUpdate": MessageLookupByLibrary.simpleMessage(
       "配置文件已经修改,是否关闭自动更新 ",
@@ -715,7 +757,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "profileNew": MessageLookupByLibrary.simpleMessage("新配置"),
     "profileNoTrafficInfo": MessageLookupByLibrary.simpleMessage("未提供流量信息"),
     "profileNodeCount": MessageLookupByLibrary.simpleMessage("节点数量"),
-    "profileNodeCountValue": m32,
+    "profileNodeCountValue": m35,
     "profileNotLoaded": MessageLookupByLibrary.simpleMessage("切换后显示"),
     "profileOff": MessageLookupByLibrary.simpleMessage("关闭"),
     "profileOpenEditor": MessageLookupByLibrary.simpleMessage("打开完整编辑"),
@@ -740,7 +782,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "profileUrlRequired": MessageLookupByLibrary.simpleMessage("请输入订阅地址"),
     "profileUsed": MessageLookupByLibrary.simpleMessage("已用"),
-    "profileUsedPercent": m33,
+    "profileUsedPercent": m36,
     "profiles": MessageLookupByLibrary.simpleMessage("配置"),
     "profilesSort": MessageLookupByLibrary.simpleMessage("配置排序"),
     "project": MessageLookupByLibrary.simpleMessage("项目"),
@@ -819,6 +861,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "restoreStrategy_compatible": MessageLookupByLibrary.simpleMessage("兼容"),
     "restoreStrategy_override": MessageLookupByLibrary.simpleMessage("覆盖"),
     "restoreSuccess": MessageLookupByLibrary.simpleMessage("恢复成功"),
+    "riskApiUrl": MessageLookupByLibrary.simpleMessage("风险 API 地址"),
+    "riskApiUrlDefault": MessageLookupByLibrary.simpleMessage("IPPure（默认）"),
+    "riskApiUrlDesc": MessageLookupByLibrary.simpleMessage(
+      "可选：执行风险检测时改用这个 HTTPS JSON 接口，替代 IPPure。仅支持 443 端口和公网域名。在路径或查询参数中加入 ip 占位符（写法见输入框提示），即可把节点的出口 IP 传给接口。可识别 riskScore、fraud_score、trust_score 等字段；信任/信誉分会被反转，使分数始终「越高越危险」。留空则使用 IPPure。",
+    ),
+    "riskApiUrlInvalid": MessageLookupByLibrary.simpleMessage(
+      "请输入 443 端口的 https:// 公网地址。",
+    ),
     "riskIndex": MessageLookupByLibrary.simpleMessage("风险指数"),
     "riskIndexHigh": MessageLookupByLibrary.simpleMessage("高风险"),
     "riskIndexLow": MessageLookupByLibrary.simpleMessage("低风险"),
@@ -917,7 +967,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "search": MessageLookupByLibrary.simpleMessage("搜索"),
     "seconds": MessageLookupByLibrary.simpleMessage("秒"),
-    "secondsCount": m34,
+    "secondsCount": m37,
     "sectionMain": MessageLookupByLibrary.simpleMessage("主要"),
     "sectionMonitor": MessageLookupByLibrary.simpleMessage("监控"),
     "sectionSystem": MessageLookupByLibrary.simpleMessage("系统"),
@@ -928,7 +978,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectSplitStrategy": MessageLookupByLibrary.simpleMessage("请选择分流策略"),
     "selectSubRule": MessageLookupByLibrary.simpleMessage("请选择子规则"),
     "selected": MessageLookupByLibrary.simpleMessage("已选择"),
-    "selectedCountTitle": m35,
+    "selectedCountTitle": m38,
     "serviceRunning": MessageLookupByLibrary.simpleMessage("服务运行正常"),
     "settings": MessageLookupByLibrary.simpleMessage("设置"),
     "settingsAboutApp": MessageLookupByLibrary.simpleMessage("关于 QuanClash"),
@@ -1045,7 +1095,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadSpeed": MessageLookupByLibrary.simpleMessage("上传速度"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("通过URL获取配置文件"),
-    "urlTip": m36,
+    "urlTip": m39,
     "useHosts": MessageLookupByLibrary.simpleMessage("使用Hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("使用系统Hosts"),
     "userAgent": MessageLookupByLibrary.simpleMessage("用户代理"),
@@ -1062,7 +1112,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("重启VPN后改变生效"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV配置"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("白名单模式"),
-    "yearsAgo": m37,
+    "yearsAgo": m40,
     "zh_CN": MessageLookupByLibrary.simpleMessage("中文简体"),
   };
 }

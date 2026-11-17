@@ -49,7 +49,7 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
             DashboardCardTitle(
               icon: QuanXIcons.gauge,
               color: DashboardPalette.blue,
-              title: appLocalizations.networkDetection,
+              title: appLocalizations.ipApiLatency,
               trailing: IconButton(
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),

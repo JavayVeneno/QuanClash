@@ -99,6 +99,7 @@ class InputDialog extends StatefulWidget {
   final String? labelText;
   final String? resetValue;
   final String? hintText;
+  final String? description;
   final FormFieldValidator<String>? validator;
   final AutovalidateMode? autovalidateMode;
   final bool? obscureText;
@@ -113,6 +114,7 @@ class InputDialog extends StatefulWidget {
     this.suffixText,
     this.resetValue,
     this.hintText,
+    this.description,
     this.validator,
     this.obscureText,
     this.labelText,
@@ -211,6 +213,16 @@ class _InputDialogState extends State<InputDialog> {
               ),
               validator: widget.validator,
             ),
+            if (widget.description != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                widget.description!,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  height: 1.4,
+                ),
+              ),
+            ],
           ],
         ),
       ),
