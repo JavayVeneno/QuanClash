@@ -9,6 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_ext/window_ext.dart';
 import 'package:window_manager/window_manager.dart';
 
+/// Windows 11 关闭按钮的悬停 / 按下底色。
+const Color _captionCloseHover = Color(0xFFC42B1C);
+const Color _captionClosePressed = Color(0xFFB02418);
+
 class WindowManager extends ConsumerStatefulWidget {
   final Widget child;
 
@@ -257,51 +261,57 @@ class _WindowHeaderState extends State<WindowHeader> {
   }
 
   Widget _buildActions() {
+    final primary = context.colorScheme.primary;
     return Row(
       children: [
-        IconButton(
-          onPressed: () async {
-            _updatePin();
-          },
-          icon: ValueListenableBuilder(
+        // 置顶是应用自己的动作,与系统窗口按钮分开:小一号、圆角悬停,
+        // 置顶时用主题色点亮,避免像之前那样两种状态看起来完全一样。
+        Padding(
+          padding: const EdgeInsets.only(right: 6),
+          child: ValueListenableBuilder(
             valueListenable: isPinNotifier,
-            builder: (_, value, _) {
-              return value
-                  ? const Icon(QuanXIcons.pin)
-                  : const Icon(QuanXIcons.pin);
+            builder: (context, value, _) {
+              return _TitleBarButton(
+                onPressed: _updatePin,
+                width: 30,
+                height: 28,
+                iconSize: 14,
+                borderRadius: BorderRadius.circular(6),
+                cursor: SystemMouseCursors.click,
+                color: value ? primary : context.quanX.textSecondary,
+                hoverColor: primary.withValues(alpha: 0.10),
+                highlightColor: primary.withValues(alpha: 0.16),
+                icon: const Icon(QuanXIcons.pin),
+              );
             },
           ),
         ),
-        IconButton(
+        _TitleBarButton(
           onPressed: () {
             windowManager.minimize();
           },
           icon: const Icon(QuanXIcons.minus),
         ),
-        IconButton(
-          onPressed: () async {
-            _updateMaximized();
-          },
+        _TitleBarButton(
+          onPressed: _updateMaximized,
           icon: ValueListenableBuilder(
             valueListenable: isMaximizedNotifier,
             builder: (_, value, _) {
-              return value
-                  ? const Icon(QuanXIcons.squareStack, size: 20)
-                  : const Icon(QuanXIcons.square);
+              return Icon(value ? QuanXIcons.squareStack : QuanXIcons.square);
             },
           ),
         ),
-        IconButton(
+        _TitleBarButton(
           onPressed: () {
             globalState.container
                 .read(systemActionProvider.notifier)
                 .handleClose();
           },
+          hoverForeground: Colors.white,
+          hoverColor: _captionCloseHover,
+          highlightColor: _captionClosePressed,
           icon: const Icon(QuanXIcons.x),
         ),
-        // const SizedBox(
-        //   width: 8,
-        // ),
       ],
     );
   }
@@ -344,6 +354,95 @@ class _WindowHeaderState extends State<WindowHeader> {
               ),
               if (!system.isMacOS) _buildActions(),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 标题栏按钮:按 Windows 11 原生标题栏的比例绘制。
+///
+/// 每个按钮占满标题栏高度、宽度固定,平时没有底色,悬停时出现浅色填充;
+/// 关闭按钮悬停变红、图标转白。之前用的是默认 [IconButton],命中区只有
+/// 图标大小,四个按钮挤在 34px 高的标题栏里,既不像系统窗口控件,也显得零碎。
+class _TitleBarButton extends StatefulWidget {
+  const _TitleBarButton({
+    required this.icon,
+    required this.onPressed,
+    this.width = 46,
+    this.height,
+    this.iconSize = 13,
+    this.color,
+    this.hoverForeground,
+    this.hoverColor,
+    this.highlightColor,
+    this.borderRadius = BorderRadius.zero,
+    this.cursor = SystemMouseCursors.basic,
+  });
+
+  final Widget icon;
+  final VoidCallback onPressed;
+
+  /// 按钮宽度;系统窗口按钮为 46,与应用内动作按钮区分。
+  final double width;
+
+  /// 按钮高度;为 null 时占满标题栏高度。
+  final double? height;
+
+  final double iconSize;
+  final Color? color;
+  final Color? hoverForeground;
+  final Color? hoverColor;
+  final Color? highlightColor;
+  final BorderRadius borderRadius;
+  final MouseCursor cursor;
+
+  @override
+  State<_TitleBarButton> createState() => _TitleBarButtonState();
+}
+
+class _TitleBarButtonState extends State<_TitleBarButton> {
+  bool _hovered = false;
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = context.isQuanXDark;
+    final quanX = context.quanX;
+    final defaultColor = widget.color ?? quanX.textPrimary;
+    final hoverColor =
+        widget.hoverColor ??
+        (isDark
+            ? Colors.white.withValues(alpha: 0.08)
+            : Colors.black.withValues(alpha: 0.05));
+    final highlightColor =
+        widget.highlightColor ??
+        (isDark
+            ? Colors.white.withValues(alpha: 0.14)
+            : Colors.black.withValues(alpha: 0.09));
+    final foreground = _hovered || _focused
+        ? widget.hoverForeground ?? defaultColor
+        : defaultColor;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: InkWell(
+        onTap: widget.onPressed,
+        onFocusChange: (value) => setState(() => _focused = value),
+        mouseCursor: widget.cursor,
+        hoverColor: hoverColor,
+        highlightColor: highlightColor,
+        focusColor: hoverColor,
+        splashFactory: NoSplash.splashFactory,
+        customBorder: RoundedRectangleBorder(borderRadius: widget.borderRadius),
+        child: SizedBox(
+          width: widget.width,
+          height: widget.height ?? double.infinity,
+          child: IconTheme(
+            data: IconThemeData(color: foreground, size: widget.iconSize),
+            child: Center(child: widget.icon),
           ),
         ),
       ),
