@@ -23,15 +23,17 @@ class ThemeManager extends ConsumerWidget {
     return Consumer(
       builder: (context, ref, _) {
         final brightness = ref.watch(currentBrightnessProvider);
-        final iconBrightness = brightness == Brightness.light
-            ? Brightness.dark
-            : Brightness.light;
+        final isLight = brightness == Brightness.light;
+        final iconBrightness = isLight ? Brightness.dark : Brightness.light;
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
             statusBarIconBrightness: iconBrightness,
+            statusBarBrightness: brightness,
             systemNavigationBarIconBrightness: iconBrightness,
-            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarColor: isLight
+                ? const Color(0xFFF2F2F7)
+                : Colors.black,
             systemNavigationBarDividerColor: Colors.transparent,
             systemNavigationBarContrastEnforced: false,
           ),
