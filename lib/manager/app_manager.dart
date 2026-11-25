@@ -119,6 +119,9 @@ class AppEnvManager extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!system.isDesktop) {
+      return child;
+    }
     if (kDebugMode) {
       if (globalState.isPre) {
         return Banner(

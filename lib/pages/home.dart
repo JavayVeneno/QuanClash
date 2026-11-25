@@ -4,6 +4,7 @@ import 'package:quanclash/manager/app_manager.dart';
 import 'package:quanclash/models/common.dart';
 import 'package:quanclash/providers/providers.dart';
 import 'package:quanclash/state.dart';
+import 'package:quanclash/views/mobile_v4/mobile_v4_dashboard.dart';
 import 'package:quanclash/views/panel/panel.dart';
 import 'package:quanclash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,9 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildHome(BuildContext context) {
+    if (!system.isDesktop) {
+      return const HomeBackScopeContainer(child: MobileV4Dashboard());
+    }
     return HomeBackScopeContainer(
       child: AppTopNavContainer(
         child: Material(
