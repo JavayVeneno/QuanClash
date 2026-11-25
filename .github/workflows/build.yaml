@@ -4,12 +4,13 @@ on:
   push:
     tags:
       - 'v*'
-  # Pull requests only run the tests; artifacts are built for tags alone.
+  # Pull requests run tests; tags (or manual dispatch) build release artifacts.
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 env:
-  IS_STABLE: ${{ !contains(github.ref, '-') }}
+  IS_STABLE: ${{ !contains(github.ref, '-') && github.event_name == 'push' }}
   FLUTTER_VERSION: '3.44.4'
 
 jobs:
@@ -39,20 +40,20 @@ jobs:
         run: flutter test --reporter expanded
 
   build:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     needs: [ test ]
     runs-on: ${{ matrix.os }}
     strategy:
-      # Windows is the only supported target for now. The remaining entries
-      # are kept here so they can be re-enabled once a platform is built and
-      # tested on real hardware.
+      fail-fast: false
+      # Windows and Android are the supported release targets. Remaining desktop
+      # targets are kept commented for future enablement.
       matrix:
         include:
           - platform: windows
             os: Windows-2022
             arch: amd64
-          # - platform: android
-          #   os: ubuntu-latest
+          - platform: android
+            os: ubuntu-latest
           # - platform: linux
           #   os: ubuntu-22.04
           #   arch: amd64
@@ -84,16 +85,27 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Setup Java (Android)
+        if: startsWith(matrix.platform, 'android')
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - name: Setup Android Signing
-        if: startsWith(matrix.platform,'android')
+        if: startsWith(matrix.platform, 'android')
         run: |
-          echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/keystore.jks
-          echo "${{ secrets.SERVICE_JSON }}" | base64 --decode > android/app/google-services.json
-          {
-            echo "keyAlias=${{ secrets.KEY_ALIAS }}"
-            echo "storePassword=${{ secrets.STORE_PASSWORD }}"
-            echo "keyPassword=${{ secrets.KEY_PASSWORD }}"
-          } >> android/local.properties
+          if [ -n "${{ secrets.KEYSTORE }}" ]; then
+            echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/keystore.jks
+            {
+              echo "keyAlias=${{ secrets.KEY_ALIAS }}"
+              echo "storePassword=${{ secrets.STORE_PASSWORD }}"
+              echo "keyPassword=${{ secrets.KEY_PASSWORD }}"
+            } >> android/local.properties
+          fi
+          if [ -n "${{ secrets.SERVICE_JSON }}" ]; then
+            echo "${{ secrets.SERVICE_JSON }}" | base64 --decode > android/app/google-services.json
+          fi
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -109,18 +121,18 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: master
+          channel: stable
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Setup Xcode
-        if: startsWith(matrix.platform,'macos')
+        if: startsWith(matrix.platform, 'macos')
         run: |
           sudo xcode-select -s /Applications/Xcode_26.3.app || sudo xcode-select -s /Applications/Xcode_26.2.app
           xcodebuild -version
 
       - name: Setup NDK
-        if: startsWith(matrix.platform,'android')
+        if: startsWith(matrix.platform, 'android')
         uses: nttld/setup-ndk@v1
         with:
           ndk-version: r28c
@@ -143,6 +155,7 @@ jobs:
           overwrite: true
 
   upload:
+    if: github.event_name == 'push'
     permissions:
       contents: write
     needs: [ build ]

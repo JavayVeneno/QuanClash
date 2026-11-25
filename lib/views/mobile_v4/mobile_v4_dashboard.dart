@@ -3,7 +3,9 @@ import 'dart:ui' as ui;
 
 import 'package:quanclash/common/common.dart';
 import 'package:quanclash/core/core.dart';
+import 'package:quanclash/enum/enum.dart';
 import 'package:quanclash/models/common.dart' as common_models;
+import 'package:quanclash/models/models.dart' show ProfileExtension;
 import 'package:quanclash/providers/providers.dart';
 import 'package:quanclash/views/mobile_v4/network_globe.dart';
 import 'package:quanclash/views/mobile_v4/radial_fab.dart';
@@ -48,10 +50,7 @@ class _MobileV4DashboardState extends ConsumerState<MobileV4Dashboard> {
     });
   }
 
-  void _cycleMode() {
-    final current = ref.read(patchClashConfigProvider.select((s) => s.mode));
-    final next = mobileV4Modes[
-        (mobileV4Modes.indexOf(current) + 1) % mobileV4Modes.length];
+  void _setMode(Mode next) {
     ref
         .read(patchClashConfigProvider.notifier)
         .update((state) => state.copyWith(mode: next));
@@ -98,6 +97,9 @@ class _MobileV4DashboardState extends ConsumerState<MobileV4Dashboard> {
     final p = MobileV4Palette.of(context);
     final isStart = ref.watch(isStartProvider);
     final mode = ref.watch(patchClashConfigProvider.select((s) => s.mode));
+    final activeProfileLabel = ref.watch(
+      currentProfileProvider.select((state) => state?.realLabel),
+    );
     final preferredGroup = ref.watch(
       currentProfileProvider.select((state) => state?.currentGroupName),
     );
@@ -168,7 +170,7 @@ class _MobileV4DashboardState extends ConsumerState<MobileV4Dashboard> {
                   Expanded(
                     child: MobileV4Globe(
                       connected: isStart,
-                      onTap: _cycleMode,
+                      activeNodeName: activeNode,
                       onConnectChanged: (on) =>
                           unawaited(_setConnected(on, activeNode)),
                     ),
@@ -195,7 +197,11 @@ class _MobileV4DashboardState extends ConsumerState<MobileV4Dashboard> {
             ),
             Positioned.fill(
               child: MobileV4RadialFab(
+                mode: mode,
+                onModeChanged: _setMode,
                 onOpen: (type) => showMobileV4Sheet(context, type),
+                activeNodeLabel: activeNode.isNotEmpty ? activeNode : null,
+                activeProfileLabel: activeProfileLabel,
                 onMenuOpenChanged: (open) {
                   if (_menuOpen != open) {
                     setState(() => _menuOpen = open);

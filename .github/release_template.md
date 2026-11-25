@@ -1,6 +1,6 @@
 <div align=center>
 
-[![Release Downloads](https://img.shields.io/github/downloads/JavayVeneno/QuanClash/vVERSION/total?style=flat-square&logo=github)](https://img.shields.io/github/downloads/JavayVeneno/QuanClash/vVERSION/)
+[![Release Downloads](https://img.shields.io/github/downloads/JavayVeneno/QuanClash/vVERSION/total?style=flat-square&logo=github)](https://github.com/JavayVeneno/QuanClash/releases/tag/vVERSION)
 
 </div>
 
@@ -22,14 +22,22 @@
                 <a href="https://github.com/JavayVeneno/QuanClash/releases/download/vVERSION/QuanClash-VERSION-windows-amd64.zip"><img src="https://img.shields.io/badge/Portable-x64-67b7d1.svg?logo=windows"></a>
             </td>
         </tr>
+        <tr>
+            <td>Android</td>
+            <td>
+                <a href="https://github.com/JavayVeneno/QuanClash/releases/download/vVERSION/QuanClash-VERSION-android-arm64-v8a.apk"><img src="https://img.shields.io/badge/APK-arm64--v8a-3DDC84.svg?logo=android&logoColor=white"></a><br>
+                <a href="https://github.com/JavayVeneno/QuanClash/releases/download/vVERSION/QuanClash-VERSION-android-armeabi-v7a.apk"><img src="https://img.shields.io/badge/APK-armeabi--v7a-3DDC84.svg?logo=android&logoColor=white"></a><br>
+                <a href="https://github.com/JavayVeneno/QuanClash/releases/download/vVERSION/QuanClash-VERSION-android-x86_64.apk"><img src="https://img.shields.io/badge/APK-x86__64-3DDC84.svg?logo=android&logoColor=white"></a>
+            </td>
+        </tr>
     </tbody>
 </table>
 
 
 </div>
 
-macOS, Linux and Android builds are not published yet; the code still builds
-for those targets, but they are untested.
+macOS and Linux builds are not published yet; the codebase remains buildable for
+those targets, but they are untested.
 
 <div dir="ltr">
 

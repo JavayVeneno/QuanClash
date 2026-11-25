@@ -205,15 +205,14 @@ class WindowHeaderContainer extends StatelessWidget {
   }
 }
 
-class WindowHeader extends StatefulWidget {
+class WindowHeader extends ConsumerStatefulWidget {
   const WindowHeader({super.key});
 
   @override
-  State<WindowHeader> createState() => _WindowHeaderState();
+  ConsumerState<WindowHeader> createState() => _WindowHeaderState();
 }
 
-class _WindowHeaderState extends State<WindowHeader> {
-  final isMaximizedNotifier = ValueNotifier<bool>(false);
+class _WindowHeaderState extends ConsumerState<WindowHeader> {
   final isPinNotifier = ValueNotifier<bool>(false);
 
   @override
@@ -223,13 +222,21 @@ class _WindowHeaderState extends State<WindowHeader> {
   }
 
   Future<void> _initNotifier() async {
-    isMaximizedNotifier.value = await windowManager.isMaximized();
-    isPinNotifier.value = await windowManager.isAlwaysOnTop();
+    try {
+      final maximized = await windowManager.isMaximized();
+      final pinned = await windowManager.isAlwaysOnTop();
+      if (!mounted) {
+        return;
+      }
+      ref.read(isMaximizedProvider.notifier).value = maximized;
+      isPinNotifier.value = pinned;
+    } catch (_) {
+      // Ignore platform channel errors in headless widget tests.
+    }
   }
 
   @override
   void dispose() {
-    isMaximizedNotifier.dispose();
     isPinNotifier.dispose();
     super.dispose();
   }
@@ -248,57 +255,70 @@ class _WindowHeaderState extends State<WindowHeader> {
       }
     }
     final res = await windowManager.isMaximized();
-    globalState.container.read(isMaximizedProvider.notifier).value = res;
     if (mounted) {
-      isMaximizedNotifier.value = res;
+      ref.read(isMaximizedProvider.notifier).value = res;
     }
   }
 
   Future<void> _updatePin() async {
     final isAlwaysOnTop = await windowManager.isAlwaysOnTop();
     await windowManager.setAlwaysOnTop(!isAlwaysOnTop);
-    isPinNotifier.value = await windowManager.isAlwaysOnTop();
+    if (mounted) {
+      isPinNotifier.value = await windowManager.isAlwaysOnTop();
+    }
   }
 
-  Widget _buildActions() {
+  Widget _buildActions(bool isMaximized) {
+    final isDark = context.isQuanXDark;
     final primary = context.colorScheme.primary;
+    final separatorColor = isDark
+        ? Colors.white.withValues(alpha: 0.09)
+        : const Color(0x160F172A);
+
     return Row(
       children: [
-        // 置顶是应用自己的动作,与系统窗口按钮分开:小一号、圆角悬停,
-        // 置顶时用主题色点亮,避免像之前那样两种状态看起来完全一样。
+        // 置顶是应用内动作，与原生窗口按钮以极细竖线分隔。
         Padding(
           padding: const EdgeInsets.only(right: 6),
-          child: ValueListenableBuilder(
+          child: ValueListenableBuilder<bool>(
             valueListenable: isPinNotifier,
-            builder: (context, value, _) {
+            builder: (context, pinned, _) {
               return _TitleBarButton(
                 onPressed: _updatePin,
                 width: 30,
-                height: 28,
-                iconSize: 14,
+                height: 26,
+                iconSize: 13.5,
                 borderRadius: BorderRadius.circular(6),
                 cursor: SystemMouseCursors.click,
-                color: value ? primary : context.quanX.textSecondary,
-                hoverColor: primary.withValues(alpha: 0.10),
-                highlightColor: primary.withValues(alpha: 0.16),
+                color: pinned ? primary : context.quanX.textSecondary,
+                backgroundColor: pinned
+                    ? primary.withValues(alpha: isDark ? 0.18 : 0.10)
+                    : Colors.transparent,
+                hoverColor: primary.withValues(alpha: isDark ? 0.16 : 0.09),
+                highlightColor: primary.withValues(alpha: isDark ? 0.22 : 0.15),
                 icon: const Icon(QuanXIcons.pin),
               );
             },
           ),
         ),
+        Container(
+          width: 1,
+          height: 14,
+          margin: const EdgeInsets.only(right: 2),
+          color: separatorColor,
+        ),
         _TitleBarButton(
           onPressed: () {
             windowManager.minimize();
           },
-          icon: const Icon(QuanXIcons.minus),
+          icon: const _WindowsCaptionGlyph(WindowsCaptionGlyphType.minimize),
         ),
         _TitleBarButton(
           onPressed: _updateMaximized,
-          icon: ValueListenableBuilder(
-            valueListenable: isMaximizedNotifier,
-            builder: (_, value, _) {
-              return Icon(value ? QuanXIcons.squareStack : QuanXIcons.square);
-            },
+          icon: _WindowsCaptionGlyph(
+            isMaximized
+                ? WindowsCaptionGlyphType.restore
+                : WindowsCaptionGlyphType.maximize,
           ),
         ),
         _TitleBarButton(
@@ -310,7 +330,7 @@ class _WindowHeaderState extends State<WindowHeader> {
           hoverForeground: Colors.white,
           hoverColor: _captionCloseHover,
           highlightColor: _captionClosePressed,
-          icon: const Icon(QuanXIcons.x),
+          icon: const _WindowsCaptionGlyph(WindowsCaptionGlyphType.close),
         ),
       ],
     );
@@ -318,20 +338,28 @@ class _WindowHeaderState extends State<WindowHeader> {
 
   @override
   Widget build(BuildContext context) {
-    final glass = context.glass;
-    // 子树高度必须严格等于 kHeaderHeight。
-    //
-    // 之前是 Material > Align > Container(height: kHeaderHeight) 的结构:Align 在
-    // Stack 的松散约束下会撑满整个窗口,导致里层的 Material(PhysicalModel)一并
-    // 覆盖全屏,吞掉标题栏以外的所有点击 —— 表现为「鼠标点不动,只有 Tab 能用」。
+    final isDark = context.isQuanXDark;
+    final isMaximized = ref.watch(isMaximizedProvider);
+    final bgTop = isDark ? const Color(0xFF171920) : const Color(0xFFFCFCFE);
+    final bgBottom = isDark ? const Color(0xFF13151B) : const Color(0xFFF6F7FA);
+    final bottomLine = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : const Color(0x120F172A);
+
+    // 子树高度必须严格等于 kHeaderHeight，避免吞掉下方点击。
     return SizedBox(
       height: kHeaderHeight,
       width: double.infinity,
       child: Material(
-        color: glass.tintStrong,
+        color: Colors.transparent,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: glass.divider)),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [bgTop, bgBottom],
+            ),
+            border: Border(bottom: BorderSide(color: bottomLine, width: 1)),
           ),
           child: Row(
             children: [
@@ -352,7 +380,7 @@ class _WindowHeaderState extends State<WindowHeader> {
                         ),
                 ),
               ),
-              if (!system.isMacOS) _buildActions(),
+              if (!system.isMacOS) _buildActions(isMaximized),
             ],
           ),
         ),
@@ -361,11 +389,92 @@ class _WindowHeaderState extends State<WindowHeader> {
   }
 }
 
-/// 标题栏按钮:按 Windows 11 原生标题栏的比例绘制。
-///
-/// 每个按钮占满标题栏高度、宽度固定,平时没有底色,悬停时出现浅色填充;
-/// 关闭按钮悬停变红、图标转白。之前用的是默认 [IconButton],命中区只有
-/// 图标大小,四个按钮挤在 34px 高的标题栏里,既不像系统窗口控件,也显得零碎。
+/// Native Windows 11 Segoe Fluent caption glyph types.
+enum WindowsCaptionGlyphType { minimize, maximize, restore, close }
+
+/// Crisp 10×10 geometric hairline caption glyph matching native Windows 11
+/// title bar controls (`─`, `□`, `❐`, `×`) with pixel-aligned 1px strokes.
+class _WindowsCaptionGlyph extends StatelessWidget {
+  const _WindowsCaptionGlyph(this.type);
+
+  final WindowsCaptionGlyphType type;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = IconTheme.of(context).color ?? const Color(0xFF1C1C22);
+    return CustomPaint(
+      size: const Size(10, 10),
+      painter: _WindowsCaptionGlyphPainter(type: type, color: color),
+    );
+  }
+}
+
+class _WindowsCaptionGlyphPainter extends CustomPainter {
+  const _WindowsCaptionGlyphPainter({
+    required this.type,
+    required this.color,
+  });
+
+  final WindowsCaptionGlyphType type;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.05
+      ..strokeCap = StrokeCap.butt
+      ..strokeJoin = StrokeJoin.miter;
+
+    switch (type) {
+      case WindowsCaptionGlyphType.minimize:
+        canvas.drawLine(
+          Offset(0, size.height / 2),
+          Offset(size.width, size.height / 2),
+          paint,
+        );
+      case WindowsCaptionGlyphType.maximize:
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            const Rect.fromLTWH(0.5, 0.5, 9, 9),
+            const Radius.circular(0.8),
+          ),
+          paint,
+        );
+      case WindowsCaptionGlyphType.restore:
+        // Front square (bottom-left 7.2×7.2) + crisp rear top-right L-frame,
+        // matching the exact Windows 11 Fluent restore icon with no interior
+        // crossing lines.
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            const Rect.fromLTWH(0.5, 2.3, 7.2, 7.2),
+            const Radius.circular(0.6),
+          ),
+          paint,
+        );
+        final back = Path()
+          ..moveTo(2.3, 2.3)
+          ..lineTo(2.3, 1.2)
+          ..quadraticBezierTo(2.3, 0.5, 3.0, 0.5)
+          ..lineTo(8.8, 0.5)
+          ..quadraticBezierTo(9.5, 0.5, 9.5, 1.2)
+          ..lineTo(9.5, 7.0)
+          ..quadraticBezierTo(9.5, 7.7, 8.8, 7.7)
+          ..lineTo(7.7, 7.7);
+        canvas.drawPath(back, paint);
+      case WindowsCaptionGlyphType.close:
+        canvas.drawLine(const Offset(0.5, 0.5), const Offset(9.5, 9.5), paint);
+        canvas.drawLine(const Offset(9.5, 0.5), const Offset(0.5, 9.5), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _WindowsCaptionGlyphPainter oldDelegate) =>
+      oldDelegate.type != type || oldDelegate.color != color;
+}
+
+/// 标题栏按钮:按 Windows 11 原生 Fluent 标题栏比例与微交互绘制。
 class _TitleBarButton extends StatefulWidget {
   const _TitleBarButton({
     required this.icon,
@@ -374,6 +483,7 @@ class _TitleBarButton extends StatefulWidget {
     this.height,
     this.iconSize = 13,
     this.color,
+    this.backgroundColor = Colors.transparent,
     this.hoverForeground,
     this.hoverColor,
     this.highlightColor,
@@ -383,15 +493,11 @@ class _TitleBarButton extends StatefulWidget {
 
   final Widget icon;
   final VoidCallback onPressed;
-
-  /// 按钮宽度;系统窗口按钮为 46,与应用内动作按钮区分。
   final double width;
-
-  /// 按钮高度;为 null 时占满标题栏高度。
   final double? height;
-
   final double iconSize;
   final Color? color;
+  final Color backgroundColor;
   final Color? hoverForeground;
   final Color? hoverColor;
   final Color? highlightColor;
@@ -404,45 +510,60 @@ class _TitleBarButton extends StatefulWidget {
 
 class _TitleBarButtonState extends State<_TitleBarButton> {
   bool _hovered = false;
+  bool _pressed = false;
   bool _focused = false;
 
   @override
   Widget build(BuildContext context) {
     final isDark = context.isQuanXDark;
-    final quanX = context.quanX;
-    final defaultColor = widget.color ?? quanX.textPrimary;
+    final defaultColor =
+        widget.color ??
+        (isDark ? const Color(0xFFE6E8EE) : const Color(0xFF1F2329));
     final hoverColor =
         widget.hoverColor ??
         (isDark
             ? Colors.white.withValues(alpha: 0.08)
-            : Colors.black.withValues(alpha: 0.05));
+            : const Color(0x0B0F172A));
     final highlightColor =
         widget.highlightColor ??
         (isDark
             ? Colors.white.withValues(alpha: 0.14)
-            : Colors.black.withValues(alpha: 0.09));
-    final foreground = _hovered || _focused
+            : const Color(0x140F172A));
+    final activeBg = _pressed
+        ? highlightColor
+        : (_hovered || _focused ? hoverColor : widget.backgroundColor);
+    final foreground = _hovered || _pressed || _focused
         ? widget.hoverForeground ?? defaultColor
         : defaultColor;
 
     return MouseRegion(
+      cursor: widget.cursor,
       onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: InkWell(
+      onExit: (_) => setState(() {
+        _hovered = false;
+        _pressed = false;
+      }),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (_) => setState(() => _pressed = true),
+        onTapUp: (_) => setState(() => _pressed = false),
+        onTapCancel: () => setState(() => _pressed = false),
         onTap: widget.onPressed,
-        onFocusChange: (value) => setState(() => _focused = value),
-        mouseCursor: widget.cursor,
-        hoverColor: hoverColor,
-        highlightColor: highlightColor,
-        focusColor: hoverColor,
-        splashFactory: NoSplash.splashFactory,
-        customBorder: RoundedRectangleBorder(borderRadius: widget.borderRadius),
-        child: SizedBox(
-          width: widget.width,
-          height: widget.height ?? double.infinity,
-          child: IconTheme(
-            data: IconThemeData(color: foreground, size: widget.iconSize),
-            child: Center(child: widget.icon),
+        child: Focus(
+          onFocusChange: (value) => setState(() => _focused = value),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 110),
+            curve: Curves.easeOut,
+            width: widget.width,
+            height: widget.height ?? double.infinity,
+            decoration: BoxDecoration(
+              color: activeBg,
+              borderRadius: widget.borderRadius,
+            ),
+            child: IconTheme(
+              data: IconThemeData(color: foreground, size: widget.iconSize),
+              child: Center(child: widget.icon),
+            ),
           ),
         ),
       ),
@@ -453,23 +574,15 @@ class _TitleBarButtonState extends State<_TitleBarButton> {
 class AppIcon extends StatelessWidget {
   final double size;
 
-  const AppIcon({super.key, this.size = 16});
+  const AppIcon({super.key, this.size = 18});
 
   @override
   Widget build(BuildContext context) {
-    final scale = size / 34;
-    return Container(
-      decoration: ShapeDecoration(
-        color: context.colorScheme.surfaceContainerHighest,
-        shape: RoundedSuperellipseBorder(
-          borderRadius: BorderRadius.circular(14 * scale),
-        ),
-      ),
-      padding: EdgeInsets.all(8 * scale),
-      child: Transform.translate(
-        offset: Offset(0, -1 * scale),
-        child: Image.asset('assets/images/icon.png', width: size, height: size),
-      ),
+    return Image.asset(
+      'assets/images/icon.png',
+      width: size,
+      height: size,
+      filterQuality: FilterQuality.medium,
     );
   }
 }
@@ -479,17 +592,19 @@ class _WindowHeaderBrand extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = context.isQuanXDark;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const AppIcon(),
-        const SizedBox(width: 7),
+        const AppIcon(size: 17),
+        const SizedBox(width: 8),
         Text(
           appName,
           style: context.textTheme.bodySmall?.copyWith(
             fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: context.quanX.textPrimary,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.1,
+            color: isDark ? const Color(0xFFDDE0E8) : const Color(0xFF2B2F38),
           ),
         ),
       ],

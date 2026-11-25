@@ -13,6 +13,17 @@ class MobileV4GeoCity {
   final double lat;
   final double lon;
   final bool active;
+
+  @override
+  bool operator ==(Object other) =>
+      other is MobileV4GeoCity &&
+      other.name == name &&
+      other.lat == lat &&
+      other.lon == lon &&
+      other.active == active;
+
+  @override
+  int get hashCode => Object.hash(name, lat, lon, active);
 }
 
 /// Pseudo-3D dot-matrix globe supporting both Dark and Light v4 palettes.
@@ -20,14 +31,23 @@ class MobileV4GeoCity {
 /// Renders Natural Earth 110m country outlines (285 rings / 6008 points),
 /// land-only Fibonacci dots (2303 points) batched into six depth buckets,
 /// a 30-degree graticule, great-circle network arcs with animated packets,
-/// city pins with a breathing active beacon, and an atmospheric purple rim.
+/// city pins with a dynamic breathing active beacon, and an atmospheric rim.
 class MobileV4GlobePainter extends CustomPainter {
   const MobileV4GlobePainter({
     required this.rotation,
     required this.pulse,
     required this.connected,
     this.isDark = true,
+    this.activeCity = defaultActiveCity,
+    this.baseYaw,
   });
+
+  static const defaultActiveCity = MobileV4GeoCity(
+    'Tokyo',
+    35.68,
+    139.69,
+    active: true,
+  );
 
   /// Yaw in radians. Animate 0 -> 2*pi over ~80s for a slow spin.
   final double rotation;
@@ -41,10 +61,17 @@ class MobileV4GlobePainter extends CustomPainter {
   /// Selects the dark space-glass or light porcelain-glass globe rendering.
   final bool isDark;
 
+  /// Current active proxy node city rendered with the golden breathing beacon.
+  final MobileV4GeoCity activeCity;
+
+  /// Optional yaw offset replacing the default Tokyo front-center yaw so the
+  /// globe can smoothly rotate toward [activeCity].
+  final double? baseYaw;
+
   static const double _tilt = 0.31;
 
-  static const List<MobileV4GeoCity> _cities = [
-    MobileV4GeoCity('Tokyo', 35.68, 139.69, active: true),
+  static const List<MobileV4GeoCity> _hubCities = [
+    MobileV4GeoCity('Tokyo', 35.68, 139.69),
     MobileV4GeoCity('Singapore', 1.35, 103.82),
     MobileV4GeoCity('Frankfurt', 50.11, 8.68),
     MobileV4GeoCity('New York', 40.71, -74.01),
@@ -53,10 +80,7 @@ class MobileV4GlobePainter extends CustomPainter {
     MobileV4GeoCity('Sao Paulo', -23.55, -46.63),
   ];
 
-  static const List<List<int>> _links = [
-    [0, 1],
-    [0, 2],
-    [0, 3],
+  static const List<List<int>> _backgroundLinks = [
     [2, 4],
     [1, 5],
     [3, 6],
@@ -73,16 +97,19 @@ class MobileV4GlobePainter extends CustomPainter {
   /// Country outlines, 285 rings / 6008 points.
   static final List<List<_V3>> _worldRings = _decodeRings(worldRingsEncoded);
 
-  /// Precomputed unit vectors for cities to avoid repeated trig per frame.
-  static final List<_V3> _cityVectors = [
-    for (final city in _cities) _llToVec(city.lat, city.lon),
+  /// Precomputed unit vectors for peer hub cities to avoid trig per frame.
+  static final List<_V3> _hubVectors = [
+    for (final city in _hubCities) _llToVec(city.lat, city.lon),
   ];
 
+  /// Yaw that puts a geographic coordinate dead-center on the front hemisphere.
+  static double yawForLatLon(double lat, double lon) {
+    final v = _llToVec(lat, lon);
+    return math.atan2(-v.x, v.z);
+  }
+
   /// Yaw that puts Tokyo at the front of the sphere.
-  static final double _tokyoYaw = () {
-    final t = _cityVectors.first;
-    return math.atan2(-t.x, t.z);
-  }();
+  static final double _tokyoYaw = yawForLatLon(35.68, 139.69);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -92,7 +119,8 @@ class MobileV4GlobePainter extends CustomPainter {
       return;
     }
 
-    final yaw = rotation + _tokyoYaw;
+    final yaw = rotation + (baseYaw ?? _tokyoYaw);
+    final activeVec = _llToVec(activeCity.lat, activeCity.lon);
 
     // Subtle drop shadow beneath the porcelain sphere in light mode.
     if (!isDark) {
@@ -151,8 +179,8 @@ class MobileV4GlobePainter extends CustomPainter {
     }
 
     _drawBorders(canvas, center, radius, yaw);
-    _drawArcs(canvas, center, radius, yaw);
-    _drawCities(canvas, center, radius, yaw);
+    _drawArcs(canvas, center, radius, yaw, activeVec);
+    _drawCities(canvas, center, radius, yaw, activeVec);
     _drawLimb(canvas, center, radius);
   }
 
@@ -229,7 +257,7 @@ class MobileV4GlobePainter extends CustomPainter {
     );
   }
 
-  void _drawArcs(Canvas canvas, Offset c, double r, double yaw) {
+  void _drawArcs(Canvas canvas, Offset c, double r, double yaw, _V3 activeVec) {
     canvas.save();
     canvas.clipPath(
       Path()..addOval(Rect.fromCircle(center: c, radius: r * .995)),
@@ -242,9 +270,20 @@ class MobileV4GlobePainter extends CustomPainter {
           ? _rgba(198, 184, 255, .19)
           : _rgba(108, 92, 231, .28);
 
-    for (var li = 0; li < _links.length; li++) {
-      final a = _cityVectors[_links[li][0]];
-      final b = _cityVectors[_links[li][1]];
+    // Connect the active city to up to 3 peer hubs, plus background links.
+    final pairs = <(_V3, _V3)>[];
+    for (var i = 0; i < _hubVectors.length && pairs.length < 3; i++) {
+      final hub = _hubVectors[i];
+      if (_dot(activeVec, hub) < 0.996) {
+        pairs.add((activeVec, hub));
+      }
+    }
+    for (final link in _backgroundLinks) {
+      pairs.add((_hubVectors[link[0]], _hubVectors[link[1]]));
+    }
+
+    for (var li = 0; li < pairs.length; li++) {
+      final (a, b) = pairs[li];
 
       final path = Path();
       var started = false;
@@ -266,7 +305,7 @@ class MobileV4GlobePainter extends CustomPainter {
       }
       canvas.drawPath(path, arcPaint);
 
-      // A packet travelling along every other route.
+      // A packet travelling along every other route (including primary active routes).
       if (li.isEven) {
         final t = (pulse * 1.7 + li * .21) % 1;
         final v = _slerp(a, b, t);
@@ -287,50 +326,61 @@ class MobileV4GlobePainter extends CustomPainter {
     canvas.restore();
   }
 
-  void _drawCities(Canvas canvas, Offset c, double r, double yaw) {
-    for (var i = 0; i < _cities.length; i++) {
-      final city = _cities[i];
-      final p = _project(_cityVectors[i], yaw, c, r);
+  void _drawCities(
+    Canvas canvas,
+    Offset c,
+    double r,
+    double yaw,
+    _V3 activeVec,
+  ) {
+    // Peer hub dots (skipping any hub overlapping the active city).
+    for (var i = 0; i < _hubVectors.length; i++) {
+      final hubVec = _hubVectors[i];
+      if (_dot(activeVec, hubVec) > 0.996) {
+        continue;
+      }
+      final p = _project(hubVec, yaw, c, r);
       if (p.z <= .02) {
         continue;
       }
-      final pos = Offset(p.x, p.y);
+      canvas.drawCircle(
+        Offset(p.x, p.y),
+        1.8,
+        Paint()
+          ..color = isDark
+              ? _rgba(226, 230, 240, (.25 + p.z * .75) * .6)
+              : _rgba(74, 66, 112, (.25 + p.z * .75) * .55),
+      );
+    }
 
-      if (city.active) {
-        final strength = connected ? 1.0 : .48;
-        final (int nr, int ng, int nb) = isDark
-            ? (242, 193, 78)
-            : (229, 160, 29);
-        canvas.drawCircle(
-          pos,
-          4 + pulse * 15,
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 1.1
-            ..color = _rgba(nr, ng, nb, .55 * (1 - pulse) * strength),
-        );
-        canvas.drawCircle(
-          pos,
-          4,
-          Paint()
-            ..color = _rgba(nr, ng, nb, .5 * strength)
-            ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
-        );
-        canvas.drawCircle(
-          pos,
-          isDark ? 3.0 : 3.2,
-          Paint()..color = _rgba(nr, ng, nb, strength),
-        );
-      } else {
-        canvas.drawCircle(
-          pos,
-          1.8,
-          Paint()
-            ..color = isDark
-                ? _rgba(226, 230, 240, (.25 + p.z * .75) * .6)
-                : _rgba(74, 66, 112, (.25 + p.z * .75) * .55),
-        );
-      }
+    // Active city golden breathing beacon.
+    final activeProj = _project(activeVec, yaw, c, r);
+    if (activeProj.z > .02) {
+      final pos = Offset(activeProj.x, activeProj.y);
+      final strength = connected ? 1.0 : .48;
+      final (int nr, int ng, int nb) = isDark
+          ? (242, 193, 78)
+          : (229, 160, 29);
+      canvas.drawCircle(
+        pos,
+        4 + pulse * 15,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.1
+          ..color = _rgba(nr, ng, nb, .55 * (1 - pulse) * strength),
+      );
+      canvas.drawCircle(
+        pos,
+        4,
+        Paint()
+          ..color = _rgba(nr, ng, nb, .5 * strength)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
+      );
+      canvas.drawCircle(
+        pos,
+        isDark ? 3.0 : 3.2,
+        Paint()..color = _rgba(nr, ng, nb, strength),
+      );
     }
   }
 
@@ -363,7 +413,9 @@ class MobileV4GlobePainter extends CustomPainter {
       oldDelegate.rotation != rotation ||
       oldDelegate.pulse != pulse ||
       oldDelegate.connected != connected ||
-      oldDelegate.isDark != isDark;
+      oldDelegate.isDark != isDark ||
+      oldDelegate.activeCity != activeCity ||
+      oldDelegate.baseYaw != baseYaw;
 
   static List<_V3> _decodeDots(String s) =>
       s.split(';').map(_decodePoint).toList();
@@ -388,6 +440,8 @@ class MobileV4GlobePainter extends CustomPainter {
     );
   }
 
+  static double _dot(_V3 a, _V3 b) => a.x * b.x + a.y * b.y + a.z * b.z;
+
   static _Proj _project(_V3 v, double yaw, Offset c, double r) {
     final cy = math.cos(yaw);
     final sy = math.sin(yaw);
@@ -402,7 +456,7 @@ class MobileV4GlobePainter extends CustomPainter {
   }
 
   static _V3 _slerp(_V3 a, _V3 b, double t) {
-    final dot = (a.x * b.x + a.y * b.y + a.z * b.z).clamp(-1.0, 1.0);
+    final dot = _dot(a, b).clamp(-1.0, 1.0);
     final th = math.acos(dot);
     if (th < 1e-4) {
       return a;

@@ -775,7 +775,7 @@ class _EditProxyGroupViewState extends ConsumerState<_EditProxyGroupView> {
     return _buildItem(
       title: Text(appLocalizations.hideFromList),
       onPressed: handleChangeHidden,
-      trailing: Switch(
+      trailing: CommonSwitch(
         value: hidden ?? false,
         onChanged: (_) {
           handleChangeHidden();
@@ -795,7 +795,7 @@ class _EditProxyGroupViewState extends ConsumerState<_EditProxyGroupView> {
     return _buildItem(
       title: Text(appLocalizations.testWhenUsed),
       onPressed: handleChangeLazy,
-      trailing: Switch(
+      trailing: CommonSwitch(
         value: lazy ?? false,
         onChanged: (_) {
           handleChangeLazy();
@@ -817,7 +817,7 @@ class _EditProxyGroupViewState extends ConsumerState<_EditProxyGroupView> {
     return _buildItem(
       title: Text(appLocalizations.disableUDP),
       onPressed: handleChangeDisableUDP,
-      trailing: Switch(
+      trailing: CommonSwitch(
         value: disableUDP ?? false,
         onChanged: (_) {
           handleChangeDisableUDP();

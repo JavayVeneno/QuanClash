@@ -4,6 +4,7 @@ import 'package:quanclash/common/common.dart';
 import 'package:quanclash/enum/enum.dart';
 import 'package:quanclash/providers/app.dart';
 import 'package:quanclash/state.dart';
+import 'package:quanclash/views/mobile_v4/liquid_switch.dart';
 import 'package:quanclash/widgets/inherited.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -474,7 +475,7 @@ class ListItem<T> extends StatelessWidget {
             switchDelegate.onChanged!(!switchDelegate.value);
           }
         },
-        trailing: Switch(
+        trailing: CommonSwitch(
           value: switchDelegate.value,
           onChanged: switchDelegate.onChanged,
         ),
@@ -496,6 +497,25 @@ class ListItem<T> extends StatelessWidget {
     }
 
     return _buildListTile(context, onTap: onTap);
+  }
+}
+
+class CommonSwitch extends StatelessWidget {
+  const CommonSwitch({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    if (system.isAndroid) {
+      return MobileV4LiquidSwitch(value: value, onChanged: onChanged);
+    }
+    return Switch(value: value, onChanged: onChanged);
   }
 }
 

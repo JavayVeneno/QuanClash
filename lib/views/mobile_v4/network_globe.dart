@@ -6,24 +6,27 @@ import 'package:flutter/services.dart';
 
 import 'globe_painter.dart';
 import 'theme.dart';
+import 'utils.dart';
 
 /// Interactive pseudo-3D dot-matrix globe used by the v4 single-surface
 /// dashboard.
 ///
-/// - tap        -> cycle proxy mode
 /// - drag up    -> connect
 /// - drag down  -> disconnect
+/// - node change -> smoothly rotates the active city beacon to the front
 class MobileV4Globe extends StatefulWidget {
   const MobileV4Globe({
     super.key,
     required this.connected,
-    required this.onTap,
     required this.onConnectChanged,
+    this.onTap,
+    this.activeNodeName = '',
   });
 
   final bool connected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final ValueChanged<bool> onConnectChanged;
+  final String activeNodeName;
 
   @override
   State<MobileV4Globe> createState() => _MobileV4GlobeState();
@@ -46,13 +49,76 @@ class _MobileV4GlobeState extends State<MobileV4Globe>
     duration: const Duration(seconds: 9),
   )..repeat();
 
+  late final AnimationController _focusController = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  );
+
+  late MobileV4GeoTarget _geoTarget;
+  late double _focusStartYaw;
+  late double _focusEndYaw;
   double _dragDy = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _geoTarget = mobileV4GeoForNode(widget.activeNodeName);
+    final initialYaw = MobileV4GlobePainter.yawForLatLon(
+      _geoTarget.lat,
+      _geoTarget.lon,
+    );
+    _focusStartYaw = initialYaw;
+    _focusEndYaw = initialYaw;
+    _focusController.value = 1.0;
+  }
+
+  @override
+  void didUpdateWidget(covariant MobileV4Globe oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.activeNodeName != widget.activeNodeName) {
+      final nextTarget = mobileV4GeoForNode(widget.activeNodeName);
+      if (nextTarget.lat != _geoTarget.lat || nextTarget.lon != _geoTarget.lon) {
+        final currentBase = _currentBaseYaw;
+        final spinAngle = _spin.value * math.pi * 2;
+        final desiredFrontYaw = MobileV4GlobePainter.yawForLatLon(
+          nextTarget.lat,
+          nextTarget.lon,
+        );
+        // Compute shortest angular delta so the globe never spins the long way.
+        final desiredBase = desiredFrontYaw - spinAngle;
+        final delta = _shortestAngleDelta(currentBase, desiredBase);
+        _geoTarget = nextTarget;
+        _focusStartYaw = currentBase;
+        _focusEndYaw = currentBase + delta;
+        _focusController
+          ..value = 0.0
+          ..forward();
+      }
+    }
+  }
+
+  double get _currentBaseYaw {
+    final t = Curves.easeOutCubic.transform(_focusController.value);
+    return _focusStartYaw + (_focusEndYaw - _focusStartYaw) * t;
+  }
+
+  static double _shortestAngleDelta(double from, double to) {
+    const twoPi = math.pi * 2;
+    var diff = (to - from) % twoPi;
+    if (diff > math.pi) {
+      diff -= twoPi;
+    } else if (diff < -math.pi) {
+      diff += twoPi;
+    }
+    return diff;
+  }
 
   @override
   void dispose() {
     _spin.dispose();
     _pulse.dispose();
     _aura.dispose();
+    _focusController.dispose();
     super.dispose();
   }
 
@@ -72,6 +138,13 @@ class _MobileV4GlobeState extends State<MobileV4Globe>
   Widget build(BuildContext context) {
     final p = MobileV4Palette.of(context);
     final dragging = _dragDy.abs() > 12;
+    final activeCity = MobileV4GeoCity(
+      _geoTarget.name,
+      _geoTarget.lat,
+      _geoTarget.lon,
+      active: true,
+    );
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: widget.onTap,
@@ -140,7 +213,7 @@ class _MobileV4GlobeState extends State<MobileV4Globe>
           ),
           Positioned.fill(
             child: AnimatedBuilder(
-              animation: Listenable.merge([_spin, _pulse]),
+              animation: Listenable.merge([_spin, _pulse, _focusController]),
               builder: (context, _) {
                 return AnimatedOpacity(
                   opacity: widget.connected ? 1 : (p.isDark ? .32 : .42),
@@ -155,6 +228,8 @@ class _MobileV4GlobeState extends State<MobileV4Globe>
                           pulse: _pulse.value,
                           connected: widget.connected,
                           isDark: p.isDark,
+                          activeCity: activeCity,
+                          baseYaw: _currentBaseYaw,
                         ),
                         child: const SizedBox.expand(),
                       ),

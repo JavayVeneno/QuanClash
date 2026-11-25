@@ -4,6 +4,28 @@ QuanClash is a modified version of [FlClash](https://github.com/chen08209/FlClas
 The upstream changelog up to v0.8.94 is preserved in the git history; this file
 records the changes made in this fork.
 
+## v0.0.4
+
+### Added
+
+- **Android Mobile v4 single-surface redesign:**
+  - Interactive 3D dot-matrix globe (Natural Earth 110m land dots & country borders) with swipe-up to connect / swipe-down to disconnect and smooth 900ms animated geo tracking that rotates the active proxy city to the front.
+  - Obsidian-Amethyst glass floating QuanClash hub icon with real cloud silhouette and dynamic mode-specific golden accent (crescent for Rule, 360° halo for Global, minimal spark point for Direct).
+  - iOS-26-inspired **Liquid Glass L-Dock** on long press: slide horizontally across the 4-slot floating capsule (`Proxy`, `Config`, `Monitor`, `Settings`) or slide vertically across the 3-mode rail (`Global`, `Rule`, `Direct`) with live icon preview and haptic feedback.
+  - Full Dark (`#000000` OLED), Light (Porcelain Glass), and Follow System theme support with dynamic Android navigation bar styling.
+  - Android-wide **Liquid Glass switches** featuring an oversized transparent glass lens bloom during press and horizontal drag.
+  - Desktop feature parity across modular frosted bottom sheets: Proxy search, sort (`Default / Delay / Name`), region grouping, one-tap expand/collapse all, batch delay test, inline node risk score & quality inspection, external providers; Config CRUD menu (`Update / Edit / Preview YAML / Overwrite / Delete`) & auto-update interval picker; dedicated Monitor telemetry sheet (`Connections`, `Requests`, `Logs`, `DNS Diagnostic`); Settings parity (`On-Demand / Wi-Fi Exclude`, `Advanced Config`, custom `riskApiUrl`, `Backup & Restore`, `Geo Resources`, `About & Update`).
+- **Android CI & Release Pipeline:** Enabled automated Android APK builds (`arm64-v8a`, `armeabi-v7a`, `x86_64`) in GitHub Actions alongside Windows builds, with conditional signing and Firebase config handling.
+
+### Changed
+
+- **Windows 11 Fluent title bar:** Refined title bar height (`38px`), silky vertical gradient surface, whisper-thin bottom hairline, pixel-aligned `10×10` native geometric minimize/maximize/restore/close glyphs, and live `isMaximizedProvider` state synchronization.
+
+### Fixed
+
+- Android: Opening `Config > Edit Profile` no longer freezes (properly wrapped in `BaseScaffold`).
+- Android: Replaced legacy upstream status-bar & Quick Settings tile notification icons (`ic_service.xml` / `ic.xml`) with the monochrome QuanClash cloud + crescent vector icon.
+
 ## v0.0.3
 
 ### Added
