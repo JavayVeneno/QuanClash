@@ -774,7 +774,7 @@
   "nodeQualityReasonBusy": "同時実行中の検査が多すぎます。しばらくしてから再試行してください",
   "nodeQualityReasonInactive": "コアが起動していません",
   "nodeQualityReasonUnavailable": "このノードではこの検査を実行できません",
-  "proxyChains": "プロキシチェーン",
+  "proxyChainTitle": "プロキシチェーン",
   "proxyChainNew": "新規チェーン",
   "proxyChainManage": "チェーン管理",
   "proxyChainEntry": "入口",

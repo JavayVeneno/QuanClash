@@ -311,7 +311,7 @@ class _MobileV4ChainsSheetState extends ConsumerState<MobileV4ChainsSheet> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              l10n.proxyChains,
+                              l10n.proxyChainTitle,
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,

@@ -900,6 +900,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyChainSetCurrent": MessageLookupByLibrary.simpleMessage("设为当前"),
     "proxyChainSingleNode": MessageLookupByLibrary.simpleMessage("单节点直挂"),
     "proxyChainStaticNodes": MessageLookupByLibrary.simpleMessage("固定节点"),
+    "proxyChainTitle": MessageLookupByLibrary.simpleMessage("链式代理"),
     "proxyChainTolerance": MessageLookupByLibrary.simpleMessage("容差 (ms)"),
     "proxyChainUnapplied": MessageLookupByLibrary.simpleMessage("未应用"),
     "proxyChainUnsavedDesc": MessageLookupByLibrary.simpleMessage(
@@ -913,7 +914,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyChainYamlPreview": MessageLookupByLibrary.simpleMessage(
       "生成的 YAML 片段",
     ),
-    "proxyChains": MessageLookupByLibrary.simpleMessage("链式代理"),
+    "proxyChains": MessageLookupByLibrary.simpleMessage("代理链"),
     "proxyDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "检测到选中的代理存在异常",
     ),

@@ -1008,6 +1008,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyChainSetCurrent": MessageLookupByLibrary.simpleMessage("現在に設定"),
     "proxyChainSingleNode": MessageLookupByLibrary.simpleMessage("単一ノード直結"),
     "proxyChainStaticNodes": MessageLookupByLibrary.simpleMessage("固定ノード"),
+    "proxyChainTitle": MessageLookupByLibrary.simpleMessage("プロキシチェーン"),
     "proxyChainTolerance": MessageLookupByLibrary.simpleMessage("許容差 (ms)"),
     "proxyChainUnapplied": MessageLookupByLibrary.simpleMessage("未適用"),
     "proxyChainUnsavedDesc": MessageLookupByLibrary.simpleMessage(

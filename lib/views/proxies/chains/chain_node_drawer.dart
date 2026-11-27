@@ -133,7 +133,7 @@ Future<void> showChainNodeDrawer(
                     ),
                   if (info.fullChainDelay != null && info.fullChainDelay! > 0)
                     _InfoRow(
-                      label: '${l10n.proxyChains} ${l10n.delay}',
+                      label: '${l10n.proxyChainTitle} ${l10n.delay}',
                       value: '${info.fullChainDelay} ms',
                       valueColor: quanX.accent,
                     ),

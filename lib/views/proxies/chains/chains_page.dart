@@ -897,7 +897,7 @@ class _ProxyChainsPageState extends ConsumerState<ProxyChainsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l10n.proxyChains,
+                        l10n.proxyChainTitle,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,

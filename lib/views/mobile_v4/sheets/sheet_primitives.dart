@@ -125,7 +125,7 @@ class MobileV4SheetHead extends ConsumerWidget {
             : ref.watch(profileProxyChainsProvider(profile.id));
         final enabled = profile?.chainsEnabled ?? true;
         return (
-          context.appLocalizations.proxyChains,
+          context.appLocalizations.proxyChainTitle,
           enabled
               ? '${chains.length} · ${profile?.realLabel ?? ''}'
               : context.appLocalizations.proxyChainDisabledTitle,

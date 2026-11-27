@@ -774,7 +774,7 @@
   "nodeQualityReasonBusy": "Too many checks are running, try again shortly",
   "nodeQualityReasonInactive": "The core is not running",
   "nodeQualityReasonUnavailable": "This node cannot run this check",
-  "proxyChains": "Proxy Chains",
+  "proxyChainTitle": "Proxy Chains",
   "proxyChainNew": "New Chain",
   "proxyChainManage": "Manage Chains",
   "proxyChainEntry": "Entry",

@@ -289,7 +289,7 @@ class PanelBody extends StatelessWidget {
                   Text(
                     state.isChain
                         ? [
-                            context.appLocalizations.proxyChains,
+                            context.appLocalizations.proxyChainTitle,
                             if (state.chainSummary != null) state.chainSummary!,
                           ].join(' · ')
                         : (state.groupName ??

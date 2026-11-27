@@ -2799,10 +2799,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Proxy Chains`
+  /// `Proxy chains`
   String get proxyChains {
     return Intl.message(
-      'Proxy Chains',
+      'Proxy chains',
       name: 'proxyChains',
       desc: '',
       args: [],
@@ -6549,6 +6549,16 @@ class AppLocalizations {
     return Intl.message(
       'This node cannot run this check',
       name: 'nodeQualityReasonUnavailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Proxy Chains`
+  String get proxyChainTitle {
+    return Intl.message(
+      'Proxy Chains',
+      name: 'proxyChainTitle',
       desc: '',
       args: [],
     );

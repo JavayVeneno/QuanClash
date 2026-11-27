@@ -774,7 +774,7 @@
   "nodeQualityReasonBusy": "Слишком много одновременных проверок, повторите позже",
   "nodeQualityReasonInactive": "Ядро не запущено",
   "nodeQualityReasonUnavailable": "Этот узел не поддерживает такую проверку",
-  "proxyChains": "Цепочки прокси",
+  "proxyChainTitle": "Цепочки прокси",
   "proxyChainNew": "Новая цепочка",
   "proxyChainManage": "Управление цепочками",
   "proxyChainEntry": "Вход",

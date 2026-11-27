@@ -182,7 +182,7 @@ class DashboardStats extends ConsumerWidget {
                 ? DashboardPalette.primary
                 : DashboardPalette.green,
             label: activeChain != null
-                ? appLocalizations.proxyChains
+                ? appLocalizations.proxyChainTitle
                 : appLocalizations.dashboardCurrentNode,
             value: displayProxyName.isEmpty ? '—' : displayProxyName,
             valueWidget: displayProxyName.isEmpty

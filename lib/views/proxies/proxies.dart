@@ -96,7 +96,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
       _buildViewModeAction(context),
       if (system.isDesktop)
         Tooltip(
-          message: appLocalizations.proxyChains,
+          message: appLocalizations.proxyChainTitle,
           child: IconButton(
             onPressed: () {
               Navigator.of(context).push(

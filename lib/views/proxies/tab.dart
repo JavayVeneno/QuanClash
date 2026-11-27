@@ -230,7 +230,7 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
                                 ),
                                 const SizedBox(width: 5),
                                 Text(
-                                  context.appLocalizations.proxyChains,
+                                  context.appLocalizations.proxyChainTitle,
                                   style: DefaultTextStyle.of(context).style,
                                 ),
                               ],

@@ -1212,6 +1212,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "proxyChainSingleNode": MessageLookupByLibrary.simpleMessage("Direct link"),
     "proxyChainStaticNodes": MessageLookupByLibrary.simpleMessage("Static"),
+    "proxyChainTitle": MessageLookupByLibrary.simpleMessage("Proxy Chains"),
     "proxyChainTolerance": MessageLookupByLibrary.simpleMessage(
       "Tolerance (ms)",
     ),
@@ -1227,7 +1228,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyChainYamlPreview": MessageLookupByLibrary.simpleMessage(
       "Generated YAML Preview",
     ),
-    "proxyChains": MessageLookupByLibrary.simpleMessage("Proxy Chains"),
+    "proxyChains": MessageLookupByLibrary.simpleMessage("Proxy chains"),
     "proxyDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "Detected selected proxies are abnormal",
     ),

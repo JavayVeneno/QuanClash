@@ -1275,6 +1275,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxyChainStaticNodes": MessageLookupByLibrary.simpleMessage(
       "Статические",
     ),
+    "proxyChainTitle": MessageLookupByLibrary.simpleMessage("Цепочки прокси"),
     "proxyChainTolerance": MessageLookupByLibrary.simpleMessage("Допуск (мс)"),
     "proxyChainUnapplied": MessageLookupByLibrary.simpleMessage("Не применено"),
     "proxyChainUnsavedDesc": MessageLookupByLibrary.simpleMessage(

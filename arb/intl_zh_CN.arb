@@ -774,7 +774,7 @@
   "nodeQualityReasonBusy": "同时进行的检测过多，请稍后重试",
   "nodeQualityReasonInactive": "核心未运行",
   "nodeQualityReasonUnavailable": "当前节点无法进行此类检测",
-  "proxyChains": "链式代理",
+  "proxyChainTitle": "链式代理",
   "proxyChainNew": "新建链",
   "proxyChainManage": "管理链路",
   "proxyChainEntry": "入口",
