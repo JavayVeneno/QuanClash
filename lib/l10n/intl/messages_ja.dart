@@ -96,13 +96,35 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m36(percent) => "使用済み ${percent}%";
 
-  static String m37(count) => "${count} 秒";
+  static String m37(name) => "「${name}」を適用しました";
 
-  static String m38(count) => "${count} 項目が選択されています";
+  static String m38(name) => "「${name}」を削除しますか？";
 
-  static String m39(label) => "${label}はURLである必要があります";
+  static String m39(name) => "「${name}」を入口と出口の両方に指定できません";
 
-  static String m40(count) => "${count}年前";
+  static String m40(name) => "「${name}」は組み込みポリシーのため使用できません";
+
+  static String m41(name, dialer) =>
+      "出口「${name}」には既に dialer-proxy「${dialer}」があります";
+
+  static String m42(name) => "ノード「${name}」が見つかりません";
+
+  static String m43(name) => "名前「${name}」は既存のノードまたはグループと重複しています";
+
+  static String m44(count) => "${count} 件のルールがこのチェーンを参照しています。";
+
+  static String m45(name) => "「${name}」に未適用の変更があります";
+
+  static String m46(exit, entry) =>
+      "出口「${exit}」は QUIC ですが、入口「${entry}」は UDP 非対応です";
+
+  static String m47(count) => "${count} 秒";
+
+  static String m48(count) => "${count} 項目が選択されています";
+
+  static String m49(label) => "${label}はURLである必要があります";
+
+  static String m50(count) => "${count}年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -891,6 +913,115 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxiesViewAll": MessageLookupByLibrary.simpleMessage("すべてのノード"),
     "proxiesViewMode": MessageLookupByLibrary.simpleMessage("表示"),
     "proxiesViewRegion": MessageLookupByLibrary.simpleMessage("地域別にグループ化"),
+    "proxyChainAddEntry": MessageLookupByLibrary.simpleMessage("+入口"),
+    "proxyChainAddExit": MessageLookupByLibrary.simpleMessage("+出口"),
+    "proxyChainAll": MessageLookupByLibrary.simpleMessage("すべて"),
+    "proxyChainApplied": m37,
+    "proxyChainApply": MessageLookupByLibrary.simpleMessage("適用"),
+    "proxyChainApplyAndLeave": MessageLookupByLibrary.simpleMessage("適用して移動"),
+    "proxyChainAvailableNodes": MessageLookupByLibrary.simpleMessage(
+      "利用可能なノード",
+    ),
+    "proxyChainDelete": MessageLookupByLibrary.simpleMessage("チェーンを削除"),
+    "proxyChainDeleteConfirm": m38,
+    "proxyChainDisabledDesc": MessageLookupByLibrary.simpleMessage(
+      "チェーン設定は保持されますが、チェーン組は生成されません。",
+    ),
+    "proxyChainDisabledTitle": MessageLookupByLibrary.simpleMessage(
+      "このプロファイルではプロキシチェーンが無効です",
+    ),
+    "proxyChainDiscard": MessageLookupByLibrary.simpleMessage("破棄"),
+    "proxyChainEmptyDesc": MessageLookupByLibrary.simpleMessage(
+      "入口から出口へ中継します。ルールから生成されたチェーン組を参照できます。",
+    ),
+    "proxyChainEmptyTitle": MessageLookupByLibrary.simpleMessage(
+      "プロキシチェーンはまだありません",
+    ),
+    "proxyChainEntry": MessageLookupByLibrary.simpleMessage("入口"),
+    "proxyChainEntryDropHint": MessageLookupByLibrary.simpleMessage(
+      "入口ノードをここにドラッグ",
+    ),
+    "proxyChainEntryDropSub": MessageLookupByLibrary.simpleMessage(
+      "複数ノードで自動フェイルオーバー",
+    ),
+    "proxyChainErrBothSides": m39,
+    "proxyChainErrBuiltin": m40,
+    "proxyChainErrCycle": MessageLookupByLibrary.simpleMessage("循環参照が検出されました"),
+    "proxyChainErrEmptyName": MessageLookupByLibrary.simpleMessage(
+      "チェーン名を入力してください",
+    ),
+    "proxyChainErrEntryEmpty": MessageLookupByLibrary.simpleMessage(
+      "入口が空です：1 つ以上追加してください",
+    ),
+    "proxyChainErrExitDialer": m41,
+    "proxyChainErrExitEmpty": MessageLookupByLibrary.simpleMessage(
+      "出口が空です：1 つ以上追加してください",
+    ),
+    "proxyChainErrInvalidExitType": MessageLookupByLibrary.simpleMessage(
+      "出口グループは fallback または select のみ対応です",
+    ),
+    "proxyChainErrMissingNode": m42,
+    "proxyChainErrNameConflict": m43,
+    "proxyChainErrProviderStrict": MessageLookupByLibrary.simpleMessage(
+      "厳格 DNS モードではプロバイダーノードを使用できません",
+    ),
+    "proxyChainExit": MessageLookupByLibrary.simpleMessage("出口"),
+    "proxyChainExitDropHint": MessageLookupByLibrary.simpleMessage(
+      "出口ノードをここにドラッグ",
+    ),
+    "proxyChainExitDropSub": MessageLookupByLibrary.simpleMessage(
+      "複数ノードは fallback で出口 IP を安定保持",
+    ),
+    "proxyChainFailureBlock": MessageLookupByLibrary.simpleMessage("ブロック（推奨）"),
+    "proxyChainFailureBlockDesc": MessageLookupByLibrary.simpleMessage(
+      "利用不可時は切断し、DIRECT へフォールバックしません。",
+    ),
+    "proxyChainFailureDirect": MessageLookupByLibrary.simpleMessage(
+      "出口へ直接フォールバック",
+    ),
+    "proxyChainFailureDirectAck": MessageLookupByLibrary.simpleMessage(
+      "実 IP が露出するリスクを理解しました",
+    ),
+    "proxyChainFailureDirectBadge": MessageLookupByLibrary.simpleMessage(
+      "直接フォールバック",
+    ),
+    "proxyChainFailureDirectDesc": MessageLookupByLibrary.simpleMessage(
+      "入口が全て失敗した場合に出口へ直接接続します。実 IP が露出します。",
+    ),
+    "proxyChainFailurePolicy": MessageLookupByLibrary.simpleMessage("失敗時の動作"),
+    "proxyChainInterval": MessageLookupByLibrary.simpleMessage("間隔 (s)"),
+    "proxyChainInvalid": MessageLookupByLibrary.simpleMessage("無効"),
+    "proxyChainLocate": MessageLookupByLibrary.simpleMessage("移動"),
+    "proxyChainManage": MessageLookupByLibrary.simpleMessage("チェーン管理"),
+    "proxyChainNew": MessageLookupByLibrary.simpleMessage("新規チェーン"),
+    "proxyChainOnlyUdp": MessageLookupByLibrary.simpleMessage("UDP のみ"),
+    "proxyChainProviderNodes": MessageLookupByLibrary.simpleMessage("プロバイダー"),
+    "proxyChainProviderStrictTip": MessageLookupByLibrary.simpleMessage(
+      "厳格 DNS モードではプロバイダーノードは未対応です。",
+    ),
+    "proxyChainReenable": MessageLookupByLibrary.simpleMessage("有効にする"),
+    "proxyChainRelationHint": MessageLookupByLibrary.simpleMessage(
+      "ルール指定のチェーンは常に有効です。ここでの選択は未一致の既定トラフィックのみに影響します。",
+    ),
+    "proxyChainRename": MessageLookupByLibrary.simpleMessage("チェーン名を変更"),
+    "proxyChainRuleRefWarning": m44,
+    "proxyChainSetCurrent": MessageLookupByLibrary.simpleMessage("現在に設定"),
+    "proxyChainSingleNode": MessageLookupByLibrary.simpleMessage("単一ノード直結"),
+    "proxyChainStaticNodes": MessageLookupByLibrary.simpleMessage("固定ノード"),
+    "proxyChainTitle": MessageLookupByLibrary.simpleMessage("プロキシチェーン"),
+    "proxyChainTolerance": MessageLookupByLibrary.simpleMessage("許容差 (ms)"),
+    "proxyChainUnapplied": MessageLookupByLibrary.simpleMessage("未適用"),
+    "proxyChainUnsavedDesc": MessageLookupByLibrary.simpleMessage(
+      "このまま移動すると下書きが失われます。",
+    ),
+    "proxyChainUnsavedTitle": m45,
+    "proxyChainUrlTestParams": MessageLookupByLibrary.simpleMessage(
+      "入口 url-test パラメータ",
+    ),
+    "proxyChainWarnUdpQuic": m46,
+    "proxyChainYamlPreview": MessageLookupByLibrary.simpleMessage(
+      "生成 YAML プレビュー",
+    ),
     "proxyChains": MessageLookupByLibrary.simpleMessage("プロキシチェーン"),
     "proxyDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "選択されたプロキシに異常があることを検出しました",
@@ -1101,7 +1232,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "search": MessageLookupByLibrary.simpleMessage("検索"),
     "seconds": MessageLookupByLibrary.simpleMessage("秒"),
-    "secondsCount": m37,
+    "secondsCount": m47,
     "sectionMain": MessageLookupByLibrary.simpleMessage("メイン"),
     "sectionMonitor": MessageLookupByLibrary.simpleMessage("監視"),
     "sectionSystem": MessageLookupByLibrary.simpleMessage("システム"),
@@ -1116,7 +1247,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "selectSubRule": MessageLookupByLibrary.simpleMessage("サブルールを選択してください"),
     "selected": MessageLookupByLibrary.simpleMessage("選択済み"),
-    "selectedCountTitle": m38,
+    "selectedCountTitle": m48,
     "serviceRunning": MessageLookupByLibrary.simpleMessage("サービス正常稼働中"),
     "settings": MessageLookupByLibrary.simpleMessage("設定"),
     "settingsAboutApp": MessageLookupByLibrary.simpleMessage("QuanClash について"),
@@ -1243,7 +1374,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadSpeed": MessageLookupByLibrary.simpleMessage("アップロード速度"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("URL経由でプロファイルを取得"),
-    "urlTip": m39,
+    "urlTip": m49,
     "useHosts": MessageLookupByLibrary.simpleMessage("ホストを使用"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("システムホストを使用"),
     "userAgent": MessageLookupByLibrary.simpleMessage("ユーザーエージェント"),
@@ -1260,7 +1391,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("変更はVPN再起動後に有効"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV設定"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("ホワイトリストモード"),
-    "yearsAgo": m40,
+    "yearsAgo": m50,
     "zh_CN": MessageLookupByLibrary.simpleMessage("簡体字中国語"),
   };
 }

@@ -16,6 +16,8 @@ class PanelState {
     this.groupName,
     this.proxyName,
     this.delay,
+    this.isChain = false,
+    this.chainSummary,
     this.systemProxy = false,
     this.tun = false,
     this.locale,
@@ -35,6 +37,8 @@ class PanelState {
   final String? groupName;
   final String? proxyName;
   final int? delay;
+  final bool isChain;
+  final String? chainSummary;
   final bool systemProxy;
   final bool tun;
 
@@ -59,6 +63,8 @@ class PanelState {
     String? groupName,
     String? proxyName,
     int? delay,
+    bool? isChain,
+    String? chainSummary,
     bool? systemProxy,
     bool? tun,
     String? locale,
@@ -78,6 +84,8 @@ class PanelState {
       groupName: groupName ?? this.groupName,
       proxyName: proxyName ?? this.proxyName,
       delay: delay ?? this.delay,
+      isChain: isChain ?? this.isChain,
+      chainSummary: chainSummary ?? this.chainSummary,
       systemProxy: systemProxy ?? this.systemProxy,
       tun: tun ?? this.tun,
       locale: locale ?? this.locale,
@@ -100,6 +108,8 @@ class PanelState {
       'groupName': groupName,
       'proxyName': proxyName,
       'delay': delay,
+      'isChain': isChain,
+      'chainSummary': chainSummary,
       'systemProxy': systemProxy,
       'tun': tun,
       'locale': locale,
@@ -122,6 +132,8 @@ class PanelState {
       groupName: json['groupName'] as String?,
       proxyName: json['proxyName'] as String?,
       delay: (json['delay'] as num?)?.toInt(),
+      isChain: json['isChain'] as bool? ?? false,
+      chainSummary: json['chainSummary'] as String?,
       systemProxy: json['systemProxy'] as bool? ?? false,
       tun: json['tun'] as bool? ?? false,
       locale: json['locale'] as String?,

@@ -4,4 +4,5 @@ export 'common.dart';
 export 'config.dart';
 export 'core.dart';
 export 'profile.dart';
+export 'proxy_chain.dart';
 export 'state.dart';

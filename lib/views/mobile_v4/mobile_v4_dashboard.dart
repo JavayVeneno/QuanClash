@@ -5,8 +5,10 @@ import 'package:quanclash/common/common.dart';
 import 'package:quanclash/core/core.dart';
 import 'package:quanclash/enum/enum.dart';
 import 'package:quanclash/models/common.dart' as common_models;
-import 'package:quanclash/models/models.dart' show ProfileExtension;
+import 'package:quanclash/models/models.dart'
+    show ProfileExtension, ProxyChain, ProxyChainExt;
 import 'package:quanclash/providers/providers.dart';
+import 'package:quanclash/widgets/mobius_icon.dart';
 import 'package:quanclash/views/mobile_v4/network_globe.dart';
 import 'package:quanclash/views/mobile_v4/radial_fab.dart';
 import 'package:quanclash/views/mobile_v4/sheets.dart';
@@ -97,12 +99,12 @@ class _MobileV4DashboardState extends ConsumerState<MobileV4Dashboard> {
     final p = MobileV4Palette.of(context);
     final isStart = ref.watch(isStartProvider);
     final mode = ref.watch(patchClashConfigProvider.select((s) => s.mode));
-    final activeProfileLabel = ref.watch(
-      currentProfileProvider.select((state) => state?.realLabel),
-    );
-    final preferredGroup = ref.watch(
-      currentProfileProvider.select((state) => state?.currentGroupName),
-    );
+    final currentProfile = ref.watch(currentProfileProvider);
+    final activeProfileLabel = currentProfile?.realLabel;
+    final preferredGroup = currentProfile?.currentGroupName;
+    final profileChains = currentProfile == null
+        ? const <ProxyChain>[]
+        : ref.watch(profileProxyChainsProvider(currentProfile.id));
     final selectedMap = ref.watch(selectedMapProvider);
     final group = ref.watch(
       groupsProvider.select(
@@ -110,6 +112,7 @@ class _MobileV4DashboardState extends ConsumerState<MobileV4Dashboard> {
           groups,
           preferredName: preferredGroup,
           selectedMap: selectedMap,
+          mode: mode,
         ),
       ),
     );
@@ -122,9 +125,18 @@ class _MobileV4DashboardState extends ConsumerState<MobileV4Dashboard> {
         ? ''
         : ref.watch(realSelectedProxyStateProvider(rawSelected)).proxyName;
     final activeNode = resolvedProxy.isNotEmpty ? resolvedProxy : rawSelected;
-    final groupTag = (group != null &&
-            activeNode.isNotEmpty &&
-            group.name != activeNode)
+    final activeChain = resolveActiveProxyChain(
+      profileChains,
+      proxyName: activeNode,
+      groupNow: rawSelected,
+      chainsEnabled: currentProfile?.chainsEnabled ?? true,
+    );
+    final displayNode = activeChain?.groupName ?? activeNode;
+    final groupTag = activeChain != null
+        ? '${activeChain.entry.members.length} ${context.appLocalizations.proxyChainEntry} → ${activeChain.exit.members.length} ${context.appLocalizations.proxyChainExit}'
+        : (group != null &&
+              activeNode.isNotEmpty &&
+              group.name != activeNode)
         ? group.name
         : null;
 
@@ -182,13 +194,17 @@ class _MobileV4DashboardState extends ConsumerState<MobileV4Dashboard> {
                     child: _InfoPanel(
                       palette: p,
                       mode: mobileV4ModeLabel(mode),
-                      nodeName: activeNode.isNotEmpty ? activeNode : '未选择节点',
+                      nodeName: displayNode.isNotEmpty ? displayNode : '未选择节点',
                       nodeSubTag: groupTag,
+                      isChain: activeChain != null,
                       connected: isStart,
                       down: traffic.down,
                       up: traffic.up,
                       riskScore: riskScore,
-                      onNodeTap: () => showMobileV4Sheet(context, 'proxy'),
+                      onNodeTap: () => showMobileV4Sheet(
+                        context,
+                        activeChain != null ? 'chains' : 'proxy',
+                      ),
                       onRiskTap: () => _openRiskCheck(activeNode),
                     ),
                   ),
@@ -280,6 +296,7 @@ class _InfoPanel extends StatelessWidget {
     required this.mode,
     required this.nodeName,
     required this.nodeSubTag,
+    this.isChain = false,
     required this.connected,
     required this.down,
     required this.up,
@@ -292,6 +309,7 @@ class _InfoPanel extends StatelessWidget {
   final String mode;
   final String nodeName;
   final String? nodeSubTag;
+  final bool isChain;
   final bool connected;
   final num down;
   final num up;
@@ -348,9 +366,12 @@ class _InfoPanel extends StatelessWidget {
                       ),
                       const SizedBox(height: 9),
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          if (isChain) ...[
+                            MobiusIcon(size: 17, color: palette.accent),
+                            const SizedBox(width: 7),
+                          ],
                           Flexible(
                             child: Text(
                               nodeName,

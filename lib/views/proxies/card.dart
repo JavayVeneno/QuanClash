@@ -123,9 +123,20 @@ class ProxyCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildProxyNameText(BuildContext context) {
+  Widget _buildProxyNameText(BuildContext context, WidgetRef ref) {
     final maxLines = type == ProxyCardType.min ? 1 : 2;
-    return EmojiText(
+    final profile = ref.watch(currentProfileProvider);
+    final chains = profile == null
+        ? const <ProxyChain>[]
+        : ref.watch(profileProxyChainsProvider(profile.id));
+    final isChainNode =
+        resolveActiveProxyChain(
+          chains,
+          proxyName: proxy.name,
+          chainsEnabled: profile?.chainsEnabled ?? true,
+        ) !=
+        null;
+    final text = EmojiText(
       proxy.name,
       maxLines: maxLines,
       overflow: TextOverflow.ellipsis,
@@ -134,6 +145,16 @@ class ProxyCard extends ConsumerWidget {
         height: 1.25,
         color: context.quanX.textPrimary,
       ),
+    );
+    if (!isChainNode) {
+      return text;
+    }
+    return Row(
+      children: [
+        MobiusIcon(size: 13, color: context.quanX.accent),
+        const SizedBox(width: 5),
+        Expanded(child: text),
+      ],
     );
   }
 
@@ -244,7 +265,7 @@ class ProxyCard extends ConsumerWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(child: _buildProxyNameText(context)),
+                        Expanded(child: _buildProxyNameText(context, ref)),
                         if (showMark) const _SelectedMark(),
                       ],
                     ),

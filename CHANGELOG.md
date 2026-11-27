@@ -4,6 +4,17 @@ QuanClash is a modified version of [FlClash](https://github.com/chen08209/FlClas
 The upstream changelog up to v0.8.94 is preserved in the git history; this file
 records the changes made in this fork.
 
+## Unreleased
+
+### Added
+
+- **Proxy Chains (Desktop & Android Mobile v4):** Support multi-hop entry/exit groups (or single-node direct links) stored per profile, with static strict-DNS-safe config generation, Möbius strip branding, Dashboard/tray/mobile active-chain display, and Rule/Global mode support.
+- **Mobile v4 Globe Interaction:** Added horizontal swipe rotation with inertia on the 3D dot-matrix globe.
+
+### Fixed
+
+- **Mobile v4 Globe Orientation:** Corrected the sphere coordinate projection so East-West and Asia/China coastlines render without mirror inversion.
+
 ## v0.0.4
 
 ### Added

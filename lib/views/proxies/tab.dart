@@ -4,6 +4,7 @@ import 'package:quanclash/common/common.dart';
 import 'package:quanclash/enum/enum.dart';
 import 'package:quanclash/models/clash_config.dart';
 import 'package:quanclash/models/common.dart';
+import 'package:quanclash/models/proxy_chain.dart';
 import 'package:quanclash/providers/providers.dart';
 import 'package:quanclash/state.dart';
 import 'package:quanclash/views/dashboard/widgets/dashboard_style.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'card.dart';
+import 'chains/chains_page.dart';
 import 'common.dart';
 import 'grouping.dart';
 
@@ -218,6 +220,22 @@ class ProxiesTabViewState extends ConsumerState<ProxiesTabView>
                       height: 32,
                       child: Builder(
                         builder: (context) {
+                          if (group.name == chainAggregateGroupName) {
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                MobiusIcon(
+                                  size: 14,
+                                  color: DefaultTextStyle.of(context).style.color,
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  context.appLocalizations.proxyChainTitle,
+                                  style: DefaultTextStyle.of(context).style,
+                                ),
+                              ],
+                            );
+                          }
                           return EmojiText(
                             group.name,
                             style: DefaultTextStyle.of(context).style,
@@ -583,6 +601,62 @@ class _ProxyGroupViewState extends ConsumerState<ProxyGroupView> {
               key: _getPageStorageKey(),
               controller: _controller,
               slivers: [
+                if (group.name == chainAggregateGroupName)
+                  SliverToBoxAdapter(
+                    child: _ChainGroupBanner(
+                      selectedChainName: group.now,
+                      onSetCurrent: () {
+                        final selectedChain = group.now;
+                        if (selectedChain == null || selectedChain.isEmpty) {
+                          return;
+                        }
+                        final mode = ref.read(
+                          patchClashConfigProvider.select(
+                            (state) => state.mode,
+                          ),
+                        );
+                        final allGroups = ref.read(groupsProvider);
+                        final selectedMap = ref.read(selectedMapProvider);
+                        final targetGroup = mode == Mode.global
+                            ? allGroups.getGroup(GroupName.GLOBAL.name)
+                            : computeCurrentGroup(
+                                allGroups,
+                                preferredName: null,
+                                selectedMap: selectedMap,
+                                mode: mode,
+                              );
+                        if (targetGroup != null &&
+                            targetGroup.type == GroupType.Selector &&
+                            targetGroup.name != chainAggregateGroupName) {
+                          final hasDirect = targetGroup.all.any(
+                            (p) => p.name == selectedChain,
+                          );
+                          final nextVal = hasDirect
+                              ? selectedChain
+                              : chainAggregateGroupName;
+                          ref
+                              .read(profilesActionProvider.notifier)
+                              .updateCurrentSelectedMap(
+                                targetGroup.name,
+                                nextVal,
+                              );
+                          ref
+                              .read(proxiesActionProvider.notifier)
+                              .changeProxyDebounce(targetGroup.name, nextVal);
+                          globalState.showNotifier(
+                            '${targetGroup.name} → $selectedChain',
+                          );
+                        }
+                      },
+                      onManage: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const ProxyChainsPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 const SliverToBoxAdapter(child: SizedBox(height: 16)),
                 for (final section in sections) ...[
                   if (section.title != null)
@@ -704,6 +778,79 @@ class _SectionNavItem extends StatelessWidget {
                   : quanX.textTertiary,
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ChainGroupBanner extends StatelessWidget {
+  const _ChainGroupBanner({
+    required this.onManage,
+    required this.onSetCurrent,
+    this.selectedChainName,
+  });
+
+  final VoidCallback onManage;
+  final VoidCallback onSetCurrent;
+  final String? selectedChainName;
+
+  @override
+  Widget build(BuildContext context) {
+    final quanX = context.quanX;
+    final l10n = context.appLocalizations;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: quanX.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: quanX.separator),
+        ),
+        child: Row(
+          children: [
+            MobiusIcon(size: 16, color: quanX.accent),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                l10n.proxyChainRelationHint,
+                style: TextStyle(fontSize: 12, color: quanX.textSecondary),
+              ),
+            ),
+            const SizedBox(width: 10),
+            if (selectedChainName != null && selectedChainName!.isNotEmpty) ...[
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: onSetCurrent,
+                child: Text(
+                  l10n.proxyChainSetCurrent,
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                side: BorderSide(color: quanX.separator),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              onPressed: onManage,
+              child: Text(
+                l10n.proxyChainManage,
+                style: const TextStyle(fontSize: 12),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -450,6 +450,9 @@ HotKeyAction getHotKeyAction(Ref ref, HotAction hotAction) {
 @riverpod
 Profile? currentProfile(Ref ref) {
   final profileId = ref.watch(currentProfileIdProvider);
+  if (profileId == null) {
+    return null;
+  }
   return ref.watch(
     profilesProvider.select((state) => state.getProfile(profileId)),
   );
@@ -784,13 +787,19 @@ Future<SetupState> setupState(Ref ref, int? profileId) async {
   final scriptId = profile?.scriptId;
   final profileLastUpdateDate = profile?.lastUpdateDate?.millisecondsSinceEpoch;
   final overwriteType = profile?.overwriteType ?? OverwriteType.standard;
+  final chainsEnabled = profile?.chainsEnabled ?? true;
   final dns = ref.watch(patchClashConfigProvider.select((state) => state.dns));
   final overrideDns = ref.watch(overrideDnsProvider);
   List<ProxyGroup> proxyGroups = [];
   List<Rule> rules = [];
   List<Rule> addedRules = [];
+  List<ProxyChain> proxyChains = [];
   Script? script;
   if (profileId != null) {
+    proxyChains = ref.watch(profileProxyChainsProvider(profileId));
+    if (proxyChains.isEmpty) {
+      proxyChains = await database.proxyChainsDao.query(profileId).get();
+    }
     if (overwriteType == OverwriteType.standard) {
       addedRules = await database.rulesDao.queryAddedRules(profileId).get();
     } else if (overwriteType == OverwriteType.script) {
@@ -812,6 +821,8 @@ Future<SetupState> setupState(Ref ref, int? profileId) async {
     script: script,
     overrideDns: overrideDns,
     dns: dns,
+    chainsEnabled: chainsEnabled,
+    proxyChains: proxyChains,
   );
 }
 

@@ -116,6 +116,7 @@ Group? computeCurrentGroup(
   List<Group> groups, {
   String? preferredName,
   Map<String, String> selectedMap = const {},
+  Mode? mode,
 }) {
   Group? withSelection(String? name) {
     if (name == null || name.isEmpty) {
@@ -126,6 +127,13 @@ Group? computeCurrentGroup(
       return null;
     }
     return group;
+  }
+
+  if (mode == Mode.global) {
+    final globalGroup = withSelection(GroupName.GLOBAL.name);
+    if (globalGroup != null) {
+      return globalGroup;
+    }
   }
 
   bool usable(Group group) {

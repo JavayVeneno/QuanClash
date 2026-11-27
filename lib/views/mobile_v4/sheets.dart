@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
+import 'sheets/chains_sheet.dart';
 import 'sheets/config_sheet.dart';
 import 'sheets/monitor_sheet.dart';
 import 'sheets/proxy_sheet.dart';
@@ -80,6 +81,7 @@ class _SheetBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (type) {
       'proxy' => MobileV4ProxySheet(controller: controller),
+      'chains' => MobileV4ChainsSheet(controller: controller),
       'config' => MobileV4ConfigSheet(controller: controller),
       'monitor' => MobileV4MonitorSheet(controller: controller),
       _ => MobileV4SettingsSheet(controller: controller),

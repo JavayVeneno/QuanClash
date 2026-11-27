@@ -9,6 +9,7 @@ import 'package:quanclash/common/common.dart';
 import 'package:quanclash/enum/enum.dart';
 import 'package:quanclash/models/models.dart';
 
+part 'chains.dart';
 part 'converter.dart';
 part 'generated/database.g.dart';
 part 'groups.dart';
@@ -25,15 +26,23 @@ part 'scripts.dart';
     Rules,
     ProfileRuleLinks,
     ProxyGroups,
+    ProxyChains,
     IconRecords,
   ],
-  daos: [ProfilesDao, ScriptsDao, RulesDao, ProxyGroupsDao, IconRecordsDao],
+  daos: [
+    ProfilesDao,
+    ScriptsDao,
+    RulesDao,
+    ProxyGroupsDao,
+    ProxyChainsDao,
+    IconRecordsDao,
+  ],
 )
 class Database extends _$Database {
   Database([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
@@ -51,6 +60,20 @@ class Database extends _$Database {
           await m.createTable(iconRecords);
           await _resetOrders();
           await _migrateRules(m);
+        }
+        if (from < 3) {
+          await m.createTable(proxyChains);
+          final profileCols = await customSelect(
+            'PRAGMA table_info(profiles)',
+          ).get();
+          final hasChainsEnabled = profileCols.any(
+            (row) => row.read<String>('name') == 'chains_enabled',
+          );
+          if (!hasChainsEnabled) {
+            await customStatement(
+              'ALTER TABLE profiles ADD COLUMN chains_enabled INTEGER NOT NULL DEFAULT 1',
+            );
+          }
         }
       },
       beforeOpen: (details) async {

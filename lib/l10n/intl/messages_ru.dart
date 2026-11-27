@@ -103,13 +103,39 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m36(percent) => "Использовано ${percent}%";
 
-  static String m37(count) => "${count} секунд";
+  static String m37(name) => "Применено «${name}»";
 
-  static String m38(count) => "Выбрано ${count} элементов";
+  static String m38(name) => "Удалить цепочку «${name}»?";
 
-  static String m39(label) => "${label} должен быть URL";
+  static String m39(name) =>
+      "«${name}» не может быть одновременно на входе и выходе";
 
-  static String m40(count) =>
+  static String m40(name) =>
+      "«${name}» — встроенная политика, нельзя добавить в цепочку";
+
+  static String m41(name, dialer) =>
+      "У выхода «${name}» уже задан dialer-proxy «${dialer}»";
+
+  static String m42(name) => "Узел «${name}» не найден в текущем профиле";
+
+  static String m43(name) =>
+      "Имя «${name}» конфликтует с существующим узлом или группой";
+
+  static String m44(count) =>
+      "Используется в ${count} правилах. Удаление или отключение нарушит эти правила.";
+
+  static String m45(name) => "Неприменённые изменения в «${name}»";
+
+  static String m46(exit, entry) =>
+      "Выход «${exit}» использует QUIC, но вход «${entry}» не поддерживает UDP";
+
+  static String m47(count) => "${count} секунд";
+
+  static String m48(count) => "Выбрано ${count} элементов";
+
+  static String m49(label) => "${label} должен быть URL";
+
+  static String m50(count) =>
       "${Intl.plural(count, one: '${count} год назад', few: '${count} года назад', many: '${count} лет назад', other: '${count} года назад')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -1134,6 +1160,135 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxiesViewRegion": MessageLookupByLibrary.simpleMessage(
       "Группировать по регионам",
     ),
+    "proxyChainAddEntry": MessageLookupByLibrary.simpleMessage("+Вход"),
+    "proxyChainAddExit": MessageLookupByLibrary.simpleMessage("+Выход"),
+    "proxyChainAll": MessageLookupByLibrary.simpleMessage("Все"),
+    "proxyChainApplied": m37,
+    "proxyChainApply": MessageLookupByLibrary.simpleMessage("Применить"),
+    "proxyChainApplyAndLeave": MessageLookupByLibrary.simpleMessage(
+      "Применить и выйти",
+    ),
+    "proxyChainAvailableNodes": MessageLookupByLibrary.simpleMessage(
+      "Доступные узлы",
+    ),
+    "proxyChainDelete": MessageLookupByLibrary.simpleMessage("Удалить цепочку"),
+    "proxyChainDeleteConfirm": m38,
+    "proxyChainDisabledDesc": MessageLookupByLibrary.simpleMessage(
+      "Данные цепочек сохранены, но группы цепочек не создаются.",
+    ),
+    "proxyChainDisabledTitle": MessageLookupByLibrary.simpleMessage(
+      "Цепочки прокси отключены для профиля",
+    ),
+    "proxyChainDiscard": MessageLookupByLibrary.simpleMessage("Сбросить"),
+    "proxyChainEmptyDesc": MessageLookupByLibrary.simpleMessage(
+      "Направляйте трафик через входной узел к выходному. Правила могут ссылаться на созданную группу.",
+    ),
+    "proxyChainEmptyTitle": MessageLookupByLibrary.simpleMessage(
+      "Цепочек прокси пока нет",
+    ),
+    "proxyChainEntry": MessageLookupByLibrary.simpleMessage("Вход"),
+    "proxyChainEntryDropHint": MessageLookupByLibrary.simpleMessage(
+      "Перетащите узлы сюда как вход",
+    ),
+    "proxyChainEntryDropSub": MessageLookupByLibrary.simpleMessage(
+      "Несколько узлов образуют группу с автопереключением",
+    ),
+    "proxyChainErrBothSides": m39,
+    "proxyChainErrBuiltin": m40,
+    "proxyChainErrCycle": MessageLookupByLibrary.simpleMessage(
+      "Обнаружена циклическая ссылка",
+    ),
+    "proxyChainErrEmptyName": MessageLookupByLibrary.simpleMessage(
+      "Имя цепочки не может быть пустым",
+    ),
+    "proxyChainErrEntryEmpty": MessageLookupByLibrary.simpleMessage(
+      "Вход пуст: добавьте хотя бы 1 узел",
+    ),
+    "proxyChainErrExitDialer": m41,
+    "proxyChainErrExitEmpty": MessageLookupByLibrary.simpleMessage(
+      "Выход пуст: добавьте хотя бы 1 узел",
+    ),
+    "proxyChainErrInvalidExitType": MessageLookupByLibrary.simpleMessage(
+      "Группа выхода поддерживает только fallback или select",
+    ),
+    "proxyChainErrMissingNode": m42,
+    "proxyChainErrNameConflict": m43,
+    "proxyChainErrProviderStrict": MessageLookupByLibrary.simpleMessage(
+      "Узлы провайдеров запрещены в строгом режиме DNS",
+    ),
+    "proxyChainExit": MessageLookupByLibrary.simpleMessage("Выход"),
+    "proxyChainExitDropHint": MessageLookupByLibrary.simpleMessage(
+      "Перетащите узлы сюда как выход",
+    ),
+    "proxyChainExitDropSub": MessageLookupByLibrary.simpleMessage(
+      "Несколько узлов используют fallback для стабильного IP",
+    ),
+    "proxyChainFailureBlock": MessageLookupByLibrary.simpleMessage(
+      "Блокировать (рекомендуется)",
+    ),
+    "proxyChainFailureBlockDesc": MessageLookupByLibrary.simpleMessage(
+      "Обрывать соединение при сбое, без отката к DIRECT.",
+    ),
+    "proxyChainFailureDirect": MessageLookupByLibrary.simpleMessage(
+      "Откат к прямому выходу",
+    ),
+    "proxyChainFailureDirectAck": MessageLookupByLibrary.simpleMessage(
+      "Я понимаю риск раскрытия реального IP",
+    ),
+    "proxyChainFailureDirectBadge": MessageLookupByLibrary.simpleMessage(
+      "Прямой откат",
+    ),
+    "proxyChainFailureDirectDesc": MessageLookupByLibrary.simpleMessage(
+      "Подключаться напрямую к выходу при отказе входа. Раскрывает реальный IP.",
+    ),
+    "proxyChainFailurePolicy": MessageLookupByLibrary.simpleMessage(
+      "Политика при сбое",
+    ),
+    "proxyChainInterval": MessageLookupByLibrary.simpleMessage("Интервал (с)"),
+    "proxyChainInvalid": MessageLookupByLibrary.simpleMessage("Ошибка"),
+    "proxyChainLocate": MessageLookupByLibrary.simpleMessage("Перейти"),
+    "proxyChainManage": MessageLookupByLibrary.simpleMessage(
+      "Управление цепочками",
+    ),
+    "proxyChainNew": MessageLookupByLibrary.simpleMessage("Новая цепочка"),
+    "proxyChainOnlyUdp": MessageLookupByLibrary.simpleMessage("Только UDP"),
+    "proxyChainProviderNodes": MessageLookupByLibrary.simpleMessage(
+      "Провайдеры",
+    ),
+    "proxyChainProviderStrictTip": MessageLookupByLibrary.simpleMessage(
+      "Узлы провайдеров не поддерживаются в строгом режиме DNS.",
+    ),
+    "proxyChainReenable": MessageLookupByLibrary.simpleMessage("Включить"),
+    "proxyChainRelationHint": MessageLookupByLibrary.simpleMessage(
+      "Трафик по правилам всегда идёт через назначенную цепочку; выбор здесь влияет только на трафик по умолчанию.",
+    ),
+    "proxyChainRename": MessageLookupByLibrary.simpleMessage(
+      "Переименовать цепочку",
+    ),
+    "proxyChainRuleRefWarning": m44,
+    "proxyChainSetCurrent": MessageLookupByLibrary.simpleMessage(
+      "Выбрать текущим",
+    ),
+    "proxyChainSingleNode": MessageLookupByLibrary.simpleMessage(
+      "Прямая связка",
+    ),
+    "proxyChainStaticNodes": MessageLookupByLibrary.simpleMessage(
+      "Статические",
+    ),
+    "proxyChainTitle": MessageLookupByLibrary.simpleMessage("Цепочки прокси"),
+    "proxyChainTolerance": MessageLookupByLibrary.simpleMessage("Допуск (мс)"),
+    "proxyChainUnapplied": MessageLookupByLibrary.simpleMessage("Не применено"),
+    "proxyChainUnsavedDesc": MessageLookupByLibrary.simpleMessage(
+      "При выходе черновик будет потерян.",
+    ),
+    "proxyChainUnsavedTitle": m45,
+    "proxyChainUrlTestParams": MessageLookupByLibrary.simpleMessage(
+      "Параметры url-test входа",
+    ),
+    "proxyChainWarnUdpQuic": m46,
+    "proxyChainYamlPreview": MessageLookupByLibrary.simpleMessage(
+      "Просмотр YAML",
+    ),
     "proxyChains": MessageLookupByLibrary.simpleMessage("Цепочки прокси"),
     "proxyDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "Обнаружена аномалия выбранных прокси",
@@ -1388,7 +1543,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "search": MessageLookupByLibrary.simpleMessage("Поиск"),
     "seconds": MessageLookupByLibrary.simpleMessage("Секунд"),
-    "secondsCount": m37,
+    "secondsCount": m47,
     "sectionMain": MessageLookupByLibrary.simpleMessage("Основное"),
     "sectionMonitor": MessageLookupByLibrary.simpleMessage("Мониторинг"),
     "sectionSystem": MessageLookupByLibrary.simpleMessage("Система"),
@@ -1407,7 +1562,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Пожалуйста, выберите подправило",
     ),
     "selected": MessageLookupByLibrary.simpleMessage("Выбрано"),
-    "selectedCountTitle": m38,
+    "selectedCountTitle": m48,
     "serviceRunning": MessageLookupByLibrary.simpleMessage("Сервис работает"),
     "settings": MessageLookupByLibrary.simpleMessage("Настройки"),
     "settingsAboutApp": MessageLookupByLibrary.simpleMessage("О QuanClash"),
@@ -1590,7 +1745,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Получить профиль через URL",
     ),
-    "urlTip": m39,
+    "urlTip": m49,
     "useHosts": MessageLookupByLibrary.simpleMessage("Использовать hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage(
       "Использовать системные hosts",
@@ -1615,7 +1770,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "whitelistMode": MessageLookupByLibrary.simpleMessage(
       "Режим белого списка",
     ),
-    "yearsAgo": m40,
+    "yearsAgo": m50,
     "zh_CN": MessageLookupByLibrary.simpleMessage("Упрощенный китайский"),
   };
 }

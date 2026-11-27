@@ -103,13 +103,38 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m36(percent) => "Used ${percent}%";
 
-  static String m37(count) => "${count} seconds";
+  static String m37(name) => "Applied \"${name}\"";
 
-  static String m38(count) => "${count} items have been selected";
+  static String m38(name) => "Delete chain \"${name}\"?";
 
-  static String m39(label) => "${label} must be a url";
+  static String m39(name) => "\"${name}\" cannot be in both entry and exit";
 
-  static String m40(count) =>
+  static String m40(name) =>
+      "\"${name}\" is a built-in policy and cannot be used in a chain";
+
+  static String m41(name, dialer) =>
+      "Exit \"${name}\" already has dialer-proxy \"${dialer}\"";
+
+  static String m42(name) => "Node \"${name}\" not found in current profile";
+
+  static String m43(name) =>
+      "Name \"${name}\" conflicts with an existing proxy or group";
+
+  static String m44(count) =>
+      "Referenced by ${count} rule(s). Removing or disabling this chain will break those rules.";
+
+  static String m45(name) => "Unapplied changes in \"${name}\"";
+
+  static String m46(exit, entry) =>
+      "Exit \"${exit}\" uses QUIC, but entry \"${entry}\" does not support UDP";
+
+  static String m47(count) => "${count} seconds";
+
+  static String m48(count) => "${count} items have been selected";
+
+  static String m49(label) => "${label} must be a url";
+
+  static String m50(count) =>
       "${Intl.plural(count, one: '1 year ago', other: '${count} years ago')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -1080,6 +1105,129 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxiesViewRegion": MessageLookupByLibrary.simpleMessage(
       "Group by region",
     ),
+    "proxyChainAddEntry": MessageLookupByLibrary.simpleMessage("+In"),
+    "proxyChainAddExit": MessageLookupByLibrary.simpleMessage("+Out"),
+    "proxyChainAll": MessageLookupByLibrary.simpleMessage("All"),
+    "proxyChainApplied": m37,
+    "proxyChainApply": MessageLookupByLibrary.simpleMessage("Apply"),
+    "proxyChainApplyAndLeave": MessageLookupByLibrary.simpleMessage(
+      "Apply & Leave",
+    ),
+    "proxyChainAvailableNodes": MessageLookupByLibrary.simpleMessage(
+      "Available Nodes",
+    ),
+    "proxyChainDelete": MessageLookupByLibrary.simpleMessage("Delete Chain"),
+    "proxyChainDeleteConfirm": m38,
+    "proxyChainDisabledDesc": MessageLookupByLibrary.simpleMessage(
+      "Your chain drafts are preserved, but chain groups will not be generated.",
+    ),
+    "proxyChainDisabledTitle": MessageLookupByLibrary.simpleMessage(
+      "Proxy chains disabled for this profile",
+    ),
+    "proxyChainDiscard": MessageLookupByLibrary.simpleMessage("Discard"),
+    "proxyChainEmptyDesc": MessageLookupByLibrary.simpleMessage(
+      "Route traffic through an entry hop and out via an exit hop. Rules can reference the generated chain group directly.",
+    ),
+    "proxyChainEmptyTitle": MessageLookupByLibrary.simpleMessage(
+      "No proxy chains yet",
+    ),
+    "proxyChainEntry": MessageLookupByLibrary.simpleMessage("Entry"),
+    "proxyChainEntryDropHint": MessageLookupByLibrary.simpleMessage(
+      "Drag nodes here as Entry",
+    ),
+    "proxyChainEntryDropSub": MessageLookupByLibrary.simpleMessage(
+      "Multiple nodes form a group with auto failover",
+    ),
+    "proxyChainErrBothSides": m39,
+    "proxyChainErrBuiltin": m40,
+    "proxyChainErrCycle": MessageLookupByLibrary.simpleMessage(
+      "Cycle detected in dialer-proxy path",
+    ),
+    "proxyChainErrEmptyName": MessageLookupByLibrary.simpleMessage(
+      "Chain name cannot be empty",
+    ),
+    "proxyChainErrEntryEmpty": MessageLookupByLibrary.simpleMessage(
+      "Entry is empty: add at least 1 node",
+    ),
+    "proxyChainErrExitDialer": m41,
+    "proxyChainErrExitEmpty": MessageLookupByLibrary.simpleMessage(
+      "Exit is empty: add at least 1 node",
+    ),
+    "proxyChainErrInvalidExitType": MessageLookupByLibrary.simpleMessage(
+      "Exit group only supports fallback or select",
+    ),
+    "proxyChainErrMissingNode": m42,
+    "proxyChainErrNameConflict": m43,
+    "proxyChainErrProviderStrict": MessageLookupByLibrary.simpleMessage(
+      "Provider nodes are not allowed under strict DNS mode",
+    ),
+    "proxyChainExit": MessageLookupByLibrary.simpleMessage("Exit"),
+    "proxyChainExitDropHint": MessageLookupByLibrary.simpleMessage(
+      "Drag nodes here as Exit",
+    ),
+    "proxyChainExitDropSub": MessageLookupByLibrary.simpleMessage(
+      "Multiple nodes use fallback to keep egress IP stable",
+    ),
+    "proxyChainFailureBlock": MessageLookupByLibrary.simpleMessage(
+      "Block (Recommended)",
+    ),
+    "proxyChainFailureBlockDesc": MessageLookupByLibrary.simpleMessage(
+      "Drop traffic when unavailable; never fall back to DIRECT.",
+    ),
+    "proxyChainFailureDirect": MessageLookupByLibrary.simpleMessage(
+      "Fallback to direct exit",
+    ),
+    "proxyChainFailureDirectAck": MessageLookupByLibrary.simpleMessage(
+      "I understand this exposes my real IP",
+    ),
+    "proxyChainFailureDirectBadge": MessageLookupByLibrary.simpleMessage(
+      "Direct Fallback",
+    ),
+    "proxyChainFailureDirectDesc": MessageLookupByLibrary.simpleMessage(
+      "Connect directly to exit when entry fails. Exposes your real IP to the exit server.",
+    ),
+    "proxyChainFailurePolicy": MessageLookupByLibrary.simpleMessage(
+      "Failure Policy",
+    ),
+    "proxyChainInterval": MessageLookupByLibrary.simpleMessage("Interval (s)"),
+    "proxyChainInvalid": MessageLookupByLibrary.simpleMessage("Invalid"),
+    "proxyChainLocate": MessageLookupByLibrary.simpleMessage("Locate"),
+    "proxyChainManage": MessageLookupByLibrary.simpleMessage("Manage Chains"),
+    "proxyChainNew": MessageLookupByLibrary.simpleMessage("New Chain"),
+    "proxyChainOnlyUdp": MessageLookupByLibrary.simpleMessage("UDP only"),
+    "proxyChainProviderNodes": MessageLookupByLibrary.simpleMessage(
+      "Providers",
+    ),
+    "proxyChainProviderStrictTip": MessageLookupByLibrary.simpleMessage(
+      "Provider nodes are not supported under strict DNS mode yet.",
+    ),
+    "proxyChainReenable": MessageLookupByLibrary.simpleMessage("Enable"),
+    "proxyChainRelationHint": MessageLookupByLibrary.simpleMessage(
+      "Rule-matched traffic always uses its assigned chain; selecting a chain here only affects default unmatched traffic.",
+    ),
+    "proxyChainRename": MessageLookupByLibrary.simpleMessage("Rename Chain"),
+    "proxyChainRuleRefWarning": m44,
+    "proxyChainSetCurrent": MessageLookupByLibrary.simpleMessage(
+      "Set as current",
+    ),
+    "proxyChainSingleNode": MessageLookupByLibrary.simpleMessage("Direct link"),
+    "proxyChainStaticNodes": MessageLookupByLibrary.simpleMessage("Static"),
+    "proxyChainTitle": MessageLookupByLibrary.simpleMessage("Proxy Chains"),
+    "proxyChainTolerance": MessageLookupByLibrary.simpleMessage(
+      "Tolerance (ms)",
+    ),
+    "proxyChainUnapplied": MessageLookupByLibrary.simpleMessage("Unapplied"),
+    "proxyChainUnsavedDesc": MessageLookupByLibrary.simpleMessage(
+      "Leaving now will discard your draft changes.",
+    ),
+    "proxyChainUnsavedTitle": m45,
+    "proxyChainUrlTestParams": MessageLookupByLibrary.simpleMessage(
+      "Entry url-test Parameters",
+    ),
+    "proxyChainWarnUdpQuic": m46,
+    "proxyChainYamlPreview": MessageLookupByLibrary.simpleMessage(
+      "Generated YAML Preview",
+    ),
     "proxyChains": MessageLookupByLibrary.simpleMessage("Proxy chains"),
     "proxyDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "Detected selected proxies are abnormal",
@@ -1322,7 +1470,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
     "seconds": MessageLookupByLibrary.simpleMessage("Seconds"),
-    "secondsCount": m37,
+    "secondsCount": m47,
     "sectionMain": MessageLookupByLibrary.simpleMessage("Main"),
     "sectionMonitor": MessageLookupByLibrary.simpleMessage("Monitor"),
     "sectionSystem": MessageLookupByLibrary.simpleMessage("System"),
@@ -1341,7 +1489,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Please select sub rule",
     ),
     "selected": MessageLookupByLibrary.simpleMessage("Selected"),
-    "selectedCountTitle": m38,
+    "selectedCountTitle": m48,
     "serviceRunning": MessageLookupByLibrary.simpleMessage("Service running"),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "settingsAboutApp": MessageLookupByLibrary.simpleMessage("About QuanClash"),
@@ -1504,7 +1652,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Obtain profile through URL",
     ),
-    "urlTip": m39,
+    "urlTip": m49,
     "useHosts": MessageLookupByLibrary.simpleMessage("Use hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("Use system hosts"),
     "userAgent": MessageLookupByLibrary.simpleMessage("User-Agent"),
@@ -1525,7 +1673,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "WebDAV configuration",
     ),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("Whitelist mode"),
-    "yearsAgo": m40,
+    "yearsAgo": m50,
     "zh_CN": MessageLookupByLibrary.simpleMessage("Simplified Chinese"),
   };
 }

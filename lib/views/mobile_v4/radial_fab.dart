@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:quanclash/common/common.dart';
 import 'package:quanclash/enum/enum.dart';
+import 'package:quanclash/widgets/mobius_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/services.dart';
@@ -68,6 +69,12 @@ class _MobileV4RadialFabState extends State<MobileV4RadialFab>
 
   static const List<_DockNavItem> _dockItems = [
     _DockNavItem(type: 'proxy', label: '代理', icon: QuanXIcons.waypoints),
+    _DockNavItem(
+      type: 'chains',
+      label: '链路',
+      icon: QuanXIcons.link,
+      useMobius: true,
+    ),
     _DockNavItem(type: 'config', label: '配置', icon: QuanXIcons.folderOpen),
     _DockNavItem(type: 'monitor', label: '监控', icon: QuanXIcons.activity),
     _DockNavItem(type: 'settings', label: '设置', icon: QuanXIcons.settings),
@@ -294,12 +301,12 @@ class _MobileV4RadialFabState extends State<MobileV4RadialFab>
     if (leftSide) {
       final left = pos.dx + _hubSize + _dockGap;
       final available = math.max(180.0, size.width - left - 16.0);
-      final width = math.min(available, 276.0);
+      final width = math.min(available, 292.0);
       return (left, width);
     }
     final rightEdge = pos.dx - _dockGap;
     final available = math.max(180.0, rightEdge - 16.0);
-    final width = math.min(available, 276.0);
+    final width = math.min(available, 292.0);
     return (rightEdge - width, width);
   }
 
@@ -623,11 +630,13 @@ class _DockNavItem {
     required this.type,
     required this.label,
     required this.icon,
+    this.useMobius = false,
   });
 
   final String type;
   final String label;
   final IconData icon;
+  final bool useMobius;
 }
 
 /// iOS-26-inspired horizontal Liquid Glass capsule dock (`代理 / 配置 / 监控 / 设置`).
@@ -772,15 +781,25 @@ class _LiquidGlassHorizontalDock extends StatelessWidget {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(
-                                        items[i].icon,
-                                        size: 17,
-                                        color: activeIdx == i
-                                            ? (palette.isDark
-                                                  ? const Color(0xFFE4DAFF)
-                                                  : palette.accent)
-                                            : palette.text2,
-                                      ),
+                                      if (items[i].useMobius)
+                                        MobiusIcon(
+                                          size: 17,
+                                          color: activeIdx == i
+                                              ? (palette.isDark
+                                                    ? const Color(0xFFE4DAFF)
+                                                    : palette.accent)
+                                              : palette.text2,
+                                        )
+                                      else
+                                        Icon(
+                                          items[i].icon,
+                                          size: 17,
+                                          color: activeIdx == i
+                                              ? (palette.isDark
+                                                    ? const Color(0xFFE4DAFF)
+                                                    : palette.accent)
+                                              : palette.text2,
+                                        ),
                                       const SizedBox(height: 3),
                                       Text(
                                         items[i].label,

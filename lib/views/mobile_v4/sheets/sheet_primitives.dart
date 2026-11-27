@@ -118,6 +118,19 @@ class MobileV4SheetHead extends ConsumerWidget {
         final nodeCount = mobileV4UniqueNodeCount(groups);
         return ('代理', '${groups.length} 个策略组 · $nodeCount 个节点');
       }(),
+      'chains' => () {
+        final profile = ref.watch(currentProfileProvider);
+        final chains = profile == null
+            ? const <ProxyChain>[]
+            : ref.watch(profileProxyChainsProvider(profile.id));
+        final enabled = profile?.chainsEnabled ?? true;
+        return (
+          context.appLocalizations.proxyChainTitle,
+          enabled
+              ? '${chains.length} · ${profile?.realLabel ?? ''}'
+              : context.appLocalizations.proxyChainDisabledTitle,
+        );
+      }(),
       'config' => () {
         final profiles = ref.watch(profilesProvider);
         final currentId = ref.watch(currentProfileIdProvider);
