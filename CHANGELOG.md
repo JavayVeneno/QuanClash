@@ -4,7 +4,7 @@ QuanClash is a modified version of [FlClash](https://github.com/chen08209/FlClas
 The upstream changelog up to v0.8.94 is preserved in the git history; this file
 records the changes made in this fork.
 
-## Unreleased
+## v0.0.5
 
 ### Added
 
