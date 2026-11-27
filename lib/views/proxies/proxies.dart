@@ -10,6 +10,7 @@ import 'package:quanclash/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'chains/chains_page.dart';
 import 'common.dart' as proxies_common;
 import 'node_quality.dart';
 import 'setting.dart';
@@ -93,6 +94,20 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
         icon: const Icon(QuanXIcons.locate),
       ),
       _buildViewModeAction(context),
+      if (system.isDesktop)
+        Tooltip(
+          message: appLocalizations.proxyChains,
+          child: IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const ProxyChainsPage(),
+                ),
+              );
+            },
+            icon: const MobiusIcon(size: 19),
+          ),
+        ),
       CommonPopupBox(
         targetBuilder: (open) {
           return IconButton(

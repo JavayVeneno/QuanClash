@@ -42,28 +42,42 @@ class PanelView extends ConsumerWidget {
     final port = ref.watch(trayStateProvider.select((state) => state.port));
     final groups = ref.watch(groupsProvider);
     final selectedMap = ref.watch(selectedMapProvider);
+    final currentProfile = ref.watch(currentProfileProvider);
+    final profileChains = currentProfile == null
+        ? const <ProxyChain>[]
+        : ref.watch(profileProxyChainsProvider(currentProfile.id));
     final group = computeCurrentGroup(
       groups,
-      preferredName: ref.watch(
-        currentProfileProvider.select((state) => state?.currentGroupName),
-      ),
+      preferredName: currentProfile?.currentGroupName,
       selectedMap: selectedMap,
+      mode: mode,
     );
-    final proxyName = group == null
+    final rawProxyName = group == null
         ? null
         : computeRealSelectedProxyState(
             group.now ?? '',
             groups: groups,
             selectedMap: selectedMap,
           ).proxyName;
+    final activeChain = resolveActiveProxyChain(
+      profileChains,
+      proxyName: rawProxyName,
+      groupNow: group?.now,
+      chainsEnabled: currentProfile?.chainsEnabled ?? true,
+    );
+    final proxyName = activeChain?.groupName ?? rawProxyName;
+    final chainSummary = activeChain == null
+        ? null
+        : '${activeChain.entry.members.length} ${context.appLocalizations.proxyChainEntry} → ${activeChain.exit.members.length} ${context.appLocalizations.proxyChainExit}';
     final lastTraffic = traffics.isNotEmpty ? traffics.last : const Traffic();
     final delayMap = ref.watch(delayDataSourceProvider);
     final testUrl = group?.testUrl.takeFirstValid([
       ref.watch(appSettingProvider.select((state) => state.testUrl)),
     ]);
-    final delay = proxyName == null || proxyName.isEmpty
+    final delayTarget = rawProxyName ?? proxyName;
+    final delay = delayTarget == null || delayTarget.isEmpty
         ? null
-        : delayMap[testUrl]?[proxyName];
+        : delayMap[testUrl]?[delayTarget];
     final themeProps = ref.watch(themeSettingProvider);
     final locale = utils.getEffectiveLocaleString(
           ref.watch(appSettingProvider.select((state) => state.locale)),
@@ -81,6 +95,8 @@ class PanelView extends ConsumerWidget {
       groupName: group?.name,
       proxyName: proxyName,
       delay: delay,
+      isChain: activeChain != null,
+      chainSummary: chainSummary,
       systemProxy: systemProxy,
       tun: tunEnable,
       locale: locale,

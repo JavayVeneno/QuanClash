@@ -43,6 +43,39 @@ Stream<int> proxyGroupsCount(Ref ref, int profileId) {
   return database.proxyGroupsDao.count(profileId).watchSingle();
 }
 
+@riverpod
+Stream<List<ProxyChain>> proxyChainsStream(Ref ref, int profileId) {
+  return database.proxyChainsDao.query(profileId).watch();
+}
+
+@riverpod
+class ProfileProxyChains extends _$ProfileProxyChains {
+  @override
+  List<ProxyChain> build(int profileId) {
+    return ref.watch(proxyChainsStreamProvider(profileId)).value ?? [];
+  }
+
+  Future<void> put(ProxyChain chain) async {
+    final previous = List<ProxyChain>.from(state);
+    state = previous.copyAndPut(chain, (item) => item.id == chain.id);
+    await withRollback(
+      snapshot: previous,
+      action: () => database.proxyChainsDao.put(chain),
+      rollback: (v) => state = v,
+    );
+  }
+
+  Future<void> deleteChain(int id) async {
+    final previous = List<ProxyChain>.from(state);
+    state = previous.where((item) => item.id != id).toList();
+    await withRollback(
+      snapshot: previous,
+      action: () => database.proxyChainsDao.deleteById(id),
+      rollback: (v) => state = v,
+    );
+  }
+}
+
 @Riverpod(keepAlive: true)
 class Profiles extends _$Profiles {
   @override

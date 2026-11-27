@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:quanclash/common/common.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 import 'package:flutter/services.dart';
 
 import 'globe_painter.dart';
@@ -13,6 +14,7 @@ import 'utils.dart';
 ///
 /// - drag up    -> connect
 /// - drag down  -> disconnect
+/// - drag left/right -> smoothly rotate the globe with inertia
 /// - node change -> smoothly rotates the active city beacon to the front
 class MobileV4Globe extends StatefulWidget {
   const MobileV4Globe({
@@ -54,10 +56,17 @@ class _MobileV4GlobeState extends State<MobileV4Globe>
     duration: const Duration(milliseconds: 900),
   );
 
+  late final AnimationController _flingController =
+      AnimationController.unbounded(vsync: this);
+
   late MobileV4GeoTarget _geoTarget;
   late double _focusStartYaw;
   late double _focusEndYaw;
+  double _manualYaw = 0;
   double _dragDy = 0;
+  bool _horizontalDragging = false;
+
+  static const double _dragRadPerPx = 0.0085;
 
   @override
   void initState() {
@@ -70,6 +79,16 @@ class _MobileV4GlobeState extends State<MobileV4Globe>
     _focusStartYaw = initialYaw;
     _focusEndYaw = initialYaw;
     _focusController.value = 1.0;
+    _flingController.addListener(() {
+      _manualYaw = _flingController.value;
+    });
+    _flingController.addStatusListener((status) {
+      if (status == AnimationStatus.completed && !_horizontalDragging) {
+        if (!_spin.isAnimating) {
+          _spin.repeat();
+        }
+      }
+    });
   }
 
   @override
@@ -78,6 +97,7 @@ class _MobileV4GlobeState extends State<MobileV4Globe>
     if (oldWidget.activeNodeName != widget.activeNodeName) {
       final nextTarget = mobileV4GeoForNode(widget.activeNodeName);
       if (nextTarget.lat != _geoTarget.lat || nextTarget.lon != _geoTarget.lon) {
+        _flingController.stop();
         final currentBase = _currentBaseYaw;
         final spinAngle = _spin.value * math.pi * 2;
         final desiredFrontYaw = MobileV4GlobePainter.yawForLatLon(
@@ -85,7 +105,7 @@ class _MobileV4GlobeState extends State<MobileV4Globe>
           nextTarget.lon,
         );
         // Compute shortest angular delta so the globe never spins the long way.
-        final desiredBase = desiredFrontYaw - spinAngle;
+        final desiredBase = desiredFrontYaw - spinAngle - _manualYaw;
         final delta = _shortestAngleDelta(currentBase, desiredBase);
         _geoTarget = nextTarget;
         _focusStartYaw = currentBase;
@@ -119,7 +139,40 @@ class _MobileV4GlobeState extends State<MobileV4Globe>
     _pulse.dispose();
     _aura.dispose();
     _focusController.dispose();
+    _flingController.dispose();
     super.dispose();
+  }
+
+  void _handleHorizontalDragStart(DragStartDetails _) {
+    _horizontalDragging = true;
+    _flingController.stop();
+    _spin.stop();
+  }
+
+  void _handleHorizontalDragUpdate(DragUpdateDetails details) {
+    setState(() {
+      _manualYaw += details.delta.dx * _dragRadPerPx;
+    });
+  }
+
+  void _handleHorizontalDragEnd(DragEndDetails details) {
+    _horizontalDragging = false;
+    final velocityRad = (details.velocity.pixelsPerSecond.dx * _dragRadPerPx)
+        .clamp(-9.0, 9.0);
+    if (velocityRad.abs() > 0.12) {
+      _flingController.animateWith(
+        FrictionSimulation(0.22, _manualYaw, velocityRad),
+      );
+    } else if (!_spin.isAnimating) {
+      _spin.repeat();
+    }
+  }
+
+  void _handleHorizontalDragCancel() {
+    _horizontalDragging = false;
+    if (!_spin.isAnimating) {
+      _spin.repeat();
+    }
   }
 
   void _endDrag() {
@@ -151,6 +204,10 @@ class _MobileV4GlobeState extends State<MobileV4Globe>
       onVerticalDragUpdate: (d) => setState(() => _dragDy += d.delta.dy),
       onVerticalDragEnd: (_) => _endDrag(),
       onVerticalDragCancel: () => setState(() => _dragDy = 0),
+      onHorizontalDragStart: _handleHorizontalDragStart,
+      onHorizontalDragUpdate: _handleHorizontalDragUpdate,
+      onHorizontalDragEnd: _handleHorizontalDragEnd,
+      onHorizontalDragCancel: _handleHorizontalDragCancel,
       child: Stack(
         children: [
           Positioned.fill(
@@ -213,7 +270,12 @@ class _MobileV4GlobeState extends State<MobileV4Globe>
           ),
           Positioned.fill(
             child: AnimatedBuilder(
-              animation: Listenable.merge([_spin, _pulse, _focusController]),
+              animation: Listenable.merge([
+                _spin,
+                _pulse,
+                _focusController,
+                _flingController,
+              ]),
               builder: (context, _) {
                 return AnimatedOpacity(
                   opacity: widget.connected ? 1 : (p.isDark ? .32 : .42),
@@ -224,7 +286,7 @@ class _MobileV4GlobeState extends State<MobileV4Globe>
                     child: RepaintBoundary(
                       child: CustomPaint(
                         painter: MobileV4GlobePainter(
-                          rotation: _spin.value * math.pi * 2,
+                          rotation: _spin.value * math.pi * 2 + _manualYaw,
                           pulse: _pulse.value,
                           connected: widget.connected,
                           isDark: p.isDark,

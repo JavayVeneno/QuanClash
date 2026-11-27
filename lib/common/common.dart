@@ -34,6 +34,7 @@ export 'preferences.dart';
 export 'print.dart';
 export 'protocol.dart';
 export 'proxy.dart';
+export 'proxy_chain.dart';
 export 'quanx.dart';
 export 'quanx_icons.dart';
 export 'render.dart';

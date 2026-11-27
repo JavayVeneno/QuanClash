@@ -153,6 +153,13 @@ class AppTopNavContainer extends ConsumerStatefulWidget {
 
 class _AppTopNavContainerState extends ConsumerState<AppTopNavContainer> {
   void _handleToPage(PageLabel pageLabel) {
+    final pageContext = GlobalObjectKey(pageLabel).currentContext;
+    if (pageContext != null) {
+      final navigator = Navigator.maybeOf(pageContext);
+      if (navigator != null && navigator.canPop()) {
+        navigator.popUntil((route) => route.isFirst);
+      }
+    }
     globalState.container
         .read(currentPageLabelProvider.notifier)
         .toPage(pageLabel);

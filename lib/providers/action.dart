@@ -324,6 +324,18 @@ class SetupAction extends _$SetupAction {
     if (scriptContent?.isNotEmpty == true) {
       rawConfig = await handleEvaluate(scriptContent!, rawConfig);
     }
+    if (setupState.chainsEnabled && setupState.proxyChains.isNotEmpty) {
+      final strictDns =
+          networkProps.dnsSafetyMode == DnsSafetyMode.proxyOnly ||
+          networkProps.autoSetSystemDns;
+      final chainResult = applyProxyChains(
+        rawConfig,
+        setupState.proxyChains,
+        chainsEnabled: setupState.chainsEnabled,
+        strictDns: strictDns,
+      );
+      rawConfig = chainResult.config;
+    }
     final directory = await appPath.profilesPath;
     Future<RealProfileResult> build({
       required DnsSafetyMode safetyMode,

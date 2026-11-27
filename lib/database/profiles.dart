@@ -17,6 +17,8 @@ class Profiles extends Table {
 
   TextColumn get overwriteType => textEnum<OverwriteType>()();
 
+  BoolColumn get chainsEnabled => boolean().withDefault(const Constant(true))();
+
   IntColumn get scriptId => integer().nullable()();
 
   IntColumn get autoUpdateDurationMillis => integer()();
@@ -118,6 +120,7 @@ extension RawProfilExt on RawProfile {
       selectedMap: selectedMap,
       unfoldSet: unfoldSet,
       overwriteType: overwriteType,
+      chainsEnabled: chainsEnabled,
       scriptId: scriptId,
       order: order,
     );
@@ -138,6 +141,7 @@ extension ProfilesCompanionExt on Profile {
       selectedMap: selectedMap,
       unfoldSet: unfoldSet,
       overwriteType: overwriteType,
+      chainsEnabled: Value(chainsEnabled),
       scriptId: Value(scriptId),
       order: Value(order ?? this.order),
     );

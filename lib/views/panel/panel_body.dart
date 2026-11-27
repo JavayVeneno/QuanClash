@@ -7,6 +7,7 @@ import 'package:quanclash/common/quanx_icons.dart';
 import 'package:quanclash/common/utils.dart';
 import 'package:quanclash/enum/enum.dart';
 import 'package:quanclash/panel/panel_state.dart';
+import 'package:quanclash/widgets/mobius_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -272,10 +273,12 @@ class PanelBody extends StatelessWidget {
               width: 30,
               height: 30,
               decoration: BoxDecoration(
-                color: quanX.accent.withValues(alpha: 0.10),
+                color: quanX.accent.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(9),
               ),
-              child: Icon(QuanXIcons.globe, size: 16, color: quanX.accent),
+              child: state.isChain
+                  ? Center(child: MobiusIcon(size: 16, color: quanX.accent))
+                  : Icon(QuanXIcons.globe, size: 16, color: quanX.accent),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -284,17 +287,34 @@ class PanelBody extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    state.groupName ?? context.appLocalizations.proxyGroup,
+                    state.isChain
+                        ? [
+                            context.appLocalizations.proxyChains,
+                            if (state.chainSummary != null) state.chainSummary!,
+                          ].join(' · ')
+                        : (state.groupName ??
+                              context.appLocalizations.proxyGroup),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: context.textTheme.bodySmall?.copyWith(
                       fontSize: 10.5,
-                      color: quanX.textSecondary,
+                      color: state.isChain ? quanX.accent : quanX.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Row(
                     children: [
+                      if (state.isChain && hasNode) ...[
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: quanX.success,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                      ],
                       Flexible(
                         child: Text(
                           hasNode ? now : '—',

@@ -219,28 +219,42 @@ class PanelWindowManager {
     final port = container.read(trayStateProvider).port;
     final groups = container.read(groupsProvider);
     final selectedMap = container.read(selectedMapProvider);
-    // mihomo's GLOBAL selector defaults to DIRECT; without this the panel
-    // always showed "GLOBAL / DIRECT" while rule mode used a real node.
+    final currentProfile = container.read(currentProfileProvider);
+    final profileChains = currentProfile == null
+        ? const <ProxyChain>[]
+        : container.read(profileProxyChainsProvider(currentProfile.id));
     final group = computeCurrentGroup(
       groups,
-      preferredName: container.read(currentProfileProvider)?.currentGroupName,
+      preferredName: currentProfile?.currentGroupName,
       selectedMap: selectedMap,
+      mode: mode,
     );
-    final proxyName = group == null
+    final rawProxyName = group == null
         ? null
         : computeRealSelectedProxyState(
             group.now ?? '',
             groups: groups,
             selectedMap: selectedMap,
           ).proxyName;
+    final activeChain = resolveActiveProxyChain(
+      profileChains,
+      proxyName: rawProxyName,
+      groupNow: group?.now,
+      chainsEnabled: currentProfile?.chainsEnabled ?? true,
+    );
+    final proxyName = activeChain?.groupName ?? rawProxyName;
+    final chainSummary = activeChain == null
+        ? null
+        : '${activeChain.entry.members.length} ${currentAppLocalizations.proxyChainEntry} → ${activeChain.exit.members.length} ${currentAppLocalizations.proxyChainExit}';
     final lastTraffic = traffics.isNotEmpty ? traffics.last : const Traffic();
     final delayMap = container.read(delayDataSourceProvider);
     final testUrl = group?.testUrl.takeFirstValid([
       container.read(appSettingProvider).testUrl,
     ]);
-    final delay = proxyName == null || proxyName.isEmpty
+    final delayTarget = rawProxyName ?? proxyName;
+    final delay = delayTarget == null || delayTarget.isEmpty
         ? null
-        : delayMap[testUrl]?[proxyName];
+        : delayMap[testUrl]?[delayTarget];
     final themeProps = container.read(themeSettingProvider);
     final locale = utils.getEffectiveLocaleString(
           container.read(appSettingProvider).locale,
@@ -257,6 +271,8 @@ class PanelWindowManager {
       groupName: group?.name,
       proxyName: proxyName,
       delay: delay,
+      isChain: activeChain != null,
+      chainSummary: chainSummary,
       systemProxy: systemProxy,
       tun: tunEnable,
       locale: locale,

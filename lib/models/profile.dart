@@ -54,6 +54,7 @@ abstract class Profile with _$Profile {
     @Default({}) Map<String, String> selectedMap,
     @Default({}) Set<String> unfoldSet,
     @Default(OverwriteType.standard) OverwriteType overwriteType,
+    @Default(true) bool chainsEnabled,
     int? scriptId,
     int? order,
   }) = _Profile;

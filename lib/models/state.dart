@@ -9,6 +9,7 @@ import 'common.dart';
 import 'config.dart';
 import 'core.dart';
 import 'profile.dart';
+import 'proxy_chain.dart';
 
 part 'generated/state.freezed.dart';
 part 'generated/state.g.dart';
@@ -375,6 +376,8 @@ abstract class SetupState with _$SetupState {
     required Script? script,
     required bool overrideDns,
     required Dns dns,
+    @Default(true) bool chainsEnabled,
+    @Default([]) List<ProxyChain> proxyChains,
   }) = _SetupState;
 }
 

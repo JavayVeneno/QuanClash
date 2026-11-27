@@ -96,13 +96,33 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m36(percent) => "已用 ${percent}%";
 
-  static String m37(count) => "${count} 秒";
+  static String m37(name) => "已应用「${name}」";
 
-  static String m38(count) => "已选择 ${count} 项";
+  static String m38(name) => "删除「${name}」？";
 
-  static String m39(label) => "${label}必须为URL";
+  static String m39(name) => "「${name}」不能同时在入口和出口";
 
-  static String m40(count) => "${count} 年前";
+  static String m40(name) => "「${name}」是内置策略，不能作为链成员";
+
+  static String m41(name, dialer) => "出口「${name}」已有前置代理「${dialer}」";
+
+  static String m42(name) => "找不到节点「${name}」（订阅或配置更新后丢失）";
+
+  static String m43(name) => "名称「${name}」与现有节点或策略组重名";
+
+  static String m44(count) => "有 ${count} 条规则引用了此链，删除或关闭后这些规则将失效。";
+
+  static String m45(name) => "「${name}」有未应用的改动";
+
+  static String m46(exit, entry) => "出口「${exit}」使用 QUIC，但入口「${entry}」未开启 UDP";
+
+  static String m47(count) => "${count} 秒";
+
+  static String m48(count) => "已选择 ${count} 项";
+
+  static String m49(label) => "${label}必须为URL";
+
+  static String m50(count) => "${count} 年前";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -797,7 +817,103 @@ class MessageLookup extends MessageLookupByLibrary {
     "proxiesViewAll": MessageLookupByLibrary.simpleMessage("全部节点"),
     "proxiesViewMode": MessageLookupByLibrary.simpleMessage("显示方式"),
     "proxiesViewRegion": MessageLookupByLibrary.simpleMessage("按地区分组"),
-    "proxyChains": MessageLookupByLibrary.simpleMessage("代理链"),
+    "proxyChainAddEntry": MessageLookupByLibrary.simpleMessage("+入"),
+    "proxyChainAddExit": MessageLookupByLibrary.simpleMessage("+出"),
+    "proxyChainAll": MessageLookupByLibrary.simpleMessage("全部"),
+    "proxyChainApplied": m37,
+    "proxyChainApply": MessageLookupByLibrary.simpleMessage("应用"),
+    "proxyChainApplyAndLeave": MessageLookupByLibrary.simpleMessage("应用并离开"),
+    "proxyChainAvailableNodes": MessageLookupByLibrary.simpleMessage("可用节点"),
+    "proxyChainDelete": MessageLookupByLibrary.simpleMessage("删除链"),
+    "proxyChainDeleteConfirm": m38,
+    "proxyChainDisabledDesc": MessageLookupByLibrary.simpleMessage(
+      "链路数据已保留，但不再生成链组，代理页链分组已隐藏。",
+    ),
+    "proxyChainDisabledTitle": MessageLookupByLibrary.simpleMessage(
+      "本配置已关闭链式代理",
+    ),
+    "proxyChainDiscard": MessageLookupByLibrary.simpleMessage("放弃"),
+    "proxyChainEmptyDesc": MessageLookupByLibrary.simpleMessage(
+      "把流量先送到入口，再从出口离开。每条链生成一个可被规则引用的「⛓名称」组。",
+    ),
+    "proxyChainEmptyTitle": MessageLookupByLibrary.simpleMessage("还没有链式代理"),
+    "proxyChainEntry": MessageLookupByLibrary.simpleMessage("入口"),
+    "proxyChainEntryDropHint": MessageLookupByLibrary.simpleMessage("拖入节点作为入口"),
+    "proxyChainEntryDropSub": MessageLookupByLibrary.simpleMessage(
+      "支持多节点自动择优 / 掉线切换",
+    ),
+    "proxyChainErrBothSides": m39,
+    "proxyChainErrBuiltin": m40,
+    "proxyChainErrCycle": MessageLookupByLibrary.simpleMessage("检测到循环引用"),
+    "proxyChainErrEmptyName": MessageLookupByLibrary.simpleMessage("链名称不能为空"),
+    "proxyChainErrEntryEmpty": MessageLookupByLibrary.simpleMessage(
+      "入口为空：请至少放入 1 个节点",
+    ),
+    "proxyChainErrExitDialer": m41,
+    "proxyChainErrExitEmpty": MessageLookupByLibrary.simpleMessage(
+      "出口为空：请至少放入 1 个节点",
+    ),
+    "proxyChainErrInvalidExitType": MessageLookupByLibrary.simpleMessage(
+      "出口组仅支持 fallback 或 select",
+    ),
+    "proxyChainErrMissingNode": m42,
+    "proxyChainErrNameConflict": m43,
+    "proxyChainErrProviderStrict": MessageLookupByLibrary.simpleMessage(
+      "严格 DNS 模式下不支持订阅节点",
+    ),
+    "proxyChainExit": MessageLookupByLibrary.simpleMessage("出口"),
+    "proxyChainExitDropHint": MessageLookupByLibrary.simpleMessage("拖入节点作为出口"),
+    "proxyChainExitDropSub": MessageLookupByLibrary.simpleMessage(
+      "支持多节点 fallback，保持出口 IP 稳定",
+    ),
+    "proxyChainFailureBlock": MessageLookupByLibrary.simpleMessage("阻断（推荐）"),
+    "proxyChainFailureBlockDesc": MessageLookupByLibrary.simpleMessage(
+      "链路不可用时断开，绝不退回直连。",
+    ),
+    "proxyChainFailureDirect": MessageLookupByLibrary.simpleMessage("回退为出口直连"),
+    "proxyChainFailureDirectAck": MessageLookupByLibrary.simpleMessage(
+      "我了解风险，允许暴露真实 IP",
+    ),
+    "proxyChainFailureDirectBadge": MessageLookupByLibrary.simpleMessage(
+      "直连回退",
+    ),
+    "proxyChainFailureDirectDesc": MessageLookupByLibrary.simpleMessage(
+      "入口全挂时直接连出口，出口节点将看到你的真实 IP。",
+    ),
+    "proxyChainFailurePolicy": MessageLookupByLibrary.simpleMessage("失败策略"),
+    "proxyChainInterval": MessageLookupByLibrary.simpleMessage("间隔 (s)"),
+    "proxyChainInvalid": MessageLookupByLibrary.simpleMessage("失效"),
+    "proxyChainLocate": MessageLookupByLibrary.simpleMessage("定位"),
+    "proxyChainManage": MessageLookupByLibrary.simpleMessage("管理链路"),
+    "proxyChainNew": MessageLookupByLibrary.simpleMessage("新建链"),
+    "proxyChainOnlyUdp": MessageLookupByLibrary.simpleMessage("仅 UDP"),
+    "proxyChainProviderNodes": MessageLookupByLibrary.simpleMessage("订阅节点"),
+    "proxyChainProviderStrictTip": MessageLookupByLibrary.simpleMessage(
+      "严格 DNS 模式暂不支持订阅节点，后续提供非严格降级方案",
+    ),
+    "proxyChainReenable": MessageLookupByLibrary.simpleMessage("重新开启"),
+    "proxyChainRelationHint": MessageLookupByLibrary.simpleMessage(
+      "规则指定的链始终生效；在此切换仅影响未命中规则的默认流量。",
+    ),
+    "proxyChainRename": MessageLookupByLibrary.simpleMessage("重命名链"),
+    "proxyChainRuleRefWarning": m44,
+    "proxyChainSetCurrent": MessageLookupByLibrary.simpleMessage("设为当前"),
+    "proxyChainSingleNode": MessageLookupByLibrary.simpleMessage("单节点直挂"),
+    "proxyChainStaticNodes": MessageLookupByLibrary.simpleMessage("固定节点"),
+    "proxyChainTolerance": MessageLookupByLibrary.simpleMessage("容差 (ms)"),
+    "proxyChainUnapplied": MessageLookupByLibrary.simpleMessage("未应用"),
+    "proxyChainUnsavedDesc": MessageLookupByLibrary.simpleMessage(
+      "离开后当前草稿将丢失。",
+    ),
+    "proxyChainUnsavedTitle": m45,
+    "proxyChainUrlTestParams": MessageLookupByLibrary.simpleMessage(
+      "入口 url-test 参数",
+    ),
+    "proxyChainWarnUdpQuic": m46,
+    "proxyChainYamlPreview": MessageLookupByLibrary.simpleMessage(
+      "生成的 YAML 片段",
+    ),
+    "proxyChains": MessageLookupByLibrary.simpleMessage("链式代理"),
     "proxyDetectedAbnormal": MessageLookupByLibrary.simpleMessage(
       "检测到选中的代理存在异常",
     ),
@@ -967,7 +1083,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "search": MessageLookupByLibrary.simpleMessage("搜索"),
     "seconds": MessageLookupByLibrary.simpleMessage("秒"),
-    "secondsCount": m37,
+    "secondsCount": m47,
     "sectionMain": MessageLookupByLibrary.simpleMessage("主要"),
     "sectionMonitor": MessageLookupByLibrary.simpleMessage("监控"),
     "sectionSystem": MessageLookupByLibrary.simpleMessage("系统"),
@@ -978,7 +1094,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectSplitStrategy": MessageLookupByLibrary.simpleMessage("请选择分流策略"),
     "selectSubRule": MessageLookupByLibrary.simpleMessage("请选择子规则"),
     "selected": MessageLookupByLibrary.simpleMessage("已选择"),
-    "selectedCountTitle": m38,
+    "selectedCountTitle": m48,
     "serviceRunning": MessageLookupByLibrary.simpleMessage("服务运行正常"),
     "settings": MessageLookupByLibrary.simpleMessage("设置"),
     "settingsAboutApp": MessageLookupByLibrary.simpleMessage("关于 QuanClash"),
@@ -1095,7 +1211,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "uploadSpeed": MessageLookupByLibrary.simpleMessage("上传速度"),
     "url": MessageLookupByLibrary.simpleMessage("URL"),
     "urlDesc": MessageLookupByLibrary.simpleMessage("通过URL获取配置文件"),
-    "urlTip": m39,
+    "urlTip": m49,
     "useHosts": MessageLookupByLibrary.simpleMessage("使用Hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("使用系统Hosts"),
     "userAgent": MessageLookupByLibrary.simpleMessage("用户代理"),
@@ -1112,7 +1228,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "vpnTip": MessageLookupByLibrary.simpleMessage("重启VPN后改变生效"),
     "webDAVConfiguration": MessageLookupByLibrary.simpleMessage("WebDAV配置"),
     "whitelistMode": MessageLookupByLibrary.simpleMessage("白名单模式"),
-    "yearsAgo": m40,
+    "yearsAgo": m50,
     "zh_CN": MessageLookupByLibrary.simpleMessage("中文简体"),
   };
 }

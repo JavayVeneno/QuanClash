@@ -2799,10 +2799,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Proxy chains`
+  /// `Proxy Chains`
   String get proxyChains {
     return Intl.message(
-      'Proxy chains',
+      'Proxy Chains',
       name: 'proxyChains',
       desc: '',
       args: [],
@@ -6551,6 +6551,566 @@ class AppLocalizations {
       name: 'nodeQualityReasonUnavailable',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `New Chain`
+  String get proxyChainNew {
+    return Intl.message('New Chain', name: 'proxyChainNew', desc: '', args: []);
+  }
+
+  /// `Manage Chains`
+  String get proxyChainManage {
+    return Intl.message(
+      'Manage Chains',
+      name: 'proxyChainManage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Entry`
+  String get proxyChainEntry {
+    return Intl.message('Entry', name: 'proxyChainEntry', desc: '', args: []);
+  }
+
+  /// `Exit`
+  String get proxyChainExit {
+    return Intl.message('Exit', name: 'proxyChainExit', desc: '', args: []);
+  }
+
+  /// `Direct link`
+  String get proxyChainSingleNode {
+    return Intl.message(
+      'Direct link',
+      name: 'proxyChainSingleNode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Apply`
+  String get proxyChainApply {
+    return Intl.message('Apply', name: 'proxyChainApply', desc: '', args: []);
+  }
+
+  /// `Discard`
+  String get proxyChainDiscard {
+    return Intl.message(
+      'Discard',
+      name: 'proxyChainDiscard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unapplied`
+  String get proxyChainUnapplied {
+    return Intl.message(
+      'Unapplied',
+      name: 'proxyChainUnapplied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Proxy chains disabled for this profile`
+  String get proxyChainDisabledTitle {
+    return Intl.message(
+      'Proxy chains disabled for this profile',
+      name: 'proxyChainDisabledTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your chain drafts are preserved, but chain groups will not be generated.`
+  String get proxyChainDisabledDesc {
+    return Intl.message(
+      'Your chain drafts are preserved, but chain groups will not be generated.',
+      name: 'proxyChainDisabledDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enable`
+  String get proxyChainReenable {
+    return Intl.message(
+      'Enable',
+      name: 'proxyChainReenable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No proxy chains yet`
+  String get proxyChainEmptyTitle {
+    return Intl.message(
+      'No proxy chains yet',
+      name: 'proxyChainEmptyTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Route traffic through an entry hop and out via an exit hop. Rules can reference the generated chain group directly.`
+  String get proxyChainEmptyDesc {
+    return Intl.message(
+      'Route traffic through an entry hop and out via an exit hop. Rules can reference the generated chain group directly.',
+      name: 'proxyChainEmptyDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Drag nodes here as Entry`
+  String get proxyChainEntryDropHint {
+    return Intl.message(
+      'Drag nodes here as Entry',
+      name: 'proxyChainEntryDropHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Multiple nodes form a group with auto failover`
+  String get proxyChainEntryDropSub {
+    return Intl.message(
+      'Multiple nodes form a group with auto failover',
+      name: 'proxyChainEntryDropSub',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Drag nodes here as Exit`
+  String get proxyChainExitDropHint {
+    return Intl.message(
+      'Drag nodes here as Exit',
+      name: 'proxyChainExitDropHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Multiple nodes use fallback to keep egress IP stable`
+  String get proxyChainExitDropSub {
+    return Intl.message(
+      'Multiple nodes use fallback to keep egress IP stable',
+      name: 'proxyChainExitDropSub',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Available Nodes`
+  String get proxyChainAvailableNodes {
+    return Intl.message(
+      'Available Nodes',
+      name: 'proxyChainAvailableNodes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All`
+  String get proxyChainAll {
+    return Intl.message('All', name: 'proxyChainAll', desc: '', args: []);
+  }
+
+  /// `Static`
+  String get proxyChainStaticNodes {
+    return Intl.message(
+      'Static',
+      name: 'proxyChainStaticNodes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Providers`
+  String get proxyChainProviderNodes {
+    return Intl.message(
+      'Providers',
+      name: 'proxyChainProviderNodes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `UDP only`
+  String get proxyChainOnlyUdp {
+    return Intl.message(
+      'UDP only',
+      name: 'proxyChainOnlyUdp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Provider nodes are not supported under strict DNS mode yet.`
+  String get proxyChainProviderStrictTip {
+    return Intl.message(
+      'Provider nodes are not supported under strict DNS mode yet.',
+      name: 'proxyChainProviderStrictTip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `+In`
+  String get proxyChainAddEntry {
+    return Intl.message('+In', name: 'proxyChainAddEntry', desc: '', args: []);
+  }
+
+  /// `+Out`
+  String get proxyChainAddExit {
+    return Intl.message('+Out', name: 'proxyChainAddExit', desc: '', args: []);
+  }
+
+  /// `Failure Policy`
+  String get proxyChainFailurePolicy {
+    return Intl.message(
+      'Failure Policy',
+      name: 'proxyChainFailurePolicy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Block (Recommended)`
+  String get proxyChainFailureBlock {
+    return Intl.message(
+      'Block (Recommended)',
+      name: 'proxyChainFailureBlock',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Drop traffic when unavailable; never fall back to DIRECT.`
+  String get proxyChainFailureBlockDesc {
+    return Intl.message(
+      'Drop traffic when unavailable; never fall back to DIRECT.',
+      name: 'proxyChainFailureBlockDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fallback to direct exit`
+  String get proxyChainFailureDirect {
+    return Intl.message(
+      'Fallback to direct exit',
+      name: 'proxyChainFailureDirect',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connect directly to exit when entry fails. Exposes your real IP to the exit server.`
+  String get proxyChainFailureDirectDesc {
+    return Intl.message(
+      'Connect directly to exit when entry fails. Exposes your real IP to the exit server.',
+      name: 'proxyChainFailureDirectDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Direct Fallback`
+  String get proxyChainFailureDirectBadge {
+    return Intl.message(
+      'Direct Fallback',
+      name: 'proxyChainFailureDirectBadge',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `I understand this exposes my real IP`
+  String get proxyChainFailureDirectAck {
+    return Intl.message(
+      'I understand this exposes my real IP',
+      name: 'proxyChainFailureDirectAck',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Generated YAML Preview`
+  String get proxyChainYamlPreview {
+    return Intl.message(
+      'Generated YAML Preview',
+      name: 'proxyChainYamlPreview',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rename Chain`
+  String get proxyChainRename {
+    return Intl.message(
+      'Rename Chain',
+      name: 'proxyChainRename',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Chain`
+  String get proxyChainDelete {
+    return Intl.message(
+      'Delete Chain',
+      name: 'proxyChainDelete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete chain "{name}"?`
+  String proxyChainDeleteConfirm(Object name) {
+    return Intl.message(
+      'Delete chain "$name"?',
+      name: 'proxyChainDeleteConfirm',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Referenced by {count} rule(s). Removing or disabling this chain will break those rules.`
+  String proxyChainRuleRefWarning(Object count) {
+    return Intl.message(
+      'Referenced by $count rule(s). Removing or disabling this chain will break those rules.',
+      name: 'proxyChainRuleRefWarning',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Unapplied changes in "{name}"`
+  String proxyChainUnsavedTitle(Object name) {
+    return Intl.message(
+      'Unapplied changes in "$name"',
+      name: 'proxyChainUnsavedTitle',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Leaving now will discard your draft changes.`
+  String get proxyChainUnsavedDesc {
+    return Intl.message(
+      'Leaving now will discard your draft changes.',
+      name: 'proxyChainUnsavedDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Apply & Leave`
+  String get proxyChainApplyAndLeave {
+    return Intl.message(
+      'Apply & Leave',
+      name: 'proxyChainApplyAndLeave',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Applied "{name}"`
+  String proxyChainApplied(Object name) {
+    return Intl.message(
+      'Applied "$name"',
+      name: 'proxyChainApplied',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Locate`
+  String get proxyChainLocate {
+    return Intl.message('Locate', name: 'proxyChainLocate', desc: '', args: []);
+  }
+
+  /// `Invalid`
+  String get proxyChainInvalid {
+    return Intl.message(
+      'Invalid',
+      name: 'proxyChainInvalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rule-matched traffic always uses its assigned chain; selecting a chain here only affects default unmatched traffic.`
+  String get proxyChainRelationHint {
+    return Intl.message(
+      'Rule-matched traffic always uses its assigned chain; selecting a chain here only affects default unmatched traffic.',
+      name: 'proxyChainRelationHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Set as current`
+  String get proxyChainSetCurrent {
+    return Intl.message(
+      'Set as current',
+      name: 'proxyChainSetCurrent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Entry url-test Parameters`
+  String get proxyChainUrlTestParams {
+    return Intl.message(
+      'Entry url-test Parameters',
+      name: 'proxyChainUrlTestParams',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tolerance (ms)`
+  String get proxyChainTolerance {
+    return Intl.message(
+      'Tolerance (ms)',
+      name: 'proxyChainTolerance',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Interval (s)`
+  String get proxyChainInterval {
+    return Intl.message(
+      'Interval (s)',
+      name: 'proxyChainInterval',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Chain name cannot be empty`
+  String get proxyChainErrEmptyName {
+    return Intl.message(
+      'Chain name cannot be empty',
+      name: 'proxyChainErrEmptyName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Entry is empty: add at least 1 node`
+  String get proxyChainErrEntryEmpty {
+    return Intl.message(
+      'Entry is empty: add at least 1 node',
+      name: 'proxyChainErrEntryEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exit is empty: add at least 1 node`
+  String get proxyChainErrExitEmpty {
+    return Intl.message(
+      'Exit is empty: add at least 1 node',
+      name: 'proxyChainErrExitEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `"{name}" is a built-in policy and cannot be used in a chain`
+  String proxyChainErrBuiltin(Object name) {
+    return Intl.message(
+      '"$name" is a built-in policy and cannot be used in a chain',
+      name: 'proxyChainErrBuiltin',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `"{name}" cannot be in both entry and exit`
+  String proxyChainErrBothSides(Object name) {
+    return Intl.message(
+      '"$name" cannot be in both entry and exit',
+      name: 'proxyChainErrBothSides',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Exit "{name}" already has dialer-proxy "{dialer}"`
+  String proxyChainErrExitDialer(Object name, Object dialer) {
+    return Intl.message(
+      'Exit "$name" already has dialer-proxy "$dialer"',
+      name: 'proxyChainErrExitDialer',
+      desc: '',
+      args: [name, dialer],
+    );
+  }
+
+  /// `Cycle detected in dialer-proxy path`
+  String get proxyChainErrCycle {
+    return Intl.message(
+      'Cycle detected in dialer-proxy path',
+      name: 'proxyChainErrCycle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Provider nodes are not allowed under strict DNS mode`
+  String get proxyChainErrProviderStrict {
+    return Intl.message(
+      'Provider nodes are not allowed under strict DNS mode',
+      name: 'proxyChainErrProviderStrict',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Node "{name}" not found in current profile`
+  String proxyChainErrMissingNode(Object name) {
+    return Intl.message(
+      'Node "$name" not found in current profile',
+      name: 'proxyChainErrMissingNode',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Name "{name}" conflicts with an existing proxy or group`
+  String proxyChainErrNameConflict(Object name) {
+    return Intl.message(
+      'Name "$name" conflicts with an existing proxy or group',
+      name: 'proxyChainErrNameConflict',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Exit group only supports fallback or select`
+  String get proxyChainErrInvalidExitType {
+    return Intl.message(
+      'Exit group only supports fallback or select',
+      name: 'proxyChainErrInvalidExitType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exit "{exit}" uses QUIC, but entry "{entry}" does not support UDP`
+  String proxyChainWarnUdpQuic(Object exit, Object entry) {
+    return Intl.message(
+      'Exit "$exit" uses QUIC, but entry "$entry" does not support UDP',
+      name: 'proxyChainWarnUdpQuic',
+      desc: '',
+      args: [exit, entry],
     );
   }
 }

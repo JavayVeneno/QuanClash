@@ -89,15 +89,21 @@ class DashboardStats extends ConsumerWidget {
     final appLocalizations = context.appLocalizations;
     final groups = ref.watch(groupsProvider);
     final selectedMap = ref.watch(selectedMapProvider);
-    final preferredGroup = ref.watch(
-      currentProfileProvider.select((state) => state?.currentGroupName),
+    final mode = ref.watch(
+      patchClashConfigProvider.select((state) => state.mode),
     );
+    final currentProfile = ref.watch(currentProfileProvider);
+    final preferredGroup = currentProfile?.currentGroupName;
+    final profileChains = currentProfile == null
+        ? const <ProxyChain>[]
+        : ref.watch(profileProxyChainsProvider(currentProfile.id));
     final nodeNames = _collectNodeNames(groups);
     final countries = _collectCountries(nodeNames);
     final group = computeCurrentGroup(
       groups,
       preferredName: preferredGroup,
       selectedMap: selectedMap,
+      mode: mode,
     );
     final delayTarget = group?.now ?? '';
     final proxyName = delayTarget.isEmpty
@@ -107,15 +113,30 @@ class DashboardStats extends ConsumerWidget {
             groups: groups,
             selectedMap: selectedMap,
           ).proxyName;
+    final activeChain = resolveActiveProxyChain(
+      profileChains,
+      proxyName: proxyName,
+      groupNow: delayTarget,
+      chainsEnabled: currentProfile?.chainsEnabled ?? true,
+    );
     final delay = delayTarget.isEmpty
         ? null
         : ref.watch(
             delayProvider(proxyName: delayTarget, testUrl: group?.testUrl),
           );
-    final nodeCaption = [
-      if (group != null && group.name.isNotEmpty) group.name,
-      if (delay != null) '$delay ms',
-    ].join(' · ');
+    final displayProxyName = activeChain?.groupName ?? proxyName;
+    final chainHopSummary = activeChain == null
+        ? null
+        : '${activeChain.entry.members.length} ${appLocalizations.proxyChainEntry} → ${activeChain.exit.members.length} ${appLocalizations.proxyChainExit}';
+    final nodeCaption = activeChain != null
+        ? [
+            chainHopSummary!,
+            if (delay != null) '$delay ms',
+          ].join(' · ')
+        : [
+            if (group != null && group.name.isNotEmpty) group.name,
+            if (delay != null) '$delay ms',
+          ].join(' · ');
     final speedTest = ref.watch(speedTestProvider);
     final speedAvailable = ref.watch(speedTestAvailableProvider);
     final speedRunning = speedTest.phase == SpeedTestPhase.running;
@@ -154,19 +175,43 @@ class DashboardStats extends ConsumerWidget {
         Expanded(
           child: _StatCard(
             icon: QuanXIcons.router,
-            color: DashboardPalette.green,
-            label: appLocalizations.dashboardCurrentNode,
-            value: proxyName.isEmpty ? '—' : proxyName,
-            valueWidget: proxyName.isEmpty
+            iconWidget: activeChain == null
                 ? null
-                : EmojiText(
-                    proxyName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      height: 1.2,
-                    ),
+                : const MobiusIcon(size: 18, color: DashboardPalette.primary),
+            color: activeChain != null
+                ? DashboardPalette.primary
+                : DashboardPalette.green,
+            label: activeChain != null
+                ? appLocalizations.proxyChains
+                : appLocalizations.dashboardCurrentNode,
+            value: displayProxyName.isEmpty ? '—' : displayProxyName,
+            valueWidget: displayProxyName.isEmpty
+                ? null
+                : Row(
+                    children: [
+                      if (activeChain != null) ...[
+                        Container(
+                          width: 7,
+                          height: 7,
+                          decoration: const BoxDecoration(
+                            color: DashboardPalette.green,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                      ],
+                      Expanded(
+                        child: EmojiText(
+                          displayProxyName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            height: 1.2,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
             caption: nodeCaption,
             onPressed: () {
@@ -284,6 +329,7 @@ class _SpeedValue extends StatelessWidget {
 
 class _StatCard extends StatelessWidget {
   final IconData icon;
+  final Widget? iconWidget;
   final Color color;
   final String label;
   final String value;
@@ -295,6 +341,7 @@ class _StatCard extends StatelessWidget {
 
   const _StatCard({
     required this.icon,
+    this.iconWidget,
     required this.color,
     required this.label,
     required this.value,
@@ -317,7 +364,18 @@ class _StatCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                DashboardIconTile(icon: icon, color: color, size: 36),
+                if (iconWidget != null)
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(36 * 0.29),
+                    ),
+                    child: Center(child: iconWidget),
+                  )
+                else
+                  DashboardIconTile(icon: icon, color: color, size: 36),
                 const Spacer(),
                 trailing ?? DashboardMiniBars(color: color, height: 20),
               ],

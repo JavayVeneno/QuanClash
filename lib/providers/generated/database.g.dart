@@ -260,6 +260,179 @@ final class ProxyGroupsCountFamily extends $Family
   String toString() => r'proxyGroupsCountProvider';
 }
 
+@ProviderFor(proxyChainsStream)
+final proxyChainsStreamProvider = ProxyChainsStreamFamily._();
+
+final class ProxyChainsStreamProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ProxyChain>>,
+          List<ProxyChain>,
+          Stream<List<ProxyChain>>
+        >
+    with $FutureModifier<List<ProxyChain>>, $StreamProvider<List<ProxyChain>> {
+  ProxyChainsStreamProvider._({
+    required ProxyChainsStreamFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'proxyChainsStreamProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$proxyChainsStreamHash();
+
+  @override
+  String toString() {
+    return r'proxyChainsStreamProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<ProxyChain>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<ProxyChain>> create(Ref ref) {
+    final argument = this.argument as int;
+    return proxyChainsStream(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProxyChainsStreamProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$proxyChainsStreamHash() => r'7849cfd08deab963f41bd2d524c0735d000b81e4';
+
+final class ProxyChainsStreamFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<ProxyChain>>, int> {
+  ProxyChainsStreamFamily._()
+    : super(
+        retry: null,
+        name: r'proxyChainsStreamProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ProxyChainsStreamProvider call(int profileId) =>
+      ProxyChainsStreamProvider._(argument: profileId, from: this);
+
+  @override
+  String toString() => r'proxyChainsStreamProvider';
+}
+
+@ProviderFor(ProfileProxyChains)
+final profileProxyChainsProvider = ProfileProxyChainsFamily._();
+
+final class ProfileProxyChainsProvider
+    extends $NotifierProvider<ProfileProxyChains, List<ProxyChain>> {
+  ProfileProxyChainsProvider._({
+    required ProfileProxyChainsFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'profileProxyChainsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$profileProxyChainsHash();
+
+  @override
+  String toString() {
+    return r'profileProxyChainsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  ProfileProxyChains create() => ProfileProxyChains();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<ProxyChain> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<ProxyChain>>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProfileProxyChainsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$profileProxyChainsHash() =>
+    r'4a7436313205d4119996f2fcd792fd59a49fa87b';
+
+final class ProfileProxyChainsFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          ProfileProxyChains,
+          List<ProxyChain>,
+          List<ProxyChain>,
+          List<ProxyChain>,
+          int
+        > {
+  ProfileProxyChainsFamily._()
+    : super(
+        retry: null,
+        name: r'profileProxyChainsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ProfileProxyChainsProvider call(int profileId) =>
+      ProfileProxyChainsProvider._(argument: profileId, from: this);
+
+  @override
+  String toString() => r'profileProxyChainsProvider';
+}
+
+abstract class _$ProfileProxyChains extends $Notifier<List<ProxyChain>> {
+  late final _$args = ref.$arg as int;
+  int get profileId => _$args;
+
+  List<ProxyChain> build(int profileId);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<List<ProxyChain>, List<ProxyChain>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<List<ProxyChain>, List<ProxyChain>>,
+              List<ProxyChain>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
+  }
+}
+
 @ProviderFor(Profiles)
 final profilesProvider = ProfilesProvider._();
 

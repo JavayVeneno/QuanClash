@@ -187,11 +187,11 @@ class MobileV4GlobePainter extends CustomPainter {
   void _drawBorders(Canvas canvas, Offset c, double r, double yaw) {
     final paint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = .65
+      ..strokeWidth = .8
       ..strokeJoin = StrokeJoin.round
       ..color = isDark
-          ? _rgba(214, 222, 240, .24)
-          : _rgba(74, 66, 112, .25);
+          ? _rgba(214, 222, 240, .32)
+          : _rgba(74, 66, 112, .30);
     final path = Path();
     for (final ring in _worldRings) {
       var started = false;
@@ -430,14 +430,28 @@ class MobileV4GlobePainter extends CustomPainter {
     return _llToVec(int.parse(parts[1]) / 10, int.parse(parts[0]) / 10);
   }
 
+  /// Right-handed sphere mapping (front = +z, right/East = +x, up/North = +y).
   static _V3 _llToVec(double lat, double lon) {
     final la = lat * math.pi / 180;
     final lo = lon * math.pi / 180;
     return _V3(
-      math.cos(la) * math.cos(lo),
-      math.sin(la),
       math.cos(la) * math.sin(lo),
+      math.sin(la),
+      math.cos(la) * math.cos(lo),
     );
+  }
+
+  /// Projects a geographic coordinate at [yaw] for verification/testing.
+  @visibleForTesting
+  static Offset projectLatLonForTest(
+    double lat,
+    double lon, {
+    required double yaw,
+    Offset center = const Offset(100, 100),
+    double radius = 100,
+  }) {
+    final p = _project(_llToVec(lat, lon), yaw, center, radius);
+    return Offset(p.x, p.y);
   }
 
   static double _dot(_V3 a, _V3 b) => a.x * b.x + a.y * b.y + a.z * b.z;
