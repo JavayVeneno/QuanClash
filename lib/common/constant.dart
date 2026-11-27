@@ -18,7 +18,7 @@ const appName = 'QuanClash';
 /// can lag behind the source tree on incremental builds and made the About
 /// page report a stale release. Keep this in sync with `pubspec.yaml`;
 /// `test/app_version_test.dart` fails when the two drift apart.
-const appVersion = '0.0.4';
+const appVersion = '0.0.5';
 const appHelperService = 'QuanClashHelperService';
 const coreName = 'clash.meta';
 

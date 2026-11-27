@@ -1,7 +1,7 @@
 name: quanclash
 description: QuanClash - a Windows & Android proxy client built on mihomo.
 publish_to: 'none'
-version: 0.0.4+4
+version: 0.0.5+5
 homepage: https://github.com/JavayVeneno/QuanClash
 repository: https://github.com/JavayVeneno/QuanClash
 issue_tracker: https://github.com/JavayVeneno/QuanClash/issues
